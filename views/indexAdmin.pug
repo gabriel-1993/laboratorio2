@@ -1,0 +1,75 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Gabriel Torrez
+    link(rel="stylesheet", href="/css/style.css") 
+
+
+  body
+    header.header
+      div.flexCenter
+        h1 SISA
+        p Sistema Integrado de Información Sanitaria Argentino
+      nav
+        ul.ulNav 
+          li
+            a(href='#') Usuarios
+            ul.subMenu
+              li
+                a(href='/#') Agregar usuario
+              li
+                a(href='/#') Modificar usuario
+              li
+                a(href='/#') Buscar usuarios  
+              li
+                a(href='/#') Deshabilitar usuario
+          li
+            a(href='#') Medicamentos
+            ul.subMenu
+              li
+                a(href='/#') Agregar medicamento
+              li
+                a(href='/#') Modificar medicamento
+              li
+                a(href='/#') Buscar medicamentos  
+              li
+                a(href='/#') Deshabilitar medicamento                   
+          li
+            a(href='#') Prestaciones
+            ul.subMenu
+              li
+                a(href='/#') Agregar Prestacion
+              li
+                a(href='/#') Modificar Prestacion
+              li
+                a(href='/#') Buscar Prestaciones  
+              li
+                a(href='/#') Deshabilitar Prestacion
+          li
+            a(href='#') Obras sociales
+            ul.subMenu
+              li
+                a(href='/#') Agregar Obra social
+              li
+                a(href='/#') Modificar Obra social
+              li
+                a(href='/#') Buscar Obras sociales 
+              li
+                a(href='/#') Deshabilitar Obra social               
+          li
+            a(href='#') Mi cuenta
+            ul.subMenu
+              li
+                a(href='') Cambiar contraseña
+              li
+                a(href='/logout') Cerrar sesíon    
+    block content
+    section.section
+
+
+    footer.flexCenter.column.footer
+      p.pFooter1  Sistema Integrado de Información Sanitaria Argentino 
+      p.pFooter2  Gabriel Torrez © 2024
+      p.pFooter2 San Luis,La Punta. ULP - Laboratorio II

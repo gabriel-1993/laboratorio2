@@ -1,0 +1,32 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Gabriel Torrez
+    link(rel="stylesheet", href="/css/style.css")
+
+  body
+    header.header
+      div.flexCenter
+        h1 SISA
+        p Sistema Integrado de Información Sanitaria Argentino
+        
+    block content
+    if titulo && mensajes
+      .blur
+      .divMsj
+        h3.h3MsjUser.width100.text-center.text-fondoAzul.borderRadiusTop5px= titulo
+        ul
+          each mensaje in mensajes
+            li= mensaje
+        button.btn-Msj(onclick="toggleMessage()") Cerrar
+
+
+    footer.flexCenter.column.footer
+      p.pFooter1  Sistema Integrado de Información Sanitaria Argentino 
+      p.pFooter2  Gabriel Torrez © 2024
+      p.pFooter2 San Luis, La Punta. ULP - Laboratorio II
+    //- script(src="/js/mostrarMsjCliente.js", type="module") // Incluye el archivo JavaScript del cliente
+
+

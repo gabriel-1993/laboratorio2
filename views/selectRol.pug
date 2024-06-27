@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  .divMsj 
+      ul
+      button.btn-Msj 
+  section.flexCenter.section
+    //- Contenedor principal
+    section
+      div.divSelectRol.center.column.blur
+        h3.text-center.text-fondoAzul.borderRadiusTop5px Seleccionar rol
+
+        //- Texto informativo para el usuario
+        p.text-center Usted tiene varios roles. Por favor, seleccione el que desea ejecutar.
+
+        //- Selector de roles generado dinámicamente desde los roles pasados desde el servidor
+        form(id="formSeleccionarRol")
+          select#selectorRol(name="rolSeleccionado")
+            option(value="") SELECCIONAR
+            each role in roles
+              option(value=role.id)= role.rol_descripcion
+            else
+              // Manejar el caso donde no hay roles disponibles
+              option(value="") No hay roles disponibles
+  script(src="/js/selectRol.js", type="module")

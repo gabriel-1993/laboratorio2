@@ -1,0 +1,65 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css")
+    title Gabriel Torrez
+    link(rel='stylesheet', href='/css/style.css')
+
+  body
+    header.header
+      div.flexCenter
+        h1 SISA
+        p Sistema Integrado de Información Sanitaria Argentino
+      nav
+        ul.ulNav 
+          li
+            a(href='#') Prescripcion
+            ul.subMenu
+              li
+                a(href='/crearPrescripcion') Agregar Prescripcion
+              li
+                a(href='/modificarUsuario') Modificar Prescripciom
+              li
+                a(href='/') Buscar Prescripciones
+              li
+                a(href='/') Eliminar Prescripcion 
+          li
+            a(href='#') Paciente
+            ul.subMenu
+              li
+                a(href='/crearPrescripcion') Agregar Paciente
+              li
+                a(href='/modificarUsuario') Modificar Paciente
+              li
+                a(href='/') Buscar Paciente
+              li
+                a(href='/') Eliminar Paciente
+          li
+            a(href='#') Mis turnos
+            ul.subMenu
+              li
+                a(href='/crearPrescripcion') Agregar Turno
+              li
+                a(href='/modificarUsuario') Modificar Turno
+              li
+                a(href='/') Buscar Turnos
+              li
+                a(href='/') Eliminar Turno                    
+          li
+            a(href='#') Mi cuenta
+            ul.subMenu
+              li
+                a(href='') Cambiar contraseña
+              li
+                a(href='/logout') Cerrar sesíon
+
+    block content
+    section.section
+
+
+    footer.flexCenter.column.footer
+      p.pFooter1  Sistema Integrado de Información Sanitaria Argentino 
+      p.pFooter2  Gabriel Torrez © 2024
+      p.pFooter2 San Luis,La Punta. ULP - Laboratorio II

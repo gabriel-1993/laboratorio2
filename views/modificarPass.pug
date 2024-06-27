@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  .divMsj 
+        ul
+        button.btn-Msj
+  section.section
+    .divRestablecerPassword.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Restablecer Contraseña
+      //- action=`/restablecer-password/${token}` method="POST"
+      form(id="formRestablecerPassword" novalidate)
+        input(type="hidden" name="token" value=token)
+        div
+          label(for="password", class="restPassLabel") Nueva Contraseña
+          input(type="password", class="restPassInput" id="password", name="password", required)
+        div
+          label(for="confirmPassword", class="restPassLabel") Confirmar Contraseña
+          input(type="password", class="restPassInput" id="confirmPassword", name="confirmPassword", required)
+        button(type="submit", class="btnRestablecerPass") Restablecer Contraseña
+  script(src="/js/restablecerPassCliente.js", type="module") // Incluye el archivo JavaScript del cliente

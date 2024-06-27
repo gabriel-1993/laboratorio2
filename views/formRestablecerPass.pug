@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  .divMsj 
+      ul
+      button.btn-Msj
+  section.section
+    .divRecuperarPassword.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Recuperar Contraseña
+      form(id="formRecuperarPassword", novalidate)
+        div
+          p.text-center Por favor, ingresa tu correo electrónico. Te enviaremos un enlace para restablecer tu contraseña.
+        div.divCorreoRecuperarPass
+          label(for="email", class="restPassLabel") Correo Electrónico
+          input(type="email", class="restPassInput", id="email", name="email", required)
+        button(type="submit", class="btnEnviarEnlacePass") Enviar Enlace
+    script(src="/js/formRestablecerPassCliente.js", type="module") // Incluye el archivo JavaScript del cliente

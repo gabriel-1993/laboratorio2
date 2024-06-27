@@ -1,0 +1,442 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+:root {
+    --azulOscuro: #0d253f;
+    --azulSemiOscuro: #023e8a;
+    --celesteOscuro: #007BFF;
+    --celeste: #48cae4;
+    --celesteClaro: #ade8f4;
+    --color-fondo: #e6e3e3;
+}
+
+/* ------------------------------------------------------------------------------------- layout */
+
+.header {
+    max-width: 1370px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 10px;
+    height: 60px;
+    background-color: var(--azulOscuro);
+    color: #fff;
+    border-bottom: 2px solid var(--celesteOscuro);
+    z-index: 2;
+    margin: 0px auto;
+    /* Borde superior */
+}
+
+
+
+/* Espacio entre SISA y la linea celeste vertical */
+.header div h1 {
+    padding-right: 5px;
+}
+
+/* header p= Sistema integrado de... */
+.header p {
+    width: 250px;
+    font-size: 0.9rem;
+    /* Espacio entre el p y la linea celeste vertical */
+    padding-left: 5px;
+}
+
+/* div logo header */
+.flexCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* ESTILOS PARA NAV DEL HEADER */
+/* Estilo base para la lista y ocultar submenús */
+.ulNav {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* items principales del nav en el header(de cada uno hay un submenu) */
+.ulNav>li {
+    position: relative;
+    padding: 9px 3px;
+    background-color: var(--azulOscuro);
+    transition: all 0.3s ease-out;
+}
+
+.ulNav>li:hover {
+    background-color: var(--azulSemiOscuro);
+}
+
+
+.subMenu {
+    border-top: solid 2px var(--celesteOscuro);
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 57px;
+    background-color: #f9f9f9;
+    z-index: 1;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.ulNav>li:hover .subMenu {
+    display: block;
+}
+
+/* Estilos para los enlaces */
+.ulNav>li>a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #fff;
+}
+
+.subMenu li {
+    width: 200px;
+    /* Ajusta el ancho del submenú según tus necesidades */
+}
+
+.subMenu li a {
+    padding: 10px 15px;
+    display: block;
+    text-decoration: none;
+    color: var(--azulOscuro);
+    transition: all 0.2s ease-out;
+}
+
+.subMenu li a:hover {
+    background-color: var(--azulSemiOscuro);
+    color: #fff;
+}
+
+/* MOSTRAR MSJ CARD */
+.divMsj {
+    display: none;
+    /* Inicialmente oculto */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--azulOscuro);
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    border: solid 1px var(--celesteClaro);
+}
+
+.divMsj.mostrarMsj {
+    display: block;
+    z-index: 1000;
+    /* Mostrar cuando tenga la clase mostrarMsj */
+}
+
+.divMsj h2 {
+    color: var(--celesteOscuro);
+    margin-bottom: 10px;
+}
+
+.divMsj ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.divMsj ul li {
+    margin-bottom: 5px;
+}
+
+.divMsj button.btn-Msj {
+    background-color: var(--azulSemiOscuro);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.divMsj button.btn-Msj:hover {
+    background-color: var(--celesteOscuro);
+}
+
+
+
+
+.column {
+    flex-direction: column;
+}
+
+.flexCenter h1 {
+    border-right: var(--celesteOscuro) 2px solid;
+    padding-right: 2px;
+    margin-right: 2px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-fondoAzul {
+    /* background-color: var(--azulOscuro);
+    color: var(--celesteOscuro); */
+    color: #fff;
+    background-color: var(--azulSemiOscuro);
+    padding: 5px;
+}
+
+.borderRadiusTop5px {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+/* Botones iniciar sesion, enviar enlace(para restablecer pass) */
+button {
+    padding: 0.50rem 1.4rem;
+    border-radius: 0.25rem;
+    background-color: var(--azulSemiOscuro);
+    color: #fff;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+}
+
+button:hover {
+    background-color: var(--celesteOscuro);
+}
+
+.btnEnviarEnlacePass {
+    width: 145px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+/* btn para enviar nueva y confirmar contraseña en restablecer contraseña */
+.btnRestablecerPass{
+    width: 220px;
+    margin: 0 auto;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+/* Login */
+/* btn restablecer contraseña en el form login */
+.btnRecuperarPass {
+    margin-top: 7px;
+    font-size: 0.70rem;
+    padding: 4px 5px;
+    border-radius: 3px;
+    background-color: var(--azulSemiOscuro);
+    color: #fff;
+    transition: all 0.3s ease-out;
+}
+
+.btnRecuperarPass:hover {
+    background-color: var(--celesteOscuro);
+}
+
+
+
+.section {
+    z-index: 2;
+    height: calc(100vh - 60px - 80px);
+    max-width: 1370px;
+    margin: 0px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--azulOscuro);
+    /* Calcula la altura disponible entre el header y el footer */
+}
+
+/* iniciar sesion y restablecer pass */
+.divLogin,
+.divRecuperarPassword,
+.divRestablecerPassword {
+    width: 420px;
+    height: auto;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    border-radius: 8px;
+    background-image: url('../img/portada.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-color: var(--azulSemiOscuro);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+.formLogin,
+#formRecuperarPassword,
+#formRestablecerPassword {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    padding: 30px;
+}
+
+#formRestablecerPassword{
+    padding: 35px 30px;
+}
+#formRecuperarPassword {
+    padding: 0px 30px;
+}
+
+/* Recuperar pass: div contenedor de label e input correo */
+.divCorreoRecuperarPass {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+
+/* label iniciar sesion , label restablecer contraseña */
+.labelLogin,
+.restPassLabel {
+    background-color: var(--azulSemiOscuro);
+    color: #fff;
+    border: 1px solid var(--azulSemiOscuro);
+    padding: 4px;
+    font-weight: 100;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+/* label en restablecer contraseña: nueva contraseña y confirmar contraseña */
+.restPassLabel {
+    flex: 0 0 auto; /* Ancho automático para el label */
+}
+
+/* Styles for login inputs */
+.formLogin input,
+.restPassInput {
+    width: 130px;
+    text-align: center;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.restPassInput {
+    flex: 1 1 auto; /* El input ocupa todo el espacio restante */
+}
+
+/* div contenedor de input y label en form restablecer contraseña */
+#formRestablecerPassword div {
+    width: 100%;
+    display: flex;
+    align-items: center; 
+}
+
+/* .input e input restablecer pass  */
+.input,
+.restPassInput {
+    padding: 4px;
+    font-weight: 100;
+    font-size: 0.9rem;
+    border: 1px solid var(--azulSemiOscuro);
+    cursor: pointer;
+}
+
+/* select, .input e input restablecer pass  */
+.input:focus,
+.restPassInput:focus,
+select:focus {
+    outline: none;
+}
+
+
+/* Select rol cuando tenga varios roles un user */
+.divSelectRol {
+    display: flex;
+    flex-direction: column;
+    width: 420px;
+    height: auto;
+    border: solid 1px var(--azulSemiOscuro);
+    border-radius: 9px;
+    background-image: url('../img/portada.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* background-color:  #023d8ac4; */
+}
+
+/* User logeado con varios roles p: Usted tiene varios roles. Por favor,seleccione el que desea ejecutar. */
+/* Restablecer contraseña p: Te enviaremos un enlace para restablecer tu contraseña.  Por favor, ingresa tu correo electrónico.*/
+.divSelectRol p,
+.divRecuperarPassword p {
+    width: 80%;
+    margin: 30px auto;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    padding: 10px;
+    color: #fff;
+    /* celeste oscuro trasparente */
+    background-color: #007bffd7;
+}
+
+
+/* Form contenedor del select de roles */
+#formSeleccionarRol {
+    display: flex;
+}
+
+/* Selector con roles del usuario : change captura el option y lo envia por el form al endpoint*/
+#selectorRol {
+    margin: 0 auto;
+    background-color: var(--celesteOscuro);
+    color: #fff;
+    padding: 6px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    width: 150px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+
+#selectorRol:hover {
+    opacity: 0.70;
+
+}
+
+#selectorRol:focus {
+    margin-bottom: 85px;
+}
+
+
+
+
+.footer {
+    background-color: var(--azulOscuro);
+    color: #fff;
+    height: 80px;
+    max-width: 1370px;
+    margin: 0px auto;
+
+}
+
+
+
+
+
+
+
+
+
