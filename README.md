@@ -1,3 +1,6 @@
+SISA Sistema integrado de Informacion Sanitaria Argentino
+#JAVASCRIPT #NODE #PUG #CSS #MYSQL (MVC / CRUD)
+ 
 usuarios :
  12345780  (rol:profesional)
  36018434  (rol:administrador) 
