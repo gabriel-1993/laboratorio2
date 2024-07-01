@@ -13,14 +13,7 @@ html(lang="es")
         p Sistema Integrado de Información Sanitaria Argentino
         
     block content
-    if titulo && mensajes
-      .blur
-      .divMsj
-        h3.h3MsjUser.width100.text-center.text-fondoAzul.borderRadiusTop5px= titulo
-        ul
-          each mensaje in mensajes
-            li= mensaje
-        button.btn-Msj(onclick="toggleMessage()") Cerrar
+
 
 
     footer.flexCenter.column.footer

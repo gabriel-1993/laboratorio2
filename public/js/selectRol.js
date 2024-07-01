@@ -1,6 +1,6 @@
 import { mostrarMsjCliente } from "./mostrarMsjCliente.js";
 //Usuario con varios roles luego de logearse, cuando elija el rol en el select 
-//Este escuchador va a moificar la url de la pagina para mostrar la vista corresponiente
+//Este escuchador va a modificar la url de la pagina para mostrar la vista corresponiente
 
 document.addEventListener('DOMContentLoaded', function () {
     const select = document.querySelector("#selectorRol");

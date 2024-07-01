@@ -10,3 +10,12 @@ const pool = createPool({
 
 export default pool;
 
+// // database.js o config.js
+// import { Sequelize } from 'sequelize';
+
+// const sequelize = new Sequelize('laboratorio2', 'root', '', {
+//   host: 'localhost',
+//   dialect: 'mysql',
+// });
+
+// export default sequelize;

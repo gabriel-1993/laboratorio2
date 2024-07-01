@@ -1,0 +1,61 @@
+extends indexAdmin 
+
+block content 
+  .divMsj 
+    ul
+    button.btn-Msj 
+  section.flexCenter.section
+    .divCrearUsuario.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Crear usuario
+      .divFlexRow
+        .divDatosUsuarioNuevo 
+          h4.text-center.text-azul Ingresar datos 
+          form(id="formAgregarUsuario" autocomplete="off")
+            div 
+              label(for="nombre" class="labelCenter") Nombre
+              input(type="text" id="nombre" name="nombre" autocomplete="off") 
+            div 
+              label(for="apellido" class="labelCenter") Apellido
+              input(type="text" id="apellido" name="apellido" autocomplete="off") 
+            div 
+              label(for="documento" class="labelCenter") Documento
+              input(type="text" id="documento" name="documento" autocomplete="off") 
+            div 
+              label(for="email" class="labelCenter") Email
+              input(type="email" id="email" name="email" autocomplete="off") 
+            div 
+              label(for="password" class="labelCenter") Contraseña
+              input(type="password" id="password" name="password" autocomplete="new-password") 
+            div 
+              label(for="confirmarPassword" class="labelCenter") Conf. Contraseña
+              input(type="password" id="confirmarPassword" name="confirmarPassword" autocomplete="new-password") 
+            div 
+              label(for="roles" class="labelCenter") Rol/es
+              select(id="roles" class="selectRolesCrearUsuario" name="roles")
+            button(type="button" class="btnAsignarRol") Asignar Rol
+            .divRolesAsignados
+              ul.ulRolesAsignados
+        .divDatosRolProfesional
+          h4.text-center.text-azul Rol Profesional  
+          form( id="formAgregarRolProfesional" autocomplete="off")
+            div 
+              label(for="profesion" class="labelCenter") Profesion
+              input(type="text" id="profesion" name="profesion" autocomplete="off") 
+            div 
+              label(for="especialidad" class="labelCenter") Especialidad
+              input(type="text" id="especialidad" name="especialidad" autocomplete="off") 
+            div 
+              label(for="matricula" class="labelCenter") Matricula
+              input(type="text" id="matricula" name="matricula" autocomplete="off") 
+            div 
+              label(for="domicilio" class="labelCenter") Domicilio
+              input(type="text" id="domicilio" name="domicilio" autocomplete="off") 
+            div 
+              label(for="idRefeps" class="labelCenter") ID Refeps
+              input(type="number" id="idRefeps" name="idRefeps" autocomplete="off")
+            div 
+              label(for="caducidad" class="labelCenter") Caducidad
+              input(type="date" class="datosProfCaducidad"  id="caducidad" name="caducidad" autocomplete="off")   
+
+      button(type="button" class="btnAgregarUsuario") Agregar Usuario
+    script(src="/js/formCrearUsuarioCliente.js", type="module") // Incluye el archivo JavaScript del cliente

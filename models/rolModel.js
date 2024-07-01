@@ -1,34 +1,44 @@
 import pool from '../database.js';
+import sequelize from '../sequalize.js';
 
 class Rol {
-    constructor({ rol_id, rol_descripcion }) {
-        this.rol_id = rol_id;
+    constructor({ id, rol_descripcion }) {
+        this.id = id;
         this.rol_descripcion = rol_descripcion;
     }
 
-    //Consultar el rol o los roles de un usuario
+    // Consultar el rol o los roles de un usuario
     static async obtenerRolesUsuario(id) {
-        const query = ` SELECT r.id, r.rol_descripcion
-                    FROM usuario_rol ur
-                    JOIN rol r ON ur.rol_id = r.id
-                    WHERE ur.usuario_id = ?
-                        `;
-        const [profesionalDatos] = await pool.query(query, id);
+        const query = `SELECT r.id, r.rol_descripcion
+                       FROM usuario_rol ur
+                       JOIN rol r ON ur.rol_id = r.id
+                       WHERE ur.usuario_id = ?`;
+        const [profesionalDatos] = await pool.query(query, [id]);
         return profesionalDatos;
     }
 
-    // Rol profesional tiene su propia trabla 
-    static async obtenerDatosProfesional(id) {
-        const query = `SELECT *
-                        FROM profesional
-                        WHERE usuario_id = ?;
-                        `;
-        const [datosProfesional] = await pool.query(query, id);
-        return datosProfesional;
+    // Asignar Rol a un usuario. Tabla Usuario relación N a N con Rol, esta asignación se guarda en la tabla de relación usuario_rol
+    // Método para asignar un rol a un usuario con transacción
+    static async asignarRolUsuario(usuario_id, rol_id, transaction) {
+        const query = `INSERT INTO usuario_rol (usuario_id, rol_id) VALUES (?, ?)`;
+        try {
+            console.log('Query:', query);
+            console.log('Replacements:', [usuario_id, rol_id]);
+
+            await sequelize.query(query, {
+                replacements: [usuario_id, rol_id],
+                transaction
+            });
+            console.log('Rol asignado con éxito');
+            return { usuario_id, rol_id };
+        } catch (error) {
+            console.error('Error en asignarRolUsuario:', error);
+            throw error;
+        }
     }
 
 
-    // Método para crear un nuevo rol
+    // Método para crear un nuevo rol su id es autoincrement en la base, solo enviar descripción
     static async crear({ rol_descripcion }) {
         const query = `INSERT INTO rol (rol_descripcion) VALUES (?)`;
         const [result] = await pool.query(query, [rol_descripcion]);

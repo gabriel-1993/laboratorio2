@@ -30,8 +30,6 @@ dotenv.config();
 
 import errorRoutes from "./routes/errorRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
-//PARA AGREGAR USUARIOS RAPIDO SIN LAS VISTAS
-// import Usuario from './models/usuarioModel.js';
 
 
 
@@ -94,30 +92,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(errorRoutes);
 
 
-// //agregar user hash rapido sin vistas
-// // // Datos del usuario que quieres crear
-// const datosUsuario = {
-//     nombre: 'JUAN',
-//     apellido: 'LOPEZ',
-//     documento: '123456789',
-//     password: '12345', // Asegúrate de que esta contraseña cumpla con tus requisitos de seguridad
-//     estado: '1',
-//     email: 'JUAN@GMAIL.COM'
-// };
-
-// // Función para crear un usuario al iniciar la aplicación
-// const crearUsuarioInicial = async () => {
-//     try {
-//         // Llama al método estático crear del modelo Usuario
-//         const nuevoUsuario = await Usuario.crear(datosUsuario);
-//         console.log('Usuario creado:', nuevoUsuario);
-//     } catch (error) {
-//         console.error('Error creando el usuario:', error);
-//     }
-// };
-
-// // Llama a la función para crear el usuario al iniciar la aplicación
-// crearUsuarioInicial();
 
 
 app.listen(port, () => {

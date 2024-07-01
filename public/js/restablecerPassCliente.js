@@ -11,21 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = form.password.value;
         const confirmPassword = form.confirmPassword.value;
 
-        // if (password === '' || confirmPassword === '') {
-        //     mostrarMsjCliente('Datos obligatorios', ['Debes ingresar una nueva contraseña y confirmar contraseña nueva.']);
-        //     return;
-        // }
+        if (password === '' || confirmPassword === '') {
+            mostrarMsjCliente('Datos obligatorios', ['Debes ingresar una nueva contraseña y confirmar contraseña nueva.']);
+            return;
+        }
 
-        // const regexPassword = /^[0-9]{4,10}$/;
-        // if (!regexPassword.test(password) || !regexPassword.test(confirmPassword)) {
-        //     mostrarMsjCliente("Password incorrecto", ["El password debe tener solo números y una longitud mínima de 4 y máxima de 10."]);
-        //     return;
-        // }
+        const regexPassword = /^[0-9]{4,10}$/;
+        if (!regexPassword.test(password) || !regexPassword.test(confirmPassword)) {
+            mostrarMsjCliente("Password incorrecto", ["El password debe tener solo números y una longitud mínima de 4 y máxima de 10."]);
+            return;
+        }
 
-        // if (password !== confirmPassword) {
-        //     mostrarMsjCliente('Error', ['Las contraseñas no coinciden.']);
-        //     return;
-        // }
+        if (password !== confirmPassword) {
+            mostrarMsjCliente('Error', ['Las contraseñas no coinciden.']);
+            return;
+        }
 
         try {
             const response = await fetch(`/restablecer-password/${token}`, {

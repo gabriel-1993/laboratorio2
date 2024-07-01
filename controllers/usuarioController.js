@@ -1,11 +1,14 @@
 // controllers/taskController.js
 import Usuario from '../models/usuarioModel.js';
 import Rol from '../models/rolModel.js';
+import Profesional from '../models/profesionalModel.js';
 //hash en contraseña
 import bcrypt from 'bcrypt';
 //Restablecer contraseña
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+//transacciones para funciones que impacten en mas de una tabla
+import sequelize from '../sequalize.js';
 
 
 const mostrarFormLogin = (req, res) => {
@@ -48,37 +51,156 @@ const cerrarSesion = (req, res) => {
 
 
 
-// Función para manejar la creación de un nuevo usuario
-// async function crearUsuario(req, res) {
-//   const { nombre, apellido, documento, password, estado } = req.body;
+// CRUD USUARIO *****************************************************************************************************************
 
-//   try {
-//     const nuevoUsuario = await Usuario.crear({ nombre, apellido, documento, password, estado });
-//     res.status(201).json(nuevoUsuario);
-//   } catch (error) {
-//     console.error('Error al crear usuario:', error);
-//     res.status(500).json({ mensaje: 'Error al crear usuario' });
-//   }
-// }
-
-
-const crearUsuario = async (req, res) => {
-
-  const { nombre, apellido, documento, password, estado, email } = req.body;
-  try {
-    const nuevoUsuario = await Usuario.crear({
-      nombre,
-      apellido,
-      documento,
-      password,
-      estado,
-      email
-    });
-    console.log('Usuario creado:', nuevoUsuario);
-  } catch (error) {
-    console.error('Error creando el usuario:', error);
+const mostrarFormCrearUsuario = (req, res) => {
+  if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
+    res.render('formCrearUsuario');
+  } else {
+    res.status(403).json({ mensaje: 'Acceso denegado' });
   }
-}
+};
+
+
+
+
+// validaciones en servidor OK
+// Verifica que documento e email no esten registrados en la base, si no existen crea el usuario y trae su ID
+//Con el ID asigna rol o roles, verifica si en roles tiene asignado profesional: agrega los datos en la tabla profesional.
+//De esta manera evito usuarios mal cargados en la base, ya que deben tener minimo 1 rol y si es profesional , los datos de profesional son todos obligatorios.
+const crearUsuarioCompleto = async (req, res) => {
+
+  const { usuario, roles, profesional } = req.body;
+
+  // Validaciones en el servidor:
+  const nombreApellidoRegex = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]{4,54}$/;
+  const documentoRegex = /^\d{6,12}$/;
+  const passwordRegex = /^\d{4,10}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Validaciones de Profesional
+  const profesionRegex = /^[a-zA-ZñÑ\s,.´¨]{6,99}$/;
+  const especialidadRegex = /^[a-zA-ZñÑ\s,.´¨]{6,99}$/;
+  const matriculaRegex = /^M\d{3,6}$/;
+  const domicilioRegex = /^[a-zA-ZñÑ\s0-9´¨().,]{20,149}$/;
+
+  let msjs = [];
+
+  if (!nombreApellidoRegex.test(usuario.nombre)) {
+    msjs.push('Nombre debe tener entre 4 y 54 caracteres. Puede contener letras, espacios y caracteres especiales como ´ y ¨.');
+  }
+
+  if (!nombreApellidoRegex.test(usuario.apellido)) {
+    msjs.push('Apellido debe tener entre 4 y 54 caracteres. Puede contener letras, espacios y caracteres especiales como ´ y ¨.');
+  }
+
+  if (!documentoRegex.test(usuario.documento)) {
+    msjs.push('El documento debe tener entre 6 y 12 números y no puede estar vacío.');
+  }
+
+  if (!emailRegex.test(usuario.email)) {
+    msjs.push('El email debe ser un correo electrónico válido y no puede estar vacío.');
+  }
+
+  if (!passwordRegex.test(usuario.password)) {
+    msjs.push('La contraseña debe tener entre 4 y 10 números y no puede estar vacía.');
+  }
+
+  if (!roles || !roles.length) {
+    msjs.push('Rol obligatorio, debe tener mínimo un rol o varios.');
+  }
+
+  if (msjs.length > 0) {
+    return res.status(400).json({ error: 'validacion_fallida', message: msjs });
+  }
+
+
+  // Si las validaciones estan ok
+  const transaction = await sequelize.transaction();
+
+
+  try {
+    // Validar que no exista el documento en usuario
+    const usuarioExistentePorDocumento = await Usuario.buscarPorDocumento(usuario.documento);
+    if (usuarioExistentePorDocumento) {
+      return res.status(400).json({ error: 'documento_duplicado', message: 'El documento ya está registrado.' });
+    }
+
+    // Validar que no exista el email en usuario
+    const usuarioExistentePorEmail = await Usuario.buscarUsuarioPorEmail(usuario.email);
+    if (usuarioExistentePorEmail) {
+      return res.status(400).json({ error: 'email_duplicado', message: 'El correo electrónico ya está registrado.' });
+    }
+
+    // Crear el usuario
+    const nuevoUsuario = await Usuario.crear(usuario, { transaction });
+
+    // // Asignar los roles
+    for (const role of roles) {
+      try {
+        await Rol.asignarRolUsuario(nuevoUsuario.id, parseInt(role.id, 10), transaction);
+      } catch (error) {
+        await transaction.rollback();
+        return res.status(500).json({ error: 'Error al asignar rol', details: error.message });
+      }
+    }
+
+    // Asignar el profesional si está el rol 'PROFESIONAL'
+    const profesionalRole = roles.find(role => role.rol_descripcion === 'PROFESIONAL');
+    if (profesionalRole) {
+      try {
+        // if (!profesional.profesion || !profesional.especialidad || !profesional.matricula || !profesional.domicilio || !profesional.id_refeps || !profesional.caducidad) {
+        //   throw new Error('Faltan datos necesarios para la creación de profesional');
+        // }
+        // Validaciones de Profesional
+        if (!profesionRegex.test(profesional.profesion)) {
+          msjs.push('Profesion incorrecta. Debe contener min 6, max 99 caracteres. (Simbolos permitidos: , . ´ ¨ ñ).');
+        }
+
+        if (!especialidadRegex.test(profesional.especialidad)) {
+          msjs.push('Especialidad incorrecta. Debe contener min 6, max 99 caracteres. (Simbolos permitidos: , . ´ ¨ ñ).');
+        }
+
+        if (!matriculaRegex.test(profesional.matricula)) {
+          msjs.push('Matricula incorrecta. Debe contener min 4, max 10 caracteres. (Ejemplo: M123, M3423).');
+        }
+
+        if (!domicilioRegex.test(profesional.domicilio)) {
+          msjs.push('Domicilio incorrecto. Debe contener min 20, max 149 caracteres. (Simbolos permitidos: ´ ¨ () . , ñ ).');
+        }
+
+        if (!profesional.id_refeps || isNaN(profesional.id_refeps) || profesional.id_refeps.length < 4 || profesional.id_refeps.length > 11) {
+          msjs.push('ID-REFEPS incorrecto. Solo permite números, debe contener min 4, max 11 números.');
+        }
+
+        if (!profesional.caducidad) {
+          msjs.push('Caducidad incorrecta. Debe ingresar una fecha.');
+        } else {
+          let currentDate = new Date();
+          let selectedDate = new Date(profesional.caducidad);
+
+          if (selectedDate <= currentDate) {
+            msjs.push("Caducidad incorrecta, debe ser una fecha futura.");
+          }
+        }
+
+        if (msjs.length > 0) {
+          return res.status(400).json({ error: 'validacion_fallida', message: msjs });
+        }
+        await Profesional.crear({ usuario_id: nuevoUsuario.id, ...profesional }, transaction);
+      } catch (error) {
+        await transaction.rollback();
+        return res.status(500).json({ error: 'Error al asignar profesional', details: error.message });
+      }
+    }
+
+    await transaction.commit();
+    res.status(201).json(nuevoUsuario);
+  } catch (error) {
+    await transaction.rollback();
+    res.status(500).json({ error: 'Error al crear el usuario y asignar rol/profesional', details: error.message });
+  }
+};
 
 
 //Se utiliza dentro de LOGIN: Funcion para comparar fecha actual con Profesional.fechaCaducidad
@@ -107,7 +229,7 @@ function validarEnvioDatosProfesional(fechaCaducidad) {
 
 
 // LOGIN verifica usuario, si existe trae el pass
-//Si el pass es correcto trae el o los roles del usuario
+//Si el pass es correcto trae el o los roles del usuario para iniciar sesion
 
 const login = async (req, res) => {
 
@@ -134,7 +256,6 @@ const login = async (req, res) => {
     // Buscar usuario en la base, si existe captura su pass
     const usuario = await Usuario.buscarPorDocumento(documento);
 
-    console.log(usuario);
 
     if (usuario === null) {
       return res.status(401).json({ mensaje: 'El documento de usuario ingresado es incorrecto. Por favor, inténtelo de nuevo.' });
@@ -142,10 +263,8 @@ const login = async (req, res) => {
 
     // si existe el user compara la pass ingresada
     const isMatch = await bcrypt.compare(password, usuario.password);
-    console.log("222 : " + password);
-    console.log("223 : " + usuario.password);
+
     if (!isMatch) {
-      console.log("no match");
       return res.status(401).json({ mensaje: 'La contraseña ingresada es incorrecta. Por favor, inténtelo de nuevo.' });
     }
 
@@ -159,7 +278,7 @@ const login = async (req, res) => {
     // Si existe rol === 'PROFESIONAL', traer los datos de la tabla profesional:
     if (roles.some(rol => rol.rol_descripcion === 'PROFESIONAL')) {
       // DATOS COMO PROFESIONAL 
-      datosProfesional = await Rol.obtenerDatosProfesional(usuario.id);
+      datosProfesional = await Profesional.obtenerDatosProfesional(usuario.id);
     }
 
     // Determinar el rol principal para decidir qué renderizar
@@ -340,4 +459,4 @@ const actualizarPassword = async (req, res) => {
   }
 };
 
-export default { mostrarFormLogin, mostrarFormRestablecerPass, renderRestablecerPassword, enviarEnlaceRecuperacion, actualizarPassword, login, mostrarIndexAdmin, mostrarIndexProf, mostrarSelectRol, cerrarSesion, crearUsuario };
+export default { mostrarFormLogin, mostrarFormRestablecerPass, renderRestablecerPassword, enviarEnlaceRecuperacion, actualizarPassword, login, mostrarIndexAdmin, mostrarIndexProf, mostrarSelectRol, cerrarSesion, mostrarFormCrearUsuario, crearUsuarioCompleto };

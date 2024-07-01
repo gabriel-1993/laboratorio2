@@ -30,7 +30,6 @@
     border-bottom: 2px solid var(--celesteOscuro);
     z-index: 2;
     margin: 0px auto;
-    /* Borde superior */
 }
 
 
@@ -119,6 +118,26 @@
     color: #fff;
 }
 
+/* li crear usuario : roles asignados titulo " ROLES ASIGNADOS " */
+.liRolesAsignadosTitulo {
+    background-color:var(--azulSemiOscuro);
+    color: #fff;
+    padding: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* li de cada rol asignado en crear usuario */
+.liRolAsignadoCrearUsuario{
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 10px;
+}
+
+
 /* MOSTRAR MSJ CARD */
 .divMsj {
     display: none;
@@ -187,6 +206,11 @@
     text-align: center;
 }
 
+.text-azul {
+    color: var(--azulSemiOscuro);
+    letter-spacing: 0.5px;
+}
+
 .text-fondoAzul {
     /* background-color: var(--azulOscuro);
     color: var(--celesteOscuro); */
@@ -216,18 +240,30 @@ button:hover {
     background-color: var(--celesteOscuro);
 }
 
+/* boton/icono eliminar */
+.fa-trash {
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+}
+
+.fa-trash:hover {
+    color: var(--azulSemiOscuro);
+}
+
 .btnEnviarEnlacePass {
     width: 145px;
     margin: 0 auto;
     margin-bottom: 20px;
 }
+
 /* btn para enviar nueva y confirmar contraseña en restablecer contraseña */
-.btnRestablecerPass{
+.btnRestablecerPass {
     width: 220px;
     margin: 0 auto;
     margin-top: 15px;
     margin-bottom: 10px;
 }
+
 /* Login */
 /* btn restablecer contraseña en el form login */
 .btnRecuperarPass {
@@ -245,10 +281,22 @@ button:hover {
 }
 
 
+.btnAsignarRol {
+    padding: 0.30rem 0.9rem;
+}
+
+.btnAgregarUsuario {
+    margin: 0 auto;
+    margin-bottom: 40px;
+    width: 160px;
+}
+
+
+
 
 .section {
     z-index: 2;
-    height: calc(100vh - 60px - 80px);
+    min-height: calc(100vh - 60px - 80px);
     max-width: 1370px;
     margin: 0px auto;
     display: flex;
@@ -258,10 +306,11 @@ button:hover {
     /* Calcula la altura disponible entre el header y el footer */
 }
 
-/* iniciar sesion y restablecer pass */
+/* iniciar sesion, restablecer pass, divContenedor de crear usuario(card completa) */
 .divLogin,
 .divRecuperarPassword,
-.divRestablecerPassword {
+.divRestablecerPassword,
+.divCrearUsuario {
     width: 420px;
     height: auto;
     display: flex;
@@ -276,10 +325,37 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.divCrearUsuario {
+    width: auto;
+    margin: 40px 0;
+}
+
+/* estilo para agregar flex y flex-direction fila */
+.divFlexRow {
+    display: flex;
+    justify-content: center;
+    padding: 0px 50px;
+
+}
+
+.divDatosUsuarioNuevo,
+.divDatosRolProfesional {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Los campos para agregar datos prof se muestra al ingresar rol profesional en crear usuario */
+.divDatosRolProfesional {
+    justify-content: space-between;
+    display: none;
+}
+
 
 .formLogin,
 #formRecuperarPassword,
-#formRestablecerPassword {
+#formRestablecerPassword,
+#formAgregarUsuario,
+#formAgregarRolProfesional {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -287,11 +363,37 @@ button:hover {
     padding: 30px;
 }
 
-#formRestablecerPassword{
+#formRestablecerPassword {
     padding: 35px 30px;
 }
+
 #formRecuperarPassword {
     padding: 0px 30px;
+}
+
+#formAgregarUsuario,
+#formAgregarRolProfesional {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 330px;
+}
+
+/* Debajo del boton asignar rol hay un div oculto para mostrar los roles asignados */
+#formAgregarUsuario .divRolesAsignados {
+    display: none;
+    border-radius: 4px;
+    background-color: var(--azulSemiOscuro);
+    background-color: var(--celesteOscuro);
+}
+
+/* ul lista de roles asigandor en agregar usuario */
+.ulRolesAsignados {
+    width: 100%;
+}
+
+/* espacio entre cada dato del form RolProfesional queda igual al ingresar datos user no modificar */
+#formAgregarRolProfesional {
+    gap: 33px;
 }
 
 /* Recuperar pass: div contenedor de label e input correo */
@@ -302,9 +404,10 @@ button:hover {
 }
 
 
-/* label iniciar sesion , label restablecer contraseña */
+/* label iniciar sesion , label restablecer contraseña, labelCenter */
 .labelLogin,
-.restPassLabel {
+.restPassLabel,
+.labelCenter {
     background-color: var(--azulSemiOscuro);
     color: #fff;
     border: 1px solid var(--azulSemiOscuro);
@@ -318,32 +421,52 @@ button:hover {
 
 /* label en restablecer contraseña: nueva contraseña y confirmar contraseña */
 .restPassLabel {
-    flex: 0 0 auto; /* Ancho automático para el label */
+    flex: 0 0 auto;
+    /* Ancho automático para el label */
+}
+
+/* label en form (administrador) -->crear usuario */
+.labelCenter {
+    width: 125px;
+    text-align: center;
 }
 
 /* Styles for login inputs */
 .formLogin input,
-.restPassInput {
+.restPassInput,
+input,
+.selectRolesCrearUsuario {
     width: 130px;
     text-align: center;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }
 
-.restPassInput {
-    flex: 1 1 auto; /* El input ocupa todo el espacio restante */
+.selectRolesCrearUsuario {
+    text-align: start;
+}
+
+.restPassInput,
+input,
+.selectRolesCrearUsuario {
+    flex: 1 1 auto;
+    /* El input ocupa todo el espacio restante */
 }
 
 /* div contenedor de input y label en form restablecer contraseña */
-#formRestablecerPassword div {
+#formRestablecerPassword div,
+#formAgregarUsuario div,
+#formAgregarRolProfesional div {
     width: 100%;
     display: flex;
-    align-items: center; 
+    align-items: center;
 }
 
 /* .input e input restablecer pass  */
 .input,
-.restPassInput {
+.restPassInput,
+.selectRolesCrearUsuario,
+input {
     padding: 4px;
     font-weight: 100;
     font-size: 0.9rem;
@@ -351,10 +474,17 @@ button:hover {
     cursor: pointer;
 }
 
+/* select crear usuario */
+.selectRolesCrearUsuario,
+.datosProfCaducidad {
+    padding: 3px;
+}
+
 /* select, .input e input restablecer pass  */
 .input:focus,
 .restPassInput:focus,
-select:focus {
+select:focus,
+input:focus {
     outline: none;
 }
 
@@ -431,12 +561,3 @@ select:focus {
     margin: 0px auto;
 
 }
-
-
-
-
-
-
-
-
-
