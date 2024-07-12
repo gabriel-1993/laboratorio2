@@ -16,10 +16,13 @@
     --color-fondo: #e6e3e3;
 }
 
+body {
+    background-color: var(--azulOscuro);
+}
+
 /* ------------------------------------------------------------------------------------- layout */
 
 .header {
-    max-width: 1370px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -120,7 +123,7 @@
 
 /* li crear usuario : roles asignados titulo " ROLES ASIGNADOS " */
 .liRolesAsignadosTitulo {
-    background-color:var(--azulSemiOscuro);
+    background-color: var(--celesteOscuro);
     color: #fff;
     padding: 4px;
     border-top-left-radius: 4px;
@@ -130,11 +133,13 @@
 }
 
 /* li de cada rol asignado en crear usuario */
-.liRolAsignadoCrearUsuario{
+.liRolAsignadoCrearUsuario,
+.liRolAsignadoModificarUsuario {
     color: #fff;
     display: flex;
     justify-content: space-between;
     padding: 4px 10px;
+    background-color: var(--azulSemiOscuro);
 }
 
 
@@ -206,6 +211,12 @@
     text-align: center;
 }
 
+.text-fondoCeleste {
+    background-color: var(--celesteOscuro);
+    color: #fff;
+    padding: 5px;
+}
+
 .text-azul {
     color: var(--azulSemiOscuro);
     letter-spacing: 0.5px;
@@ -224,6 +235,11 @@
     border-top-right-radius: 6px;
 }
 
+.borderRadius4px {
+    border-radius: 4px;
+}
+
+
 /* Botones iniciar sesion, enviar enlace(para restablecer pass) */
 button {
     padding: 0.50rem 1.4rem;
@@ -240,6 +256,41 @@ button:hover {
     background-color: var(--celesteOscuro);
 }
 
+/* boton lupa */
+
+.fa-magnifying-glass {
+    background-color: var(--azulSemiOscuro);
+    color: #fff;
+    padding: 5px 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    animation: blink 3s infinite;
+}
+
+@keyframes blink {
+    0% {
+        background-color: var(--azulSemiOscuro);
+    }
+
+    50% {
+        background-color: var(--celesteOscuro);
+    }
+
+    100% {
+        background-color: var(--azulSemiOscuro);
+    }
+}
+
+.fa-magnifying-glass:hover {
+    animation: none;
+    background-color: var(--celesteOscuro);
+}
+
 /* boton/icono eliminar */
 .fa-trash {
     cursor: pointer;
@@ -247,7 +298,7 @@ button:hover {
 }
 
 .fa-trash:hover {
-    color: var(--azulSemiOscuro);
+    color: var(--celesteOscuro);
 }
 
 .btnEnviarEnlacePass {
@@ -285,10 +336,18 @@ button:hover {
     padding: 0.30rem 0.9rem;
 }
 
-.btnAgregarUsuario {
+.btnAgregarUsuario,
+.btnModificarUsuario {
+    display: flex;
+    justify-content: center;
     margin: 0 auto;
     margin-bottom: 40px;
     width: 160px;
+}
+
+.btnModificarUsuario {
+    width: 170px;
+    margin-bottom: 15px;
 }
 
 
@@ -310,11 +369,12 @@ button:hover {
 .divLogin,
 .divRecuperarPassword,
 .divRestablecerPassword,
-.divCrearUsuario {
+.divCrearUsuario,
+.divModificarUsuario {
     width: 420px;
     height: auto;
     display: flex;
-    gap: 8px;
+    /* gap: 8px; */
     justify-content: center;
     border-radius: 8px;
     background-image: url('../img/portada.jpg');
@@ -335,11 +395,13 @@ button:hover {
     display: flex;
     justify-content: center;
     padding: 0px 50px;
-
+    gap: 12px;
 }
 
 .divDatosUsuarioNuevo,
-.divDatosRolProfesional {
+.divDatosRolProfesional,
+.divDatosUsuarioModificar,
+.divDatosModificarRolProfesional {
     display: flex;
     flex-direction: column;
 }
@@ -347,20 +409,35 @@ button:hover {
 /* Los campos para agregar datos prof se muestra al ingresar rol profesional en crear usuario */
 .divDatosRolProfesional {
     justify-content: space-between;
-    display: none;
 }
 
+.divDatosModificarRolProfesional {
+    justify-content: none;
+}
+
+/* ocultar elementos con display flex  */
+.displayNone {
+    display: none;
+}
 
 .formLogin,
 #formRecuperarPassword,
 #formRestablecerPassword,
 #formAgregarUsuario,
-#formAgregarRolProfesional {
+#formAgregarRolProfesional,
+#formModificarUsuario,
+#formModificarRolProfesional {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 7px;
     padding: 30px;
+}
+
+#formModificarRolProfesional,
+#formModificarUsuario {
+    padding: 15px 0px;
+
 }
 
 #formRestablecerPassword {
@@ -372,10 +449,23 @@ button:hover {
 }
 
 #formAgregarUsuario,
-#formAgregarRolProfesional {
+#formAgregarRolProfesional,
+#formModificarUsuario,
+#formModificarRolProfesional {
     padding-top: 15px;
     padding-bottom: 15px;
+    width: 340px;
+}
+
+
+/* modificar usuario  */
+.divBuscarDocumento {
     width: 330px;
+    margin: 0 auto;
+}
+
+.divBuscarDocumento .fa-magnifying-glass {
+    margin-left: 10px;
 }
 
 /* Debajo del boton asignar rol hay un div oculto para mostrar los roles asignados */
@@ -435,20 +525,26 @@ button:hover {
 .formLogin input,
 .restPassInput,
 input,
-.selectRolesCrearUsuario {
+.selectRolesCrearUsuario,
+.selectRolesModificarUsuario,
+.selectEstadoModificarUsuario {
     width: 130px;
     text-align: center;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }
 
-.selectRolesCrearUsuario {
+.selectRolesCrearUsuario,
+.selectRolesModificarUsuario,
+.selectEstadoModificarUsuario {
     text-align: start;
 }
 
 .restPassInput,
 input,
-.selectRolesCrearUsuario {
+.selectRolesCrearUsuario,
+.selectRolesModificarUsuario,
+.selectEstadoModificarUsuario {
     flex: 1 1 auto;
     /* El input ocupa todo el espacio restante */
 }
@@ -456,7 +552,9 @@ input,
 /* div contenedor de input y label en form restablecer contraseña */
 #formRestablecerPassword div,
 #formAgregarUsuario div,
-#formAgregarRolProfesional div {
+#formAgregarRolProfesional div,
+#formModificarUsuario div,
+#formModificarRolProfesional div {
     width: 100%;
     display: flex;
     align-items: center;
@@ -466,7 +564,8 @@ input,
 .input,
 .restPassInput,
 .selectRolesCrearUsuario,
-input {
+.selectRolesModificarUsuario,
+.selectEstadoModificarUsuario, input {
     padding: 4px;
     font-weight: 100;
     font-size: 0.9rem;
@@ -476,7 +575,9 @@ input {
 
 /* select crear usuario */
 .selectRolesCrearUsuario,
-.datosProfCaducidad {
+.selectRolesModificarUsuario,
+.datosProfCaducidad,
+.selectEstadoModificarUsuario {
     padding: 3px;
 }
 
@@ -543,13 +644,28 @@ input:focus {
 
 #selectorRol:hover {
     opacity: 0.70;
-
 }
 
 #selectorRol:focus {
     margin-bottom: 85px;
 }
 
+.divModificarUsuario {
+    margin-top: 15px;
+    width: 400px;
+    padding-bottom: 40px;
+    gap: 0px;
+}
+
+.divModificarUsuario h4 {
+    margin-bottom: 15px;
+}
+
+.divModificarUsuario .h4ModificarUsuario {
+    margin-bottom: 0;
+    margin-top: 10px;
+    border-radius: 3px;
+}
 
 
 

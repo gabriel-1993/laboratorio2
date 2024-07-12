@@ -22,17 +22,27 @@ class Rol {
     static async asignarRolUsuario(usuario_id, rol_id, transaction) {
         const query = `INSERT INTO usuario_rol (usuario_id, rol_id) VALUES (?, ?)`;
         try {
-            console.log('Query:', query);
-            console.log('Replacements:', [usuario_id, rol_id]);
-
             await sequelize.query(query, {
                 replacements: [usuario_id, rol_id],
                 transaction
             });
-            console.log('Rol asignado con éxito');
             return { usuario_id, rol_id };
         } catch (error) {
             console.error('Error en asignarRolUsuario:', error);
+            throw error;
+        }
+    }
+
+    static async desasignarRolUsuario(usuario_id, rol_id, transaction) {
+        const query = `DELETE FROM usuario_rol WHERE usuario_id = ? AND rol_id = ?`;
+        try {
+            await sequelize.query(query, {
+                replacements: [usuario_id, rol_id],
+                transaction
+            });
+            return { usuario_id, rol_id };
+        } catch (error) {
+            console.error('Error en desasignarRolUsuario:', error);
             throw error;
         }
     }

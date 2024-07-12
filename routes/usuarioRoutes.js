@@ -2,6 +2,7 @@
 import express from 'express';
 import usuarioController from '../controllers/usuarioController.js';
 import rolController from '../controllers/rolController.js';
+import profesionalController from '../controllers/profesionalController.js';
 const router = express.Router();
 
 router.get("/", usuarioController.mostrarFormLogin);
@@ -30,13 +31,21 @@ router.get('/restablecer-password/:token', usuarioController.renderRestablecerPa
 router.post('/restablecer-password/:token', usuarioController.actualizarPassword);
 
 // CRUD USUARIO
-// CREAR usuario
+// CREAR: Mostrar form para user nuevo
 router.get('/crearUsuario', usuarioController.mostrarFormCrearUsuario);
-//utilizo ruta de rolRoutes para cargar Select Roles
+//ruta de rolRoutes para cargar Select en el form con los Roles disponibles
 router.get('/obtenerRoles', rolController.obtenerTodos);
-
 // Crear usuario mediante Transacciones: asigna tambien su rol/es. Si es asignado rol profesional: carga datos profesional 
  router.post('/crearUsuario', usuarioController.crearUsuarioCompleto);
+
+//MODIFICAR:
+ router.get('/modificarUsuario', usuarioController.mostrarFormModificarUsuario);
+ router.get('/buscarUsuario/:documento', usuarioController.buscarUsuarioDocumento);
+ router.get('/buscarRolesUsuario/:usuario_id', usuarioController.buscarRolesUsuario);
+ router.get('/buscarDatosProfesional/:usuario_id', profesionalController.obtenerDatosProfesional);
+ //enviar datos del usuario en el front al controlador
+ router.post('/modificarUsuario', usuarioController.modificarUsuarioCompleto);
+
 
 
 export default router;

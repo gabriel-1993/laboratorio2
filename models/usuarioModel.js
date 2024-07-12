@@ -1,5 +1,6 @@
 // models/usuarioModel.js
 import pool from '../database.js';
+import sequelize from '../sequalize.js';
 //Hash password
 import bcrypt from 'bcrypt';
 const SALT_ROUNDS = 10;
@@ -23,6 +24,29 @@ class Usuario {
     return new Usuario({ id: result.insertId, nombre, apellido, documento, password: hashedPassword, estado, email });
   }
 
+
+  static async modificarUsuario(usuarioValidado, transaction) {
+    const queryUsuario = `UPDATE usuario SET nombre = ?, apellido = ?, documento = ?, estado = ?, email = ? WHERE id = ?;`;
+
+    // Desestructurar el objeto usuario para obtener los valores
+    const { id, nombre, apellido, documento, estado, email } = usuarioValidado;
+
+    try {
+      console.log('Query:', queryUsuario);
+      console.log('Replacements:', [nombre, apellido, documento, estado, email, id]);
+
+      const result = await sequelize.query(queryUsuario, {
+        replacements: [nombre, apellido, documento, estado, email, id],
+        transaction
+      });
+      console.log('Usuario modificado con éxito');
+      return result;
+    } catch (error) {
+      console.error('Error al modificar el usuario:', error);
+      throw error;
+    }
+  }
+
   //Verificar si existe user antes de validar pass, si existe traer los datos...
   static async buscarPorDocumento(documento) {
     const query = `SELECT * FROM usuario WHERE documento = ?`;
@@ -44,7 +68,18 @@ class Usuario {
     const { id, nombre, apellido, documento, password, estado } = rows[0];
     return new Usuario({ id, nombre, apellido, documento, password, estado, email });
   }
-  
+
+  static async buscarRolesUsuario(usuario_id) {
+    const query = `SELECT ur.rol_id, r.rol_descripcion
+    FROM usuario_rol ur
+    JOIN rol r ON ur.rol_id = r.id
+    WHERE ur.usuario_id = ?`;
+    const [rows] = await pool.query(query, [usuario_id]);
+    if (rows.length === 0) {
+      return null;
+    }
+    return rows;
+  }
 
   //Validar pass
   static async verificarCredenciales(documento, password) {
@@ -89,9 +124,7 @@ class Usuario {
     return result;
   }
 
-
-
-  // Ejemplo de función existente para actualizar la contraseña del usuario
+  //actualizar la contraseña del usuario
   static async actualizarContrasena(email, hashedPassword) {
     const [result] = await pool.query(
       'UPDATE usuario SET password = ? WHERE email = ?',

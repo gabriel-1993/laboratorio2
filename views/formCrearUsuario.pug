@@ -6,10 +6,11 @@ block content
     button.btn-Msj 
   section.flexCenter.section
     .divCrearUsuario.center.column.blur
-      h3.text-center.text-fondoAzul.borderRadiusTop5px Crear usuario
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Crear Usuario
+      h4.text-center.text-fondoCeleste Datos Usuario 
+
       .divFlexRow
-        .divDatosUsuarioNuevo 
-          h4.text-center.text-azul Ingresar datos 
+        .divDatosUsuarioNuevo
           form(id="formAgregarUsuario" autocomplete="off")
             div 
               label(for="nombre" class="labelCenter") Nombre
@@ -35,8 +36,8 @@ block content
             button(type="button" class="btnAsignarRol") Asignar Rol
             .divRolesAsignados
               ul.ulRolesAsignados
-        .divDatosRolProfesional
-          h4.text-center.text-azul Rol Profesional  
+        .divDatosRolProfesional.displayNone
+          h4.text-center.text-fondoCeleste.borderRadius4px Datos Profesional 
           form( id="formAgregarRolProfesional" autocomplete="off")
             div 
               label(for="profesion" class="labelCenter") Profesion

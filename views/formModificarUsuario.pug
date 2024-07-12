@@ -5,12 +5,19 @@ block content
     ul
     button.btn-Msj 
   section.flexCenter.section
-    .divCrearUsuario.center.column.blur
-      h3.text-center.text-fondoAzul.borderRadiusTop5px Crear usuario
-      .divFlexRow
-        .divDatosUsuarioNuevo 
-          h4.text-center.text-azul Ingresar datos 
-          form(id="formAgregarUsuario" autocomplete="off")
+    .divModificarUsuario.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Modificar Usuario
+      h4.text-center.text-fondoCeleste Buscar Documento
+      div.flexCenter.divBuscarDocumento
+        label(for="buscarDocumento" class="labelCenter") Documento
+        input(type="text" id="buscarDocumento" name="buscarDocumento" autocomplete="off") 
+        i.fa-solid.fa-magnifying-glass.btnBuscarDocumento
+      .divFlexRow.displayNone
+        //- Agrego class .divDatosModificarUsuario para manipular el dom, mantengo los estilos de crear usuario
+
+        .divDatosUsuarioModificar
+          h4.text-center.text-fondoCeleste.h4ModificarUsuario Datos Usuario
+          form(id="formModificarUsuario" autocomplete="off")
             div 
               label(for="nombre" class="labelCenter") Nombre
               input(type="text" id="nombre" name="nombre" autocomplete="off") 
@@ -22,22 +29,22 @@ block content
               input(type="text" id="documento" name="documento" autocomplete="off") 
             div 
               label(for="email" class="labelCenter") Email
-              input(type="email" id="email" name="email" autocomplete="off") 
-            div 
-              label(for="password" class="labelCenter") Contraseña
-              input(type="password" id="password" name="password" autocomplete="new-password") 
-            div 
-              label(for="confirmarPassword" class="labelCenter") Conf. Contraseña
-              input(type="password" id="confirmarPassword" name="confirmarPassword" autocomplete="new-password") 
+              input(type="email" id="email" name="email" autocomplete="off")
+            div
+              label(for="estado" class="labelCenter") Estado
+              select(id="estado" class="selectEstadoModificarUsuario" name="estado")
+                option(value="1") ACTIVO
+                option(value="0") INACTIVO
+
             div 
               label(for="roles" class="labelCenter") Rol/es
-              select(id="roles" class="selectRolesCrearUsuario" name="roles")
+              select(id="roles" class="selectRolesModificarUsuario" name="roles")
             button(type="button" class="btnAsignarRol") Asignar Rol
             .divRolesAsignados
               ul.ulRolesAsignados
-        .divDatosRolProfesional
-          h4.text-center.text-azul Rol Profesional  
-          form( id="formAgregarRolProfesional" autocomplete="off")
+        .divDatosModificarRolProfesional.displayNone
+          h4.text-center.text-fondoCeleste.h4ModificarUsuario Datos Rol Profesional  
+          form( id="formModificarRolProfesional" autocomplete="off")
             div 
               label(for="profesion" class="labelCenter") Profesion
               input(type="text" id="profesion" name="profesion" autocomplete="off") 
@@ -46,16 +53,15 @@ block content
               input(type="text" id="especialidad" name="especialidad" autocomplete="off") 
             div 
               label(for="matricula" class="labelCenter") Matricula
-              input(type="text" id="matricula" name="matricula" autocomplete="off") 
-            div 
-              label(for="domicilio" class="labelCenter") Domicilio
-              input(type="text" id="domicilio" name="domicilio" autocomplete="off") 
+              input(type="text" id="matricula" name="matricula" autocomplete="off")  
             div 
               label(for="idRefeps" class="labelCenter") ID Refeps
               input(type="number" id="idRefeps" name="idRefeps" autocomplete="off")
             div 
               label(for="caducidad" class="labelCenter") Caducidad
               input(type="date" class="datosProfCaducidad"  id="caducidad" name="caducidad" autocomplete="off")   
-
-      button(type="button" class="btnAgregarUsuario") Agregar Usuario
-    script(src="/js/formCrearUsuarioCliente.js", type="module") // Incluye el archivo JavaScript del cliente
+            div 
+              label(for="domicilio" class="labelCenter") Domicilio
+              input(type="text" id="domicilio" name="domicilio" autocomplete="off")
+      button(type="button" class="btnModificarUsuario displayNone") Modificar Usuario
+    script(src="/js/formModificarUsuarioCliente.js", type="module") // Incluye el archivo JavaScript del cliente

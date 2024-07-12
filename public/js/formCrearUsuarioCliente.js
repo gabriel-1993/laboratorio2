@@ -14,13 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ulRolesAsignados = document.querySelector('.ulRolesAsignados');
     const divDatosProfesional = document.querySelector('.divDatosRolProfesional');
 
-    //datos profesional(div oculto a menos que asignen profesional)
-    const profesion = document.getElementById('profesion');
-    const especialidad = document.getElementById('especialidad');
-    const matricula = document.getElementById('matricula');
-    const domicilio = document.getElementById('domicilio');
-    const idRefeps = document.getElementById('idRefeps');
-    const caducidad = document.querySelector('#caducidad');
+
 
     // Consultar roles a la base de datos 
     // ruta de roleRoutes importada en usuarioRoutes 
@@ -31,14 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Error al obtener los roles');
             }
             const rolesDisponibles = await response.json();
-
-
-            // rolesDisponibles.forEach(element => {
-            //     console.log(element);
-
-            // });
-
-
+            
             return rolesDisponibles;
         } catch (error) {
             console.error(error);
@@ -159,13 +146,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // retorna usuario con sus datos, solo si son validados 
-    const validarUsuario = () => {
+     const validarUsuario = () => {
         msjs = [];
         // datos usuario
-        const nombre = document.getElementById('nombre').value.trim();
-        const apellido = document.getElementById('apellido').value.trim();
+        const nombre = document.getElementById('nombre').value.trim().toUpperCase();
+        const apellido = document.getElementById('apellido').value.trim().toUpperCase();
         const documento = document.getElementById('documento').value.trim();
-        const email = document.getElementById('email').value.trim();
+        const email = document.getElementById('email').value.trim().toUpperCase();
         const password = document.getElementById('password').value.trim();
         const confirmarPassword = document.getElementById('confirmarPassword').value.trim();
 
@@ -175,9 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-        // if (!nombreApellidoRegex.test(nombre)) {
-        //     msjs.push('Nombre debe tener entre 4 y 54 caracteres. Puede contener letras, espacios y caracteres especiales como ´ y ¨.');
-        // }
+        if (!nombreApellidoRegex.test(nombre)) {
+            msjs.push('Nombre debe tener entre 4 y 54 caracteres. Puede contener letras, espacios y caracteres especiales como ´ y ¨.');
+        }
 
         if (!nombreApellidoRegex.test(apellido)) {
             msjs.push('Apellido debe tener entre 4 y 54 caracteres. Puede contener letras, espacios y caracteres especiales como ´ y ¨.');
@@ -226,6 +213,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //retorna profesional con datos ,solo si son validados
     const validarProfesional = () => {
+
+        //datos profesional(div oculto a menos que asignen profesional)
+        const profesion = document.getElementById('profesion').value.trim().toUpperCase();
+        const especialidad = document.getElementById('especialidad').value.trim().toUpperCase();
+        const matricula = document.getElementById('matricula').value.trim().toUpperCase();
+        const domicilio = document.getElementById('domicilio').value.trim().toUpperCase();
+        const idRefeps = document.getElementById('idRefeps');
+        const caducidad = document.querySelector('#caducidad');
+
         msjs = [];
         // Validación de profesion
         const profesionRegex = /^[a-zA-ZñÑ\s,.´¨]{6,99}$/;
@@ -365,14 +361,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value = '';
             const password = document.getElementById('password').value = '';
             const confirmarPassword = document.getElementById('confirmarPassword').value = '';
-            
-            
+
+
             // eliminar roles del div y el array
 
 
-            divDatosProfesional.innerHTML='';
-            roles.innerHTML='';
-            console.log(roles);
+            divDatosProfesional.innerHTML = '';
+            roles.innerHTML = '';
 
             mostrarMsjCliente('Usuario agregado', ['Registro completado con exito. ', ` Usuario: ${data.documento}. `, `Email: ${data.email} `]);
         } catch (error) {

@@ -9,6 +9,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 //transacciones para funciones que impacten en mas de una tabla
 import sequelize from '../sequalize.js';
+import { log } from 'console';
 
 
 const mostrarFormLogin = (req, res) => {
@@ -53,6 +54,7 @@ const cerrarSesion = (req, res) => {
 
 // CRUD USUARIO *****************************************************************************************************************
 
+// CREAR USUARIO
 const mostrarFormCrearUsuario = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formCrearUsuario');
@@ -60,8 +62,6 @@ const mostrarFormCrearUsuario = (req, res) => {
     res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
-
-
 
 
 // validaciones en servidor OK
@@ -123,13 +123,13 @@ const crearUsuarioCompleto = async (req, res) => {
     // Validar que no exista el documento en usuario
     const usuarioExistentePorDocumento = await Usuario.buscarPorDocumento(usuario.documento);
     if (usuarioExistentePorDocumento) {
-      return res.status(400).json({ error: 'documento_duplicado', message: 'El documento ya está registrado.' });
+      return res.status(400).json({ error: 'documento_duplicado', message: 'El documento ingresado ya está registrado.' });
     }
 
     // Validar que no exista el email en usuario
     const usuarioExistentePorEmail = await Usuario.buscarUsuarioPorEmail(usuario.email);
     if (usuarioExistentePorEmail) {
-      return res.status(400).json({ error: 'email_duplicado', message: 'El correo electrónico ya está registrado.' });
+      return res.status(400).json({ error: 'email_duplicado', message: 'El correo electrónico ingresado ya está registrado.' });
     }
 
     // Crear el usuario
@@ -202,6 +202,283 @@ const crearUsuarioCompleto = async (req, res) => {
   }
 };
 
+// MODIFICAR USUARIO
+const mostrarFormModificarUsuario = (req, res) => {
+  if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
+    res.render('formModificarUsuario');
+  } else {
+    res.status(403).json({ mensaje: 'Acceso denegado' });
+  }
+};
+
+// validaciones (expresiones regulares) de usuario en el servidor
+const validarUsuarioYRol = (usuario, rolesAsignados) => {
+  let mensajes = [];
+
+  const nombreApellidoRegex = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]{4,54}$/;
+  const documentoRegex = /^\d{6,12}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!nombreApellidoRegex.test(usuario.nombre)) {
+    mensajes.push('Nombre debe tener entre 4 y 54 caracteres. Puede contener letras, espacios y caracteres especiales como ´ y ¨.');
+  }
+
+  if (!nombreApellidoRegex.test(usuario.apellido)) {
+    mensajes.push('Apellido debe tener entre 4 y 54 caracteres. Puede contener letras, espacios y caracteres especiales como ´ y ¨.');
+  }
+
+  if (!documentoRegex.test(usuario.documento)) {
+    mensajes.push('El documento debe tener entre 6 y 12 números y no puede estar vacío.');
+  }
+
+  if (!emailRegex.test(usuario.email)) {
+    mensajes.push('El email debe ser un correo electrónico válido y no puede estar vacío.');
+  }
+
+  if (!rolesAsignados.length) {
+    mensajes.push('Rol obligatorio, debe tener mínimo un rol o varios.');
+  }
+
+  return mensajes;
+};
+
+//validaciones (expresiones regulares y mas) de profesional en el servidor
+const validarProfesional = (profesionalValidado) => {
+  let mensajes = [];
+
+  const profesionRegex = /^[a-zA-ZñÑ\s,.´¨]{6,99}$/;
+  const especialidadRegex = profesionRegex;
+  const matriculaRegex = /^M\d{3,6}$/;
+  const domicilioRegex = /^[a-zA-ZñÑ\s0-9´¨().,]{20,149}$/;
+
+  if (!profesionRegex.test(profesionalValidado.profesion)) {
+    mensajes.push('Profesión incorrecta. Debe contener entre 6 y 99 caracteres. (Símbolos permitidos: , . ´ ¨ ñ)');
+  }
+
+  if (!especialidadRegex.test(profesionalValidado.especialidad)) {
+    mensajes.push('Especialidad incorrecta. Debe contener entre 6 y 99 caracteres. (Símbolos permitidos: , . ´ ¨ ñ)');
+  }
+
+  if (!matriculaRegex.test(profesionalValidado.matricula)) {
+    mensajes.push('Matrícula incorrecta. Debe contener entre 4 y 10 caracteres. (Ejemplo: M123, M3423)');
+  }
+
+  if (!domicilioRegex.test(profesionalValidado.domicilio)) {
+    mensajes.push('Domicilio incorrecto. Debe contener entre 20 y 149 caracteres. (Símbolos permitidos: ´ ¨ () . , ñ)');
+  }
+
+  if (isNaN(profesionalValidado.id_refeps) || profesionalValidado.id_refeps.length < 4 || profesionalValidado.id_refeps.length > 11) {
+    mensajes.push('ID-REFEPS incorrecto. Solo permite números, debe contener entre 4 y 11 números.');
+  }
+
+  if (!profesionalValidado.caducidad) {
+    mensajes.push('Caducidad incorrecta. Debe ingresar una fecha.');
+  } else {
+    const currentDate = new Date();
+    const selectedDate = new Date(profesionalValidado.caducidad);
+
+    if (selectedDate <= currentDate) {
+      mensajes.push("Caducidad incorrecta, debe ser una fecha futura.");
+    }
+
+    if (profesionalValidado.datosProfesional && profesionalValidado.datosProfesional.caducidad) {
+      const caducidadTime = new Date(profesionalValidado.datosProfesional.caducidad);
+      selectedDate.setHours(caducidadTime.getHours());
+      selectedDate.setMinutes(caducidadTime.getMinutes());
+      selectedDate.setSeconds(caducidadTime.getSeconds());
+      selectedDate.setDate(selectedDate.getDate() + 1);
+
+      profesionalValidado.caducidad = selectedDate.toISOString();
+    }
+  }
+
+  return mensajes;
+};
+
+// modificar usuario completo (roles y profesional) 
+const modificarUsuarioCompleto = async (req, res) => {
+
+  const {
+    usuarioValidado,
+    rolesOriginales,
+    rolesAsignados,
+    modificarRoles,
+    profesionalValidado,
+    validarUsuarioDocumento,
+    validarUsuarioEmail,
+    validarProfesionalMatricula,
+    validarProfesionalIdRefeps
+  } = req.body;
+
+  // validaciones en el servidor usuario y roles 
+  const mensajesDeValidacion = validarUsuarioYRol(usuarioValidado, rolesAsignados);
+  if (mensajesDeValidacion.length > 0) {
+    return res.status(400).json({ error: true, message: mensajesDeValidacion });
+  }
+
+  // Validar datos del profesional si es necesario
+  let mensajesDeValidacionProfesional = [];
+  if (profesionalValidado && profesionalValidado.modificar || profesionalValidado.crear) {
+    mensajesDeValidacionProfesional = validarProfesional(profesionalValidado);
+    if (mensajesDeValidacionProfesional.length > 0) {
+      return res.status(400).json({ error: true, message: mensajesDeValidacionProfesional });
+    }
+  }
+
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    // Validar si hay que modificar usuario
+    if (usuarioValidado.modificar) {
+      if (validarUsuarioDocumento) {
+        const usuarioEncontrado = await Usuario.buscarPorDocumento(usuarioValidado.documento);
+        if (usuarioEncontrado && usuarioEncontrado.id !== usuarioValidado.id) {
+          throw new Error('El documento ingresado ya está registrado.');
+        }
+      }
+
+      if (validarUsuarioEmail) {
+        const emailNuevo = await Usuario.buscarUsuarioPorEmail(usuarioValidado.email);
+        if (emailNuevo && emailNuevo.id !== usuarioValidado.id) {
+          throw new Error('El correo electrónico ya está registrado.');
+        }
+      }
+      //Si desactivan al usuario y ademas tiene rol profesional ,desactivar tambien tabla profesional estado=0
+      if (usuarioValidado.estado === 0 && profesionalValidado !== null) {
+        await Profesional.deshabilitar(usuarioValidado.id, transaction);
+      }
+
+      //Si activan al usuario y ademas tiene rol profesional ,desactivar tambien tabla profesional estado=0
+      if (usuarioValidado.estado === 1 && profesionalValidado !== null) {
+        await Profesional.habilitar(usuarioValidado.id, transaction);
+      }
+
+      await Usuario.modificarUsuario(usuarioValidado, transaction);
+    }
+
+    // validar si hay que agregar(y crear profesional para rol profesional) o eliminar roles
+    if (modificarRoles) {
+      const rolesOriginalesIds = rolesOriginales.map(rol => rol.rol_id);
+      const rolesAsignadosIds = rolesAsignados.map(rol => rol.rol_id);
+
+      const rolesAEliminar = rolesOriginalesIds.filter(rol_id => !rolesAsignadosIds.includes(rol_id));
+      const rolesAAgregar = rolesAsignadosIds.filter(rol_id => !rolesOriginalesIds.includes(rol_id));
+
+      if (rolesAEliminar.length && rolesAEliminar.length > 0) {
+        for (const rol_id of rolesAEliminar) {
+          //Si es 2 es PROFESIONAL, ademas de aliminar el rol, modificar el estado en tabla profesional a 0 .
+          if (rol_id === 2) {
+            await Profesional.deshabilitar(usuarioValidado.id, transaction);
+          }
+          await Rol.desasignarRolUsuario(usuarioValidado.id, rol_id, transaction);
+        }
+      }
+
+      if (rolesAAgregar.length && rolesAAgregar.length > 0) {
+        for (const rol_id of rolesAAgregar) {
+          // Cuando el usuario ya tuvo rol profesional se habilita en la tabla profesional ya cargado anteriormente
+          if (rol_id === '2' && profesionalValidado.modificar) {
+            await Profesional.habilitar(usuarioValidado.id, transaction);
+          }
+
+          //Si es la primera vez que se asigna rol profesional se crea una fila en la tabla profesional
+          if (rol_id === '2' && profesionalValidado.crear) {
+            const usuario_id = usuarioValidado.id;
+            const profesion = profesionalValidado.profesion;
+            const especialidad = profesionalValidado.especialidad;
+            const matricula = profesionalValidado.matricula;
+            const domicilio = profesionalValidado.domicilio;
+            const caducidad = profesionalValidado.caducidad;
+            const id_refeps = profesionalValidado.id_refeps;
+            // replacements: [usuario_id, profesion, especialidad, matricula, domicilio, caducidad, id_refeps],
+
+            await Profesional.crear({ usuario_id, profesion, especialidad, matricula, domicilio, caducidad, id_refeps }, transaction);
+            //Si agregan rol profesional a un usuario con estado 0 , ambos tendran el mismo estado
+            if (usuarioValidado.estado === 0) {
+              await Profesional.deshabilitar(usuarioValidado.id, transaction);
+            }
+          }
+          await Rol.asignarRolUsuario(usuarioValidado.id, rol_id, transaction);
+        }
+      }
+    }
+
+    if (profesionalValidado.modificar) {
+      console.log("307");
+      console.log(profesionalValidado.modificar);
+      if (validarProfesionalMatricula) {
+        console.log("matricula...");
+        // validar matricula que no este ocupada
+        console.log('313');
+        console.log(profesionalValidado.matricula);
+        const usuarioEncontrado = await Profesional.validarMatricula(profesionalValidado.matricula);
+        console.log(usuarioEncontrado);
+        if (usuarioEncontrado.length && usuarioEncontrado[0].matricula === profesionalValidado.matricula) {
+          throw new Error('La matricula ingresada ya está registrada.');
+        }
+      }
+
+      if (validarProfesionalIdRefeps) {
+        //validar id refeps antes de modificarlo que no este ocupado
+        console.log("324");
+        console.log(profesionalValidado.id_refeps);
+        const usuarioEncontrado = await Profesional.validarIdRefeps(profesionalValidado.id_refeps);
+        console.log("325");
+        console.log(usuarioEncontrado);
+        if (usuarioEncontrado.length && usuarioEncontrado[0].id_refeps === profesionalValidado.id_refeps) {
+          throw new Error('El ID REFEPS ingresado ya está registrado.');
+        }
+      }
+
+      await Profesional.modificar({
+        usuario_id: usuarioValidado.id,
+        profesion: profesionalValidado.profesion,
+        especialidad: profesionalValidado.especialidad,
+        matricula: profesionalValidado.matricula,
+        domicilio: profesionalValidado.domicilio,
+        caducidad: profesionalValidado.caducidad,
+        id_refeps: profesionalValidado.id_refeps
+      }, transaction);
+    }
+
+    await transaction.commit();
+    res.status(200).json({ message: 'El Usuario fue modificado con éxito.' });
+  } catch (error) {
+    await transaction.rollback();
+    res.status(400).json({ error: true, message: error.message });
+  }
+}
+
+
+const buscarUsuarioDocumento = async (req, res) => {
+  const { documento } = req.params;
+  try {
+    const usuario = await Usuario.buscarPorDocumento(documento);
+    if (!usuario) {
+      return res.status(404).json({ message: 'El documento ingresado no se encuentra registrado.' });
+    }
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al buscar el usuario' });
+  }
+};
+
+const buscarRolesUsuario = async (req, res) => {
+  const { usuario_id } = req.params;
+  try {
+    const roles = await Usuario.buscarRolesUsuario(usuario_id);
+    if (!roles) {
+      return res.status(404).json({ message: 'No se encontraron roles asignados.' });
+    }
+    res.json(roles);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al buscar roles asignados.' })
+  }
+}
+
+// LOGIN verifica usuario, si existe trae el pass
+//Si el pass es correcto trae el o los roles del usuario para iniciar sesion
 
 //Se utiliza dentro de LOGIN: Funcion para comparar fecha actual con Profesional.fechaCaducidad
 function validarCaducidad(fechaIngresada) {
@@ -226,10 +503,6 @@ function validarEnvioDatosProfesional(fechaCaducidad) {
     return true;
   }
 }
-
-
-// LOGIN verifica usuario, si existe trae el pass
-//Si el pass es correcto trae el o los roles del usuario para iniciar sesion
 
 const login = async (req, res) => {
 
@@ -329,8 +602,6 @@ const login = async (req, res) => {
 }
 
 
-
-
 // Función para cambiar el estado de un usuario
 async function cambiarEstadoUsuario(req, res) {
   const { documento } = req.params;
@@ -349,7 +620,7 @@ async function cambiarEstadoUsuario(req, res) {
   }
 }
 
-//RESTABLECER CONTRASEÑA 
+//RESTABLECER CONTRASEÑA *********************************************************************************************************************************************
 const mostrarFormRestablecerPass = (req, res) => {
   res.render('formRestablecerPass');
 };
@@ -459,4 +730,4 @@ const actualizarPassword = async (req, res) => {
   }
 };
 
-export default { mostrarFormLogin, mostrarFormRestablecerPass, renderRestablecerPassword, enviarEnlaceRecuperacion, actualizarPassword, login, mostrarIndexAdmin, mostrarIndexProf, mostrarSelectRol, cerrarSesion, mostrarFormCrearUsuario, crearUsuarioCompleto };
+export default { mostrarFormLogin, mostrarFormRestablecerPass, renderRestablecerPassword, enviarEnlaceRecuperacion, actualizarPassword, login, mostrarIndexAdmin, mostrarIndexProf, mostrarSelectRol, cerrarSesion, mostrarFormCrearUsuario, crearUsuarioCompleto, mostrarFormModificarUsuario, buscarUsuarioDocumento, buscarRolesUsuario, modificarUsuarioCompleto };
