@@ -1,0 +1,63 @@
+extends indexAdmin 
+
+block content 
+  .divMsj 
+    ul
+    button.btn-Msj 
+  section.flexCenter.section.column
+    .divBuscarUsuarios.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Buscar Usuario
+      h4.text-center.text-fondoCeleste Filtrar Documento en Lista de Usuarios
+      div.flexCenter.divBuscarDocumento
+        label(for="buscarDocumento" class="labelCenter") Documento
+        input(type="text" id="buscarDocumento" name="buscarDocumento" autocomplete="off") 
+        i.fa-solid.fa-magnifying-glass.btnBuscarDocumento
+      .divFlexRow.displayNone
+
+        .divDatosUsuario
+          h4.text-center.text-fondoCeleste Datos Usuario
+          form(id="formBuscarUsuario" autocomplete="off")
+            div 
+              label(for="nombre" class="labelCenter") Nombre
+              input(type="text" id="nombre" name="nombre") 
+            div 
+              label(for="apellido" class="labelCenter") Apellido
+              input(type="text" id="apellido" name="apellido" autocomplete="off") 
+            div 
+              label(for="documento" class="labelCenter") Documento
+              input(type="text" id="documento" name="documento" autocomplete="off") 
+            div 
+              label(for="email" class="labelCenter") Email
+              input(type="email" id="email" name="email" autocomplete="off")
+            div
+              label(for="estado" class="labelCenter") Estado
+              input(type="text" id="estado" name="estado" autocomplete="off")
+
+            .divRolesAsignados
+            ul.ulRolesAsignados
+        .divBuscarDatosRolProfesional.displayNone
+          h4.text-center.text-fondoCeleste Datos Rol Profesional  
+          form( id="formMostrarRolProfesional" autocomplete="off")
+            div 
+              label(for="profesion" class="labelCenter") Profesion
+              input(type="text" id="profesion" name="profesion" autocomplete="off") 
+            div 
+              label(for="especialidad" class="labelCenter") Especialidad
+              input(type="text" id="especialidad" name="especialidad" autocomplete="off") 
+            div 
+              label(for="matricula" class="labelCenter") Matricula
+              input(type="text" id="matricula" name="matricula" autocomplete="off")  
+            div 
+              label(for="idRefeps" class="labelCenter") ID Refeps
+              input(type="number" id="idRefeps" name="idRefeps" autocomplete="off")
+            div 
+              label(for="caducidad" class="labelCenter") Caducidad
+              input(type="date" class="datosProfCaducidad"  id="caducidad" name="caducidad" autocomplete="off")   
+            div 
+              label(for="domicilio" class="labelCenter") Domicilio
+              input(type="text" id="domicilio" name="domicilio" autocomplete="off")
+    .divMostrarUsuariosTodos.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Usuarios
+      .divContenedorCardsUsuarios 
+
+    script(src="/js/formBuscarUsuariosCliente.js", type="module") // Incluye el archivo JavaScript del cliente

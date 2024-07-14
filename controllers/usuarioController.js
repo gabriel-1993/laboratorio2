@@ -477,6 +477,38 @@ const buscarRolesUsuario = async (req, res) => {
   }
 }
 
+
+//BUSCAR/VISUALIZAR USUARIOS
+const mostrarFormBuscarUsuarios = (req, res) => {
+  if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
+    res.render('formBuscarUsuarios');
+  } else {
+    res.status(403).json({ mensaje: 'Acceso denegado' });
+  }
+}
+
+
+const buscarUsuarios = async (req, res) => {
+  try {
+    const usuarios = await Usuario.buscarUsuariosConRolesYProfesionales();
+    
+    if (!usuarios) {
+      return res.status(404).json({ message: 'No se encontraron usuarios.' });
+    }
+    
+    res.json(usuarios);
+  } catch (error) {
+    console.error('Error al buscar usuarios:', error);
+    res.status(500).json({ message: 'Error al buscar usuarios.' });
+  }
+};
+
+
+
+
+
+
+
 // LOGIN verifica usuario, si existe trae el pass
 //Si el pass es correcto trae el o los roles del usuario para iniciar sesion
 
@@ -534,6 +566,7 @@ const login = async (req, res) => {
       return res.status(401).json({ mensaje: 'El documento de usuario ingresado es incorrecto. Por favor, inténtelo de nuevo.' });
     }
 
+
     // si existe el user compara la pass ingresada
     const isMatch = await bcrypt.compare(password, usuario.password);
 
@@ -581,6 +614,11 @@ const login = async (req, res) => {
         enviarDatosProfesional = validarEnvioDatosProfesional(datosProfesional[0].caducidad);
         roleToRender = 'SELECCION_ROL';
       }
+    }
+
+
+    if (usuario.estado === 0) {
+      return res.status(401).json({ mensaje: 'El usuario ingresado esta deshabilitado. Por favor, comuniquese con un administrador.' });
     }
 
     // Session 
@@ -730,4 +768,23 @@ const actualizarPassword = async (req, res) => {
   }
 };
 
-export default { mostrarFormLogin, mostrarFormRestablecerPass, renderRestablecerPassword, enviarEnlaceRecuperacion, actualizarPassword, login, mostrarIndexAdmin, mostrarIndexProf, mostrarSelectRol, cerrarSesion, mostrarFormCrearUsuario, crearUsuarioCompleto, mostrarFormModificarUsuario, buscarUsuarioDocumento, buscarRolesUsuario, modificarUsuarioCompleto };
+export default {
+  mostrarFormLogin,
+  mostrarFormRestablecerPass,
+  renderRestablecerPassword,
+  enviarEnlaceRecuperacion,
+  actualizarPassword,
+  login,
+  mostrarIndexAdmin,
+  mostrarIndexProf,
+  mostrarSelectRol,
+  cerrarSesion,
+  mostrarFormCrearUsuario,
+  crearUsuarioCompleto,
+  mostrarFormModificarUsuario,
+  buscarUsuarioDocumento,
+  buscarRolesUsuario,
+  modificarUsuarioCompleto,
+  mostrarFormBuscarUsuarios,
+  buscarUsuarios
+};

@@ -1,7 +1,6 @@
 // MODIFICAR USUARIO GENERA LA MODIFICACION COMPLETA PARA EVITAR INCONSISTENCIAS EN LA BASE DE DATOS
 //PRIMERO valida usuario, luego roles y si esta asignado rol profesional valido form profesional
 
-
 import { mostrarMsjCliente } from './mostrarMsjCliente.js';
 
 document.addEventListener('DOMContentLoaded', () => {

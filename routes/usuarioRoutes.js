@@ -46,6 +46,14 @@ router.get('/obtenerRoles', rolController.obtenerTodos);
  //enviar datos del usuario en el front al controlador
  router.post('/modificarUsuario', usuarioController.modificarUsuarioCompleto);
 
+//BUSCAR/VISUALIZAR USUARIOS
+router.get('/mostrarFormBuscarUsuarios', usuarioController.mostrarFormBuscarUsuarios);
+router.get('/buscarUsuarios', usuarioController.buscarUsuarios);
+//reutilizo las rutas de modificar usuario para obtener datos para los roles (profesional)
+router.get('/buscarRolesUsuario/:usuario_id', usuarioController.buscarRolesUsuario);
+router.get('/buscarDatosProfesional/:usuario_id', profesionalController.obtenerDatosProfesional);
+
+
 
 
 export default router;

@@ -1,6 +1,3 @@
-
-
-
 // Mostrar div con mensajes
 export function mostrarMsjCliente(titulo, mensajes) {
 

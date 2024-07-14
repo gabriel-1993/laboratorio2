@@ -370,7 +370,8 @@ button:hover {
 .divRecuperarPassword,
 .divRestablecerPassword,
 .divCrearUsuario,
-.divModificarUsuario {
+.divModificarUsuario,
+.divBuscarUsuarios {
     width: 420px;
     height: auto;
     display: flex;
@@ -400,8 +401,9 @@ button:hover {
 
 .divDatosUsuarioNuevo,
 .divDatosRolProfesional,
-.divDatosUsuarioModificar,
-.divDatosModificarRolProfesional {
+.divBuscarDatosRolProfesional .divDatosUsuarioModificar,
+.divDatosModificarRolProfesional,
+.divDatosUsuario {
     display: flex;
     flex-direction: column;
 }
@@ -420,13 +422,20 @@ button:hover {
     display: none;
 }
 
+/* Por ej en buscar usuario reutilizo el form de modificar usuario pero los botones modificar no son necesarios */
+#ocultar {
+    display: none;
+}
+
 .formLogin,
 #formRecuperarPassword,
 #formRestablecerPassword,
 #formAgregarUsuario,
 #formAgregarRolProfesional,
 #formModificarUsuario,
-#formModificarRolProfesional {
+#formModificarRolProfesional,
+#formMostrarRolProfesional,
+#formBuscarUsuario {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -435,7 +444,9 @@ button:hover {
 }
 
 #formModificarRolProfesional,
-#formModificarUsuario {
+#formModificarUsuario,
+#formBuscarUsuario,
+#formMostrarRolProfesional {
     padding: 15px 0px;
 
 }
@@ -451,7 +462,9 @@ button:hover {
 #formAgregarUsuario,
 #formAgregarRolProfesional,
 #formModificarUsuario,
-#formModificarRolProfesional {
+#formModificarRolProfesional,
+#formBuscarUsuario,
+#formMostrarRolProfesional {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
@@ -474,6 +487,9 @@ button:hover {
     border-radius: 4px;
     background-color: var(--azulSemiOscuro);
     background-color: var(--celesteOscuro);
+    width: 300px;
+    height: 100px;
+
 }
 
 /* ul lista de roles asigandor en agregar usuario */
@@ -509,6 +525,8 @@ button:hover {
     border-bottom-left-radius: 3px;
 }
 
+
+
 /* label en restablecer contraseña: nueva contraseña y confirmar contraseña */
 .restPassLabel {
     flex: 0 0 auto;
@@ -518,6 +536,11 @@ button:hover {
 /* label en form (administrador) -->crear usuario */
 .labelCenter {
     width: 125px;
+    text-align: center;
+}
+
+.labelCenter90px {
+    width: 90px;
     text-align: center;
 }
 
@@ -533,6 +556,10 @@ input,
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
 }
+
+/* #formBuscarUsuario input, #formMostrarRolProfesional input{
+    width: auto;
+} */
 
 .selectRolesCrearUsuario,
 .selectRolesModificarUsuario,
@@ -554,7 +581,9 @@ input,
 #formAgregarUsuario div,
 #formAgregarRolProfesional div,
 #formModificarUsuario div,
-#formModificarRolProfesional div {
+#formModificarRolProfesional div,
+#formMostrarRolProfesional div,
+#formBuscarUsuario div {
     width: 100%;
     display: flex;
     align-items: center;
@@ -565,12 +594,14 @@ input,
 .restPassInput,
 .selectRolesCrearUsuario,
 .selectRolesModificarUsuario,
-.selectEstadoModificarUsuario, input {
+.selectEstadoModificarUsuario,
+input {
     padding: 4px;
     font-weight: 100;
     font-size: 0.9rem;
     border: 1px solid var(--azulSemiOscuro);
     cursor: pointer;
+    background-color: #fff;
 }
 
 /* select crear usuario */
@@ -650,14 +681,22 @@ input:focus {
     margin-bottom: 85px;
 }
 
-.divModificarUsuario {
+.divModificarUsuario,
+.divBuscarUsuarios {
     margin-top: 15px;
     width: 400px;
     padding-bottom: 40px;
     gap: 0px;
 }
 
-.divModificarUsuario h4 {
+.divBuscarUsuarios {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-bottom: 21px;
+}
+
+.divModificarUsuario h4,
+.divBuscarUsuarios h4 {
     margin-bottom: 15px;
 }
 
@@ -667,7 +706,74 @@ input:focus {
     border-radius: 3px;
 }
 
+/* BUSCAR USUARIOS ******************************************************************************************** */
+.divMostrarUsuariosTodos {
+    border: 1px solid var(--azulSemiOscuro);
+    border-radius: 10px;
+    margin-top: 10px;
+    background-color: var(--color-fondo);
+    width: 85%;
+}
 
+.divContenedorCardsUsuarios {
+    display: flex;
+    flex-wrap: wrap;
+    width: 95%;
+    margin: 0 auto;
+}
+
+.cardUsuario {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 2px solid var(--azulSemiOscuro);
+    border-radius: 9px;
+    margin: 5px 0;
+}
+
+.datosUsuario,
+.rolesUsuario,
+.datosProfesional {
+    width: auto;
+    display: flex;
+    justify-content: space-between;
+    margin: auto 0;
+    padding: 5px 8px;
+}
+
+.rolesUsuario {
+    width: auto;
+    gap: 0;
+    justify-content: start;
+}
+
+.rolesUsuario input {
+    flex: 0.1 1 auto;
+    width: auto;
+}
+
+.inputEmail,
+.inputDomicilio {
+    min-width: 250px;
+    width: auto;
+}
+
+
+/* Al buscar un usuario en la lista de usuarios */
+.divDatosUsuario {
+    margin-top: 10px;
+}
+
+.divDatosUsuario h4,
+.divBuscarDatosRolProfesional h4 {
+    margin-bottom: 0;
+    margin-top: 10px;
+    border-radius: 3px;
+}
+
+.divBuscarDatosRolProfesional {
+    margin-top: 10px;
+}
 
 .footer {
     background-color: var(--azulOscuro);

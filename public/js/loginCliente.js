@@ -41,9 +41,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
             //Usuario o pass incorrecto msjs de usuario
             if (!response.ok) {
+                if(data.mensaje === 'El usuario ingresado esta deshabilitado. Por favor, comuniquese con un administrador.'){
+                    mostrarMsjCliente("Usuario Deshabilitado", [data.mensaje]);
+                    return;  
+                }
                 mostrarMsjCliente("Dato incorrecto", [data.mensaje]);
-                return;  // Asegúrate de no continuar con el código si hay un error
+                return;  
             }
+          
 
             //Con uno o varios roles recibibe datosProfesional que tendra caducado o los datos del profesional para guardar en el sessionStorage
             if (data.datosProfesional !== 'caducado') {
