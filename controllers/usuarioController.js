@@ -54,7 +54,6 @@ const cerrarSesion = (req, res) => {
 
 // CRUD USUARIO *****************************************************************************************************************
 
-// CREAR USUARIO
 const mostrarFormCrearUsuario = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formCrearUsuario');
@@ -68,8 +67,8 @@ const mostrarFormCrearUsuario = (req, res) => {
 // Verifica que documento e email no esten registrados en la base, si no existen crea el usuario y trae su ID
 //Con el ID asigna rol o roles, verifica si en roles tiene asignado profesional: agrega los datos en la tabla profesional.
 //De esta manera evito usuarios mal cargados en la base, ya que deben tener minimo 1 rol y si es profesional , los datos de profesional son todos obligatorios.
-const crearUsuarioCompleto = async (req, res) => {
 
+const crearUsuarioCompleto = async (req, res) => {
   const { usuario, roles, profesional } = req.body;
 
   // Validaciones en el servidor:
@@ -115,92 +114,117 @@ const crearUsuarioCompleto = async (req, res) => {
   }
 
 
-  // Si las validaciones estan ok
   const transaction = await sequelize.transaction();
+
+
+  // Verificar si el rol 'PROFESIONAL' está presente y validar matricula y id_refeps
+  const profesionalRole = roles.find(role => role.rol_descripcion === 'PROFESIONAL');
+  if (profesionalRole) {
+    const matriculaExistente = await Profesional.validarMatricula(profesional.matricula, { transaction });
+    if (matriculaExistente.length > 0) {
+      return res.status(400).json({ error: 'matricula_duplicada', message: 'La matrícula ingresada ya está registrada.' });
+    }
+
+    const idRefepsExistente = await Profesional.validarIdRefeps(profesional.id_refeps, { transaction });
+    if (idRefepsExistente.length > 0) {
+      return res.status(400).json({ error: 'id_refeps_duplicado', message: 'El ID REFEPS ingresado ya está registrado.' });
+    }
+
+    // Validaciones de Profesional
+    if (!profesionRegex.test(profesional.profesion)) {
+      msjs.push('Profesion incorrecta. Debe contener min 6, max 99 caracteres. (Simbolos permitidos: , . ´ ¨ ñ).');
+    }
+
+    if (!especialidadRegex.test(profesional.especialidad)) {
+      msjs.push('Especialidad incorrecta. Debe contener min 6, max 99 caracteres. (Simbolos permitidos: , . ´ ¨ ñ).');
+    }
+
+    if (!matriculaRegex.test(profesional.matricula)) {
+      msjs.push('Matricula incorrecta. Debe contener min 4, max 10 caracteres. (Ejemplo: M123, M3423).');
+    }
+
+    if (!domicilioRegex.test(profesional.domicilio)) {
+      msjs.push('Domicilio incorrecto. Debe contener min 20, max 149 caracteres. (Simbolos permitidos: ´ ¨ () . , ñ ).');
+    }
+
+    if (!profesional.id_refeps || isNaN(profesional.id_refeps) || profesional.id_refeps.length < 4 || profesional.id_refeps.length > 11) {
+      msjs.push('ID-REFEPS incorrecto. Solo permite números, debe contener min 4, max 11 números.');
+    }
+
+    if (!profesional.caducidad) {
+      msjs.push('Caducidad incorrecta. Debe ingresar una fecha.');
+    } else {
+      let currentDate = new Date();
+      let selectedDate = new Date(profesional.caducidad);
+
+      if (selectedDate <= currentDate) {
+        msjs.push("Caducidad incorrecta, debe ser una fecha futura.");
+      }
+    }
+
+    if (msjs.length > 0) {
+      return res.status(400).json({ error: 'validacion_fallida', message: msjs });
+    }
+  }
 
 
   try {
     // Validar que no exista el documento en usuario
     const usuarioExistentePorDocumento = await Usuario.buscarPorDocumento(usuario.documento);
     if (usuarioExistentePorDocumento) {
+      await transaction.rollback();
       return res.status(400).json({ error: 'documento_duplicado', message: 'El documento ingresado ya está registrado.' });
     }
 
     // Validar que no exista el email en usuario
     const usuarioExistentePorEmail = await Usuario.buscarUsuarioPorEmail(usuario.email);
     if (usuarioExistentePorEmail) {
+      await transaction.rollback();
       return res.status(400).json({ error: 'email_duplicado', message: 'El correo electrónico ingresado ya está registrado.' });
     }
 
     // Crear el usuario
     const nuevoUsuario = await Usuario.crear(usuario, { transaction });
-
-    // // Asignar los roles
+    console.log(nuevoUsuario);
+    // Asignar los roles
     for (const role of roles) {
       try {
-        await Rol.asignarRolUsuario(nuevoUsuario.id, parseInt(role.id, 10), transaction);
+        const rol_id = parseInt(role.id, 10);
+        await Rol.asignarRolUsuario(nuevoUsuario.id, rol_id, transaction);
+        // await Rol.asignarRolUsuario(nuevoUsuario.id, parseInt(role.id, 10), { transaction });
       } catch (error) {
+        console.log('Error al asignar rol:', {
+          nuevoUsuarioId: nuevoUsuario.id,
+          roleId: parseInt(role.id, 10),
+          errorMessage: error.message,
+          errorStack: error.stack
+        });
         await transaction.rollback();
         return res.status(500).json({ error: 'Error al asignar rol', details: error.message });
       }
     }
 
     // Asignar el profesional si está el rol 'PROFESIONAL'
-    const profesionalRole = roles.find(role => role.rol_descripcion === 'PROFESIONAL');
     if (profesionalRole) {
-      try {
-        // if (!profesional.profesion || !profesional.especialidad || !profesional.matricula || !profesional.domicilio || !profesional.id_refeps || !profesional.caducidad) {
-        //   throw new Error('Faltan datos necesarios para la creación de profesional');
-        // }
-        // Validaciones de Profesional
-        if (!profesionRegex.test(profesional.profesion)) {
-          msjs.push('Profesion incorrecta. Debe contener min 6, max 99 caracteres. (Simbolos permitidos: , . ´ ¨ ñ).');
-        }
-
-        if (!especialidadRegex.test(profesional.especialidad)) {
-          msjs.push('Especialidad incorrecta. Debe contener min 6, max 99 caracteres. (Simbolos permitidos: , . ´ ¨ ñ).');
-        }
-
-        if (!matriculaRegex.test(profesional.matricula)) {
-          msjs.push('Matricula incorrecta. Debe contener min 4, max 10 caracteres. (Ejemplo: M123, M3423).');
-        }
-
-        if (!domicilioRegex.test(profesional.domicilio)) {
-          msjs.push('Domicilio incorrecto. Debe contener min 20, max 149 caracteres. (Simbolos permitidos: ´ ¨ () . , ñ ).');
-        }
-
-        if (!profesional.id_refeps || isNaN(profesional.id_refeps) || profesional.id_refeps.length < 4 || profesional.id_refeps.length > 11) {
-          msjs.push('ID-REFEPS incorrecto. Solo permite números, debe contener min 4, max 11 números.');
-        }
-
-        if (!profesional.caducidad) {
-          msjs.push('Caducidad incorrecta. Debe ingresar una fecha.');
-        } else {
-          let currentDate = new Date();
-          let selectedDate = new Date(profesional.caducidad);
-
-          if (selectedDate <= currentDate) {
-            msjs.push("Caducidad incorrecta, debe ser una fecha futura.");
-          }
-        }
-
-        if (msjs.length > 0) {
-          return res.status(400).json({ error: 'validacion_fallida', message: msjs });
-        }
-        await Profesional.crear({ usuario_id: nuevoUsuario.id, ...profesional }, transaction);
-      } catch (error) {
-        await transaction.rollback();
-        return res.status(500).json({ error: 'Error al asignar profesional', details: error.message });
-      }
+      await Profesional.crear(nuevoUsuario.id, profesional, transaction);
     }
 
     await transaction.commit();
     res.status(201).json(nuevoUsuario);
   } catch (error) {
     await transaction.rollback();
+    console.log('Error al crear usuario completo:', {
+      usuario,
+      roles,
+      profesional,
+      errorMessage: error.message,
+      errorStack: error.stack
+    });
     res.status(500).json({ error: 'Error al crear el usuario y asignar rol/profesional', details: error.message });
   }
+
 };
+
 
 // MODIFICAR USUARIO
 const mostrarFormModificarUsuario = (req, res) => {
@@ -243,6 +267,7 @@ const validarUsuarioYRol = (usuario, rolesAsignados) => {
 };
 
 //validaciones (expresiones regulares y mas) de profesional en el servidor
+
 const validarProfesional = (profesionalValidado) => {
   let mensajes = [];
 
@@ -250,6 +275,8 @@ const validarProfesional = (profesionalValidado) => {
   const especialidadRegex = profesionRegex;
   const matriculaRegex = /^M\d{3,6}$/;
   const domicilioRegex = /^[a-zA-ZñÑ\s0-9´¨().,]{20,149}$/;
+
+  console.log("Validando profesional:", profesionalValidado); // Debug
 
   if (!profesionRegex.test(profesionalValidado.profesion)) {
     mensajes.push('Profesión incorrecta. Debe contener entre 6 y 99 caracteres. (Símbolos permitidos: , . ´ ¨ ñ)');
@@ -260,7 +287,7 @@ const validarProfesional = (profesionalValidado) => {
   }
 
   if (!matriculaRegex.test(profesionalValidado.matricula)) {
-    mensajes.push('Matrícula incorrecta. Debe contener entre 4 y 10 caracteres. (Ejemplo: M123, M3423)');
+    mensajes.push(`Matrícula incorrecta (${profesionalValidado.matricula}). Debe contener entre 4 y 10 caracteres. (Ejemplo: M123, M3423)`); // Debug
   }
 
   if (!domicilioRegex.test(profesionalValidado.domicilio)) {
@@ -412,7 +439,7 @@ const modificarUsuarioCompleto = async (req, res) => {
         // validar matricula que no este ocupada
         console.log('313');
         console.log(profesionalValidado.matricula);
-        const usuarioEncontrado = await Profesional.validarMatricula(profesionalValidado.matricula);
+        const usuarioEncontrado = await Profesional.validarMatricula(profesionalValidado.matricula, { transaction });
         console.log(usuarioEncontrado);
         if (usuarioEncontrado.length && usuarioEncontrado[0].matricula === profesionalValidado.matricula) {
           throw new Error('La matricula ingresada ya está registrada.');
@@ -423,7 +450,7 @@ const modificarUsuarioCompleto = async (req, res) => {
         //validar id refeps antes de modificarlo que no este ocupado
         console.log("324");
         console.log(profesionalValidado.id_refeps);
-        const usuarioEncontrado = await Profesional.validarIdRefeps(profesionalValidado.id_refeps);
+        const usuarioEncontrado = await Profesional.validarIdRefeps(profesionalValidado.id_refeps, { transaction });
         console.log("325");
         console.log(usuarioEncontrado);
         if (usuarioEncontrado.length && usuarioEncontrado[0].id_refeps === profesionalValidado.id_refeps) {
@@ -491,22 +518,17 @@ const mostrarFormBuscarUsuarios = (req, res) => {
 const buscarUsuarios = async (req, res) => {
   try {
     const usuarios = await Usuario.buscarUsuariosConRolesYProfesionales();
-    
+
     if (!usuarios) {
       return res.status(404).json({ message: 'No se encontraron usuarios.' });
     }
-    
+
     res.json(usuarios);
   } catch (error) {
     console.error('Error al buscar usuarios:', error);
     res.status(500).json({ message: 'Error al buscar usuarios.' });
   }
 };
-
-
-
-
-
 
 
 // LOGIN verifica usuario, si existe trae el pass

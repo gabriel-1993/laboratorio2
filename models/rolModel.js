@@ -21,6 +21,11 @@ class Rol {
     // Método para asignar un rol a un usuario con transacción
     static async asignarRolUsuario(usuario_id, rol_id, transaction) {
         const query = `INSERT INTO usuario_rol (usuario_id, rol_id) VALUES (?, ?)`;
+        if (!usuario_id || !rol_id) {
+            throw new Error("usuario_id o rol_id no definidos");
+        }
+        console.log('usuario_id:', usuario_id);
+        console.log('rol_id:', rol_id);
         try {
             await sequelize.query(query, {
                 replacements: [usuario_id, rol_id],
@@ -29,6 +34,12 @@ class Rol {
             return { usuario_id, rol_id };
         } catch (error) {
             console.error('Error en asignarRolUsuario:', error);
+            console.log('Detalles del error:', {
+                usuario_id,
+                rol_id,
+                errorMessage: error.message,
+                errorStack: error.stack
+            });
             throw error;
         }
     }

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Error al obtener los roles');
             }
             const rolesDisponibles = await response.json();
-            
+
             return rolesDisponibles;
         } catch (error) {
             console.error(error);
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // retorna usuario con sus datos, solo si son validados 
-     const validarUsuario = () => {
+    const validarUsuario = () => {
         msjs = [];
         // datos usuario
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
@@ -213,46 +213,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //retorna profesional con datos ,solo si son validados
     const validarProfesional = () => {
-
         //datos profesional(div oculto a menos que asignen profesional)
         const profesion = document.getElementById('profesion').value.trim().toUpperCase();
         const especialidad = document.getElementById('especialidad').value.trim().toUpperCase();
         const matricula = document.getElementById('matricula').value.trim().toUpperCase();
         const domicilio = document.getElementById('domicilio').value.trim().toUpperCase();
-        const idRefeps = document.getElementById('idRefeps');
-        const caducidad = document.querySelector('#caducidad');
+        const idRefeps = document.getElementById('idRefeps').value.trim();
+        const caducidad = document.getElementById('caducidad').value;
 
-        msjs = [];
+        let msjs = [];
         // Validación de profesion
         const profesionRegex = /^[a-zA-ZñÑ\s,.´¨]{6,99}$/;
-        if (!profesionRegex.test(profesion.value)) {
+        if (!profesionRegex.test(profesion)) {
             msjs.push('Profesion incorrecta. Debe contener min 6, max 99 caracteres. (Simbolos permitidos: , . ´ ¨ ñ).')
         }
 
         // Validación de especialidad
         const especialidadRegex = /^[a-zA-ZñÑ\s,.´¨]{6,99}$/;
-        if (!especialidadRegex.test(especialidad.value)) {
+        if (!especialidadRegex.test(especialidad)) {
             msjs.push('Especialidad incorrecta. Debe contener min 6, max 99 caracteres. (Simbolos permitidos: , . ´ ¨ ñ).')
         }
 
         // Validación de matricula
         const matriculaRegex = /^M\d{3,6}$/;
-        if (!matriculaRegex.test(matricula.value)) {
+        if (!matriculaRegex.test(matricula)) {
             msjs.push('Matricula incorrecta. Dede contener min 4, max 10 caracteres. (Ejemplo: M123, M3423).')
         }
 
         // Validación de domicilio
         const domicilioRegex = /^[a-zA-ZñÑ\s0-9´¨().,]{20,149}$/;
-        if (!domicilioRegex.test(domicilio.value)) {
+        if (!domicilioRegex.test(domicilio)) {
             msjs.push('Domicilio incorrecto. Dede contener min 20, max 149 caracteres. (Simbolos permitidos: ´ ¨ () . , ñ ).')
         }
 
         // Validación de idRefeps
-        if (!idRefeps.value || isNaN(idRefeps.value) || idRefeps.value.length < 4 || idRefeps.value.length > 11) {
+        if (!idRefeps || isNaN(idRefeps) || idRefeps.length < 4 || idRefeps.length > 11) {
             msjs.push('ID-REFEPS incorrecto. Solo permite numeros, dede contener min 4, max 11 numeros.')
         }
 
-        if (caducidad === '') {
+        if (!caducidad) {
             msjs.push('Caducidad incorrecta. Debe ingresar una fecha.')
         } else {
             let currentDate = new Date();
@@ -266,21 +265,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (msjs.length > 0) {
             mostrarMsjCliente('Profesional Datos Incorrectos', msjs);
         } else {
-
-
             let profesional = {
-                profesion: profesion.value.trim(),
-                especialidad: especialidad.value.trim(),
-                matricula: matricula.value.trim(),
-                domicilio: domicilio.value.trim(),
-                id_refeps: idRefeps.value.trim(),
-                caducidad: caducidad.value.trim()
+                profesion: profesion,
+                especialidad: especialidad,
+                matricula: matricula,
+                domicilio: domicilio,
+                id_refeps: idRefeps,
+                caducidad: caducidad
             }
             return profesional;
         }
     }
-
-
 
     // Eventos click asignar Rol, (event click eliminar esta dentro de asignarRol en cada li ingresado)
     btnAsignarRol.addEventListener('click', function (event) {
@@ -291,7 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // AGREGAR USUARIO COMPLETO 
-
     //LLamar funciones para validar primero los datos como usuario que tambien valida que tenga al menos 1 rol.
     //Si esta funcion cumple todas las validaciones verificamos el array roles si tiene asignado rol: profesional.
     //Si esta asignado este rol(profesional) llamamos a validarProfesional para los datos ingresados como profesional.
@@ -300,30 +294,27 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAgregarUsuario.addEventListener('click', async function (event) {
         event.preventDefault();
 
-        //validar datos como usuario: guardar objeto usuario
+        // Validar datos del usuario y guardar objeto usuario
         let usuario = validarUsuario();
 
-        // Si no retorna un objeto usuario con los datos no continuan las validaciones
+        // Si no retorna un objeto usuario con los datos, no continuar con las validaciones
         if (!usuario) {
             return;
         }
 
-        //Si esta asignado el rol 'Profesional' validar campos de Profesional: guardar objeto profesional
+        // Si está asignado el rol 'Profesional', validar campos de Profesional y guardar objeto profesional
         let profesional;
 
-        // Roles se verifica dentro de validarUsuario que minimo tenga un rol.
-        // Si asignaron profesional validar profesional y guardar sus datos , sino retornar
+        // Verificar roles dentro de validarUsuario que mínimo tenga un rol
         for (const element of roles) {
             if (element.rol_descripcion === 'PROFESIONAL') {
                 profesional = validarProfesional();
-                // Si no retorna un objeto profesional con los datos, no continuamos con el fetch al servidor
+                // Si no retorna un objeto profesional con los datos, no continuar con el fetch al servidor
                 if (profesional === undefined) {
                     return;
                 }
             }
         }
-
-
 
         try {
             const response = await fetch('/crearUsuario', {
@@ -336,47 +327,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
+                let msjs = [];
                 if (errorData.error === 'documento_duplicado') {
                     msjs.push('El documento ingresado ya se encuentra registrado.');
                 } else if (errorData.error === 'email_duplicado') {
                     msjs.push('El email ingresado ya se encuentra registrado.');
+                } else if (errorData.error === 'matricula_duplicada') {
+                    msjs.push('La matrícula ingresada ya se encuentra registrada.');
+                } else if (errorData.error === 'id_refeps_duplicado') {
+                    msjs.push('El ID REFEPS ingresado ya se encuentra registrado.');
                 } else if (errorData.error === 'validacion_fallida') {
                     msjs.push(...errorData.message);
                 } else {
                     throw new Error('Error al crear el usuario completo');
                 }
                 if (msjs.length > 0) {
-                    msjs.push('El usuario no pudo ser agregado, verifique los datos.')
+                    msjs.push('El usuario no pudo ser agregado, verifique los datos.');
                     mostrarMsjCliente('Datos incorrectos', msjs);
                 }
                 return;
             }
 
-            const data = await response.json();
+            const nuevoUsuario = await response.json();
+            mostrarMsjCliente('Datos correctos', ['El usuario ha sido agregado exitosamente']);
 
-            //limpiar campos usuario
-            document.getElementById('nombre').value = '';
-            document.getElementById('apellido').value = '';
-            document.getElementById('documento').value = '';
-            const email = document.getElementById('email').value = '';
-            const password = document.getElementById('password').value = '';
-            const confirmarPassword = document.getElementById('confirmarPassword').value = '';
-
-
-            // eliminar roles del div y el array
-
-
-            divDatosProfesional.innerHTML = '';
-            roles.innerHTML = '';
-
-            mostrarMsjCliente('Usuario agregado', ['Registro completado con exito. ', ` Usuario: ${data.documento}. `, `Email: ${data.email} `]);
         } catch (error) {
-            console.error('Error al crear el usuario completo:', error);
-            mostrarMsjCliente('Error: usuario no agregado.', ['Error al crear el usuario completo. Inténtalo de nuevo más tarde.']);
+            console.error('Error:', error);
+            mostrarMsjCliente('Error en el servidor', ['Hubo un problema al intentar agregar el usuario. Intente nuevamente más tarde.']);
         }
-
     });
-
-
 });
 

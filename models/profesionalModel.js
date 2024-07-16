@@ -12,19 +12,6 @@ class Profesional {
         this.id_refeps = id_refeps;
     }
 
-    static async crear({ usuario_id, profesion, especialidad, matricula, domicilio, caducidad, id_refeps }, transaction) {
-        const query = `INSERT INTO profesional (usuario_id, profesion, especialidad, matricula, domicilio, caducidad, id_refeps) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-        // Imprimir los valores para verificar
-        // console.log('Query:', query);
-        // console.log('Replacements:', [usuario_id, profesion, especialidad, matricula, domicilio, caducidad, id_refeps]);
-
-        await sequelize.query(query, {
-            replacements: [usuario_id, profesion, especialidad, matricula, domicilio, caducidad, id_refeps],
-            transaction
-        });
-        return { usuario_id, profesion, especialidad, matricula, domicilio, caducidad, id_refeps };
-    }
-
     static async deshabilitar(usuario_id, transaction) {
         const queryProfesional = `UPDATE profesional SET estado = 0 WHERE usuario_id = ?;`;
 
@@ -81,24 +68,42 @@ class Profesional {
         return datosProfesional;
     }
 
-    // Validar si la matricula esta ocupado( es dato unico en la base de datos)
-    static async validarMatricula(matricula) {
-        const query = `SELECT *
-                       FROM profesional
-                       WHERE matricula = ?`;
-        const [datosProfesional] = await pool.query(query, [matricula]);
-        return datosProfesional;
-    }
-
-    // Validar si la id_refeps esta ocupado( es dato unico en la base de datos)
-    static async validarIdRefeps(id_refeps) {
-        const query = `SELECT *
-                       FROM profesional
-                       WHERE id_refeps = ?`;
-        const [datosProfesional] = await pool.query(query, [id_refeps]);
-        return datosProfesional;
-    }
-
+    static async validarMatricula(matricula, { transaction }) {
+        try {
+          const query = `SELECT * FROM profesional WHERE matricula = ?`;
+          const [datosProfesional] = await sequelize.query(query, {
+            replacements: [matricula],
+            transaction
+          });
+          return datosProfesional;
+        } catch (error) {
+          console.error('Error al validar matrícula:', error);
+          throw error;
+        }
+      }
+    
+      static async validarIdRefeps(id_refeps, { transaction }) {
+        try {
+          const query = `SELECT * FROM profesional WHERE id_refeps = ?`;
+          const [datosProfesional] = await sequelize.query(query, {
+            replacements: [id_refeps],
+            transaction
+          });
+          return datosProfesional;
+        } catch (error) {
+          console.error('Error al validar ID Refeps:', error);
+          throw error;
+        }
+      }
+    
+      static async crear(usuario_id, profesional, transaction) {
+        const query = `INSERT INTO profesional (usuario_id, profesion, especialidad, matricula, domicilio, id_refeps, caducidad) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const [result] = await sequelize.query(query, {
+          replacements: [usuario_id, profesional.profesion, profesional.especialidad, profesional.matricula, profesional.domicilio, profesional.id_refeps, profesional.caducidad],
+          transaction
+        });
+        return result;
+      }
 }
 
 

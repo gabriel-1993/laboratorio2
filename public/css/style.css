@@ -337,7 +337,8 @@ button:hover {
 }
 
 .btnAgregarUsuario,
-.btnModificarUsuario {
+.btnModificarUsuario,
+.btnAgregarMedicamento {
     display: flex;
     justify-content: center;
     margin: 0 auto;
@@ -350,6 +351,9 @@ button:hover {
     margin-bottom: 15px;
 }
 
+.btnAgregarMedicamento {
+    width: auto;
+}
 
 
 
@@ -371,7 +375,8 @@ button:hover {
 .divRestablecerPassword,
 .divCrearUsuario,
 .divModificarUsuario,
-.divBuscarUsuarios {
+.divBuscarUsuarios,
+.divAgregarMedicamento {
     width: 420px;
     height: auto;
     display: flex;
@@ -386,6 +391,7 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.divAgregarMedicamento,
 .divCrearUsuario {
     width: auto;
     margin: 40px 0;
@@ -406,11 +412,6 @@ button:hover {
 .divDatosUsuario {
     display: flex;
     flex-direction: column;
-}
-
-/* Los campos para agregar datos prof se muestra al ingresar rol profesional en crear usuario */
-.divDatosRolProfesional {
-    justify-content: space-between;
 }
 
 .divDatosModificarRolProfesional {
@@ -435,12 +436,13 @@ button:hover {
 #formModificarUsuario,
 #formModificarRolProfesional,
 #formMostrarRolProfesional,
-#formBuscarUsuario {
+#formBuscarUsuario,
+#formAgregarMedicamento {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 7px;
-    padding: 30px;
+    /* padding: 30px; */
 }
 
 #formModificarRolProfesional,
@@ -464,7 +466,8 @@ button:hover {
 #formModificarUsuario,
 #formModificarRolProfesional,
 #formBuscarUsuario,
-#formMostrarRolProfesional {
+#formMostrarRolProfesional,
+#formAgregarMedicamento {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
@@ -487,19 +490,11 @@ button:hover {
     border-radius: 4px;
     background-color: var(--azulSemiOscuro);
     background-color: var(--celesteOscuro);
-    width: 300px;
-    height: 100px;
-
 }
 
 /* ul lista de roles asigandor en agregar usuario */
 .ulRolesAsignados {
     width: 100%;
-}
-
-/* espacio entre cada dato del form RolProfesional queda igual al ingresar datos user no modificar */
-#formAgregarRolProfesional {
-    gap: 33px;
 }
 
 /* Recuperar pass: div contenedor de label e input correo */
@@ -513,7 +508,8 @@ button:hover {
 /* label iniciar sesion , label restablecer contraseña, labelCenter */
 .labelLogin,
 .restPassLabel,
-.labelCenter {
+.labelCenter,
+.labelCenter130px {
     background-color: var(--azulSemiOscuro);
     color: #fff;
     border: 1px solid var(--azulSemiOscuro);
@@ -539,9 +535,20 @@ button:hover {
     text-align: center;
 }
 
+.labelCenter130px {
+    text-align: center;
+    width: 130px;
+}
+
 .labelCenter90px {
     width: 90px;
     text-align: center;
+}
+
+/* Achico la letra para mantener los labels del mismo tamaño en una sola linea de texto */
+.labelFormaFarmaceutica {
+    font-size: 0.8rem;
+    padding: 5px;
 }
 
 /* Styles for login inputs */
@@ -571,7 +578,12 @@ input,
 input,
 .selectRolesCrearUsuario,
 .selectRolesModificarUsuario,
-.selectEstadoModificarUsuario {
+.selectEstadoModificarUsuario,
+.selectFamilia,
+.selectCategoria,
+.selectForma,
+.selectPresentacion,
+.selectConcentracion {
     flex: 1 1 auto;
     /* El input ocupa todo el espacio restante */
 }
@@ -583,11 +595,14 @@ input,
 #formModificarUsuario div,
 #formModificarRolProfesional div,
 #formMostrarRolProfesional div,
-#formBuscarUsuario div {
+#formBuscarUsuario div,
+#formAgregarMedicamento div {
     width: 100%;
     display: flex;
     align-items: center;
 }
+
+
 
 /* .input e input restablecer pass  */
 .input,
@@ -595,6 +610,11 @@ input,
 .selectRolesCrearUsuario,
 .selectRolesModificarUsuario,
 .selectEstadoModificarUsuario,
+.selectFamilia,
+.selectCategoria,
+.selectForma,
+.selectPresentacion,
+.selectConcentracion,
 input {
     padding: 4px;
     font-weight: 100;
@@ -608,7 +628,12 @@ input {
 .selectRolesCrearUsuario,
 .selectRolesModificarUsuario,
 .datosProfCaducidad,
-.selectEstadoModificarUsuario {
+.selectEstadoModificarUsuario,
+.selectFamilia,
+.selectCategoria,
+.selectForma,
+.selectPresentacion,
+.selectConcentracion {
     padding: 3px;
 }
 

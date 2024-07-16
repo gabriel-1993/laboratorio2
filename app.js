@@ -30,7 +30,7 @@ dotenv.config();
 
 import errorRoutes from "./routes/errorRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
-
+import medicamentoRoutes from "./routes/medicamentoRoutes.js";
 
 
 
@@ -85,6 +85,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Manejo de rutas
  app.use("/", usuarioRoutes);
+ app.use("/", medicamentoRoutes);
 
 
 
