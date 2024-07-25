@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       const h4Usuario = document.createElement('h4');
       h4Usuario.classList.add('text-fondoAzul');
       h4Usuario.classList.add('borderRadiusTop5px');
-      h4Usuario.innerHTML = 'Datos Usuario';
+      h4Usuario.innerHTML = `Datos Usuario #ID: ${usuario.id}`;
       cardUsuario.appendChild(h4Usuario);
 
       // Primera fila: Datos del usuario

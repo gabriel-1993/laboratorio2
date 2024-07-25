@@ -4,42 +4,57 @@ block content
   .divMsj 
     ul
     button.btn-Msj 
-  section.flexCenter.section
+  section.flexCenter.section.column
     .divAgregarMedicamento.center.column.blur
       h3.text-center.text-fondoAzul.borderRadiusTop5px Agregar Medicamento
+      h4.text-center.text-fondoCeleste Datos Medicamento
+
       .divFlexRow
         .divDatosMedicamentoNuevo
-          h4.text-center.text-fondoCeleste.borderRadius4px Datos Medicamento
+          p Por favor ingrese el Nombre Generico del medicamento que desea agregar.
+
           form( id="formAgregarMedicamento" autocomplete="off")
-            div 
-              label(for="nombreComercial" class="labelCenter130px") Nombre Comercial
-              input(type="text" id="nombreComercial" name="nombreComercial" autocomplete="off" placeholder="opcional") 
-            div 
-              label(for="nombreGenerico" class="labelCenter130px") Nombre Generico
-              input(type="text" id="nombreGenerico" name="nombreGenerico" autocomplete="off") 
-            div(id="nombreGenerico-list" class="nombreGenerico-list displayNone") <!-- Div para mostrar las coincidencias -->
-            div 
-              label(for="familia" class="labelCenter130px") Familia
-              input(type="text" id="familia" class="selectFamilia" name="familia")
-            div(id="familia-list" class="familia-list displayNone") <!-- Div para mostrar las coincidencias -->
-            div 
-              label(for="categoria" class="labelCenter130px") Categoria
-              input(id="categoria" class="selectCategoria" name="categoria")
-            div(id="categoria-list" class="categoria-list displayNone") <!-- Div para mostrar las coincidencias -->
+            .divBuscarNombreGenerico 
+              div
+                label(for="nombreGenerico" class="labelCenter130px") Nombre Generico
+                input(type="text" id="nombreGenerico" name="nombreGenerico" autocomplete="off") 
+                i.fa-solid.fa-magnifying-glass.btnBuscar
+              ul(id="medicamentos-list" class="medicamentos-list displayNone") <!-- Div para mostrar las coincidencias -->
+
+
   
-            div 
-              label(for="formaFarmaceutica" class="labelCenter130px labelFormaFarmaceutica") Forma Farmaceutica
-              input(id="formaFarmaceutica" class="selectForma" name="formaFarmaceutica")
-            div(id="formaFarmaceutica-list" class="formaFarmaceutica-list displayNone") <!-- Div para mostrar las coincidencias -->
-            div 
-              label(for="presentacion" class="labelCenter130px") Presentacion
-              input(id="presentacion" class="selectPresentacion" name="presentacion")
-            div(id="presentacion-list" class="presentacion-list displayNone") <!-- Div para mostrar las coincidencias -->
-            div 
-              label(for="concentracion" class="labelCenter130px") Concentracion
-              input(id="concentracion" class="selectConcentracion" name="concentracion") 
-            div(id="concentracion-list" class="concentracion-list displayNone") <!-- Div para mostrar las coincidencias -->
+            div(id="nombreGenerico-list" class="nombreGenerico-list displayNone") <!-- Div para mostrar las coincidencias -->
+            div.divDatosMedicamento.column.displayNone
+              div 
+                label(for="nombreComercial" class="labelCenter130px") Nombre Comercial
+                input(type="text" id="nombreComercial" name="nombreComercial" autocomplete="off" placeholder="opcional") 
+              div 
+                label(for="familia" class="labelCenter130px") Familia
+                input(type="text" id="familia" class="selectFamilia" name="familia")
+              div(id="familia-list" class="familia-list displayNone") <!-- Div para mostrar las coincidencias -->
+              div 
+                label(for="categoria" class="labelCenter130px") Categoria
+                input(id="categoria" class="selectCategoria" name="categoria")
+              div(id="categoria-list" class="categoria-list displayNone") <!-- Div para mostrar las coincidencias -->
+    
+              .divMedicamentoForma 
+                label(for="formaFarmaceutica" class="labelCenter130px labelFormaFarmaceutica") Forma Farmaceutica
+                input(id="formaFarmaceutica" class="selectForma" name="formaFarmaceutica"  placeholder="Puede ingresar una nueva")
+                ul(id="formaFarmaceutica-list" class="formaFarmaceutica-list displayNone") <!-- Div para mostrar las coincidencias -->
+              .divMedicamentoPresentacion 
+                label(for="presentacion" class="labelCenter130px") Presentacion
+                input(id="presentacion" class="selectPresentacion" name="presentacion" placeholder="Puede ingresar una nueva")
+                ul(id="presentacion-list" class="presentacion-list displayNone") <!-- Div para mostrar las coincidencias -->
+              .divMedicamentoConcentracion 
+                label(for="concentracion" class="labelCenter130px") Concentracion
+                input(id="concentracion" class="selectConcentracion" name="concentracion" placeholder="Puede ingresar una nueva") 
+                ul(id="concentracion-list" class="concentracion-list displayNone") <!-- Div para mostrar las coincidencias -->
                
-          button(type="button" class="btnAgregarMedicamento") Agregar
+          button(type="button" class="btnAgregarMedicamento displayNone") Agregar
+    .divMedicamentosExistentes.center.column.blur.displayNone 
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Items del Medicamento 
+      h4.text-center.text-fondoCeleste Puede agregar items distintos a los existentes
+      .divContenedorItems.displayNone
+
   script(src="/js/formCrearMedicamento.js", type="module") // Incluye el archivo JavaScript del cliente
 

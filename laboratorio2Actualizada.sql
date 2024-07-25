@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-06-2024 a las 01:38:58
+-- Tiempo de generación: 25-07-2024 a las 20:49:09
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -48,22 +48,23 @@ INSERT INTO `categoria` (`id`, `descripcion`) VALUES
 
 CREATE TABLE `concentracion` (
   `id` int(11) NOT NULL,
-  `descripcion` varchar(100) NOT NULL
+  `descripcion` varchar(100) NOT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `concentracion`
 --
 
-INSERT INTO `concentracion` (`id`, `descripcion`) VALUES
-(1, '0.3 ML'),
-(2, '0.5 ML'),
-(3, '1 ML'),
-(9, '100 MG'),
-(6, '125 MG'),
-(4, '250 MG'),
-(10, '5 ML'),
-(5, '500 MG');
+INSERT INTO `concentracion` (`id`, `descripcion`, `estado`) VALUES
+(1, '0.3 ML', 1),
+(2, '0.5 ML', 1),
+(3, '1 ML', 1),
+(4, '250 MG', 1),
+(5, '500 MG', 1),
+(6, '125 MG', 1),
+(9, '100 MG', 1),
+(15, '20 GR', 1);
 
 -- --------------------------------------------------------
 
@@ -92,18 +93,20 @@ INSERT INTO `familia` (`id`, `descripcion`) VALUES
 
 CREATE TABLE `formafarmaceutica` (
   `id` int(11) NOT NULL,
-  `descripcion` varchar(100) NOT NULL
+  `descripcion` varchar(100) NOT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `formafarmaceutica`
 --
 
-INSERT INTO `formafarmaceutica` (`id`, `descripcion`) VALUES
-(1, 'CAPSULA'),
-(3, 'INYECCION'),
-(4, 'JARABE'),
-(2, 'PASTILLA');
+INSERT INTO `formafarmaceutica` (`id`, `descripcion`, `estado`) VALUES
+(1, 'CAPSULA', 1),
+(2, 'PASTILLA', 1),
+(3, 'INYECCION', 1),
+(4, 'JARABE', 1),
+(12, 'CREMA', 1);
 
 -- --------------------------------------------------------
 
@@ -137,9 +140,9 @@ INSERT INTO `lado` (`id`, `descripcion`) VALUES
 
 CREATE TABLE `medicamento` (
   `id` int(11) NOT NULL,
-  `nombre_generico` varchar(255) NOT NULL,
-  `nombre_comercial` varchar(255) DEFAULT NULL,
-  `activo` tinyint(1) DEFAULT 1,
+  `nombre_generico` varchar(101) NOT NULL,
+  `nombre_comercial` varchar(101) DEFAULT NULL,
+  `estado` tinyint(1) DEFAULT 1,
   `familia_id` int(11) NOT NULL,
   `categoria_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -148,7 +151,7 @@ CREATE TABLE `medicamento` (
 -- Volcado de datos para la tabla `medicamento`
 --
 
-INSERT INTO `medicamento` (`id`, `nombre_generico`, `nombre_comercial`, `activo`, `familia_id`, `categoria_id`) VALUES
+INSERT INTO `medicamento` (`id`, `nombre_generico`, `nombre_comercial`, `estado`, `familia_id`, `categoria_id`) VALUES
 (1, 'IBUPROFENO', NULL, 1, 1, 1),
 (2, 'AMOXICILINA', NULL, 1, 2, 2),
 (3, 'PARACETAMOL', NULL, 1, 1, 1);
@@ -169,20 +172,15 @@ CREATE TABLE `medicamento_concentracion` (
 --
 
 INSERT INTO `medicamento_concentracion` (`medicamento_id`, `concentracion_id`) VALUES
-(1, 4),
+(1, 1),
 (1, 5),
 (1, 6),
-(2, 1),
-(2, 2),
-(2, 3),
 (2, 4),
-(2, 5),
-(2, 6),
-(3, 2),
-(3, 3),
+(2, 9),
+(3, 1),
 (3, 4),
-(3, 5),
-(3, 6);
+(3, 6),
+(3, 9);
 
 -- --------------------------------------------------------
 
@@ -202,12 +200,42 @@ CREATE TABLE `medicamento_formafarmaceutica` (
 INSERT INTO `medicamento_formafarmaceutica` (`medicamento_id`, `formaFarmaceutica_id`) VALUES
 (1, 1),
 (1, 2),
+(1, 4),
 (2, 1),
 (2, 2),
-(2, 3),
 (3, 1),
 (3, 2),
-(3, 4);
+(3, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `medicamento_item`
+--
+
+CREATE TABLE `medicamento_item` (
+  `medicamento_id` int(11) NOT NULL,
+  `formafarmaceutica_id` int(11) NOT NULL,
+  `presentacion_id` int(11) NOT NULL,
+  `concentracion_id` int(11) NOT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT 1,
+  `item_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `medicamento_item`
+--
+
+INSERT INTO `medicamento_item` (`medicamento_id`, `formafarmaceutica_id`, `presentacion_id`, `concentracion_id`, `estado`, `item_id`) VALUES
+(1, 1, 1, 6, 1, 1),
+(1, 1, 2, 5, 1, 2),
+(2, 1, 2, 9, 1, 3),
+(2, 2, 3, 4, 1, 4),
+(3, 1, 1, 4, 1, 5),
+(3, 1, 1, 6, 1, 6),
+(3, 2, 2, 9, 1, 11),
+(3, 2, 3, 9, 1, 12),
+(3, 3, 4, 1, 1, 13);
 
 -- --------------------------------------------------------
 
@@ -227,14 +255,13 @@ CREATE TABLE `medicamento_presentacion` (
 INSERT INTO `medicamento_presentacion` (`medicamento_id`, `presentacion_id`) VALUES
 (1, 1),
 (1, 2),
-(1, 3),
-(2, 1),
+(1, 4),
 (2, 2),
 (2, 3),
-(2, 4),
 (3, 1),
 (3, 2),
-(3, 3);
+(3, 3),
+(3, 4);
 
 -- --------------------------------------------------------
 
@@ -370,13 +397,6 @@ CREATE TABLE `password_resets` (
   `createdAt` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `password_resets`
---
-
-INSERT INTO `password_resets` (`id`, `email`, `resetPasswordToken`, `resetPasswordExpires`, `createdAt`) VALUES
-(40, 'GABRIELTORREZ9303@GMAIL.COM', '3116ec9e109152d28e1215c11dbe8f440f2e55d8', '2024-06-26 19:34:19', '2024-06-26 21:34:19');
-
 -- --------------------------------------------------------
 
 --
@@ -451,18 +471,19 @@ CREATE TABLE `prescripcion_prestacion` (
 
 CREATE TABLE `presentacion` (
   `id` int(11) NOT NULL,
-  `descripcion` varchar(150) NOT NULL
+  `descripcion` varchar(100) NOT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `presentacion`
 --
 
-INSERT INTO `presentacion` (`id`, `descripcion`) VALUES
-(4, '1 UNIDAD'),
-(1, '10 UNIDADES'),
-(2, '15 UNIDADES'),
-(3, '30 UNIDADES');
+INSERT INTO `presentacion` (`id`, `descripcion`, `estado`) VALUES
+(1, '10 UNIDADES', 1),
+(2, '15 UNIDADES', 1),
+(3, '30 UNIDADES', 1),
+(4, '1 UNIDAD', 1);
 
 -- --------------------------------------------------------
 
@@ -501,17 +522,19 @@ CREATE TABLE `profesional` (
   `matricula` varchar(50) DEFAULT NULL,
   `domicilio` varchar(150) DEFAULT NULL,
   `caducidad` date NOT NULL,
-  `id_refeps` int(11) NOT NULL
+  `id_refeps` int(11) NOT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `profesional`
 --
 
-INSERT INTO `profesional` (`usuario_id`, `profesion`, `especialidad`, `matricula`, `domicilio`, `caducidad`, `id_refeps`) VALUES
-(9, 'MEDICO', 'GENERALISTA', 'M123', 'CORDOBA, VILLA MARIA. AVSAN MARTIN 455.', '2025-06-11', 1235),
-(11, 'DOCTORA', 'PEDIATRIA', 'M1234', 'SAN LUIS CAPITAL, AV. SUCRE 870', '2025-06-12', 1234),
-(12, 'MEDICO', 'GENERALISTA', 'M1243', 'NEUQUEN, BARILOCHE. BELGRANO 456.', '2023-06-07', 1236);
+INSERT INTO `profesional` (`usuario_id`, `profesion`, `especialidad`, `matricula`, `domicilio`, `caducidad`, `id_refeps`, `estado`) VALUES
+(9, 'MEDICO', 'GENERALISTA', 'M123', 'CORDOBA, VILLA MARIA. AVSAN MARTIN 455.', '2025-06-11', 1235, 1),
+(10, 'MEDICO', 'GENERALISTAA', 'M9983', 'ARGENTINA SAN LUIS LA PUNTA', '2024-08-18', 399933, 1),
+(11, 'DOCTORA', 'PEDIATRIA', 'M1234', 'SAN LUIS CAPITAL, AV. SUCRE 123', '2025-07-12', 1243, 1),
+(12, 'MEDICO', 'GENERALISTA', 'M1243', 'NEUQUEN, BARILOCHE. BELGRANO 456.', '2023-06-07', 1236, 1);
 
 -- --------------------------------------------------------
 
@@ -549,7 +572,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`session_id`, `expires`, `data`) VALUES
-('vMC8aeeVLwKHesE0JzgKX_KEWXTjvF-v', 1719448293, '{\"cookie\":{\"originalMaxAge\":3600000,\"expires\":\"2024-06-27T00:31:32.380Z\",\"httpOnly\":true,\"path\":\"/\"},\"user\":{\"id\":10,\"documento\":\"36018434\",\"roles\":[{\"id\":1,\"rol_descripcion\":\"ADMINISTRADOR\"}],\"datosProfesional\":{\"profesional\":\"caducado\"}}}');
+('Dh_O86fzNAT2P9iopmFHMSMFHgeTypmd', 1721936849, '{\"cookie\":{\"originalMaxAge\":3600000,\"expires\":\"2024-07-25T19:27:33.554Z\",\"httpOnly\":true,\"path\":\"/\"},\"user\":{\"id\":10,\"documento\":\"36018434\",\"roles\":[{\"id\":1,\"rol_descripcion\":\"ADMINISTRADOR\"},{\"id\":2,\"rol_descripcion\":\"PROFESIONAL\"}],\"datosProfesional\":[{\"usuario_id\":10,\"profesion\":\"MEDICO\",\"especialidad\":\"GENERALISTAA\",\"matricula\":\"M9983\",\"domicilio\":\"ARGENTINA SAN LUIS LA PUNTA\",\"caducidad\":\"2024-08-18T03:00:00.000Z\",\"id_refeps\":399933,\"estado\":1}]}}');
 
 -- --------------------------------------------------------
 
@@ -573,7 +596,7 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`id`, `nombre`, `apellido`, `documento`, `password`, `estado`, `email`) VALUES
 (9, 'CARLOS', 'GONZALES', '12345780', '$2b$10$pubNYX8Z5y/OIuYj5aLisOn.Sc2PvutK9SGqJcMXQ6AaajaUM/ZkO', 0, 'EJEMPLO3@GMAIL.COM'),
-(10, 'GABRIEL', 'TORREZ', '36018434', '$2b$10$Q9RFNyQqEjZb52OvW8y/sePXpfjqWLUiIhVU9grgCS1YD46hwDGMW', 1, 'GABRIELTORREZ9303@GMAIL.COM'),
+(10, 'GABRIELL', 'TORREZ', '36018434', '$2b$10$/KYw2TaPHU8oN55OXqpiFemSUmADEbkZmwRUbdL4ljCYHEyopyJJe', 1, 'GABRIELTORREZ9303@GMAIL.COM'),
 (11, 'MARIA', 'GOMEZ', '12345678', '$2b$10$Bkc/FGFWQXj1LvgyKm3qbu6fa/zjrBHGXa.SkRUk5Xg4DVv9OWPxO', 1, 'GOMEZ@GMAIL.COM'),
 (12, 'JUAN', 'LOPEZ', '123456789', '$2b$10$8dblOdHwVDGgRM0kKRWeo.aigaaZTopg8kFvm8ELWd8b/O2PdLm2G', 1, 'JUAN@GMAIL.COM');
 
@@ -595,6 +618,7 @@ CREATE TABLE `usuario_rol` (
 INSERT INTO `usuario_rol` (`usuario_id`, `rol_id`) VALUES
 (9, 2),
 (10, 1),
+(10, 2),
 (11, 1),
 (11, 2),
 (12, 1),
@@ -661,6 +685,16 @@ ALTER TABLE `medicamento_concentracion`
 ALTER TABLE `medicamento_formafarmaceutica`
   ADD PRIMARY KEY (`medicamento_id`,`formaFarmaceutica_id`),
   ADD KEY `formaFarmaceutica_id` (`formaFarmaceutica_id`);
+
+--
+-- Indices de la tabla `medicamento_item`
+--
+ALTER TABLE `medicamento_item`
+  ADD PRIMARY KEY (`medicamento_id`,`formafarmaceutica_id`,`presentacion_id`,`concentracion_id`),
+  ADD UNIQUE KEY `item_id` (`item_id`),
+  ADD KEY `formafarmaceutica_id` (`formafarmaceutica_id`),
+  ADD KEY `presentacion_id` (`presentacion_id`),
+  ADD KEY `concentracion_id` (`concentracion_id`);
 
 --
 -- Indices de la tabla `medicamento_presentacion`
@@ -807,7 +841,7 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `concentracion`
 --
 ALTER TABLE `concentracion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `familia`
@@ -819,7 +853,7 @@ ALTER TABLE `familia`
 -- AUTO_INCREMENT de la tabla `formafarmaceutica`
 --
 ALTER TABLE `formafarmaceutica`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `lado`
@@ -832,6 +866,12 @@ ALTER TABLE `lado`
 --
 ALTER TABLE `medicamento`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `medicamento_item`
+--
+ALTER TABLE `medicamento_item`
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `obrasocial`
@@ -849,7 +889,7 @@ ALTER TABLE `paciente`
 -- AUTO_INCREMENT de la tabla `password_resets`
 --
 ALTER TABLE `password_resets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de la tabla `plan`
@@ -867,7 +907,7 @@ ALTER TABLE `prescripcion`
 -- AUTO_INCREMENT de la tabla `presentacion`
 --
 ALTER TABLE `presentacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `prestacion`
@@ -885,7 +925,7 @@ ALTER TABLE `rol`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- Restricciones para tablas volcadas
@@ -911,6 +951,15 @@ ALTER TABLE `medicamento_concentracion`
 ALTER TABLE `medicamento_formafarmaceutica`
   ADD CONSTRAINT `medicamento_formafarmaceutica_ibfk_1` FOREIGN KEY (`medicamento_id`) REFERENCES `medicamento` (`id`),
   ADD CONSTRAINT `medicamento_formafarmaceutica_ibfk_2` FOREIGN KEY (`formaFarmaceutica_id`) REFERENCES `formafarmaceutica` (`id`);
+
+--
+-- Filtros para la tabla `medicamento_item`
+--
+ALTER TABLE `medicamento_item`
+  ADD CONSTRAINT `medicamento_item_ibfk_1` FOREIGN KEY (`medicamento_id`) REFERENCES `medicamento` (`id`),
+  ADD CONSTRAINT `medicamento_item_ibfk_2` FOREIGN KEY (`formafarmaceutica_id`) REFERENCES `formafarmaceutica` (`id`),
+  ADD CONSTRAINT `medicamento_item_ibfk_3` FOREIGN KEY (`presentacion_id`) REFERENCES `presentacion` (`id`),
+  ADD CONSTRAINT `medicamento_item_ibfk_4` FOREIGN KEY (`concentracion_id`) REFERENCES `concentracion` (`id`);
 
 --
 -- Filtros para la tabla `medicamento_presentacion`

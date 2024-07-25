@@ -342,13 +342,12 @@ button:hover {
     display: flex;
     justify-content: center;
     margin: 0 auto;
-    margin-bottom: 40px;
+    margin-bottom: 15px;
     width: 160px;
 }
 
 .btnModificarUsuario {
     width: 170px;
-    margin-bottom: 15px;
 }
 
 .btnAgregarMedicamento {
@@ -391,7 +390,18 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.divAgregarMedicamento,
+.divAgregarMedicamento {
+    margin-top: 20px;
+    margin-bottom: 18px;
+}
+
+.divLogin,
+.divModificarUsuario {
+    padding-bottom: 40px;
+    gap: 30px;
+}
+
+
 .divCrearUsuario {
     width: auto;
     margin: 40px 0;
@@ -403,6 +413,10 @@ button:hover {
     justify-content: center;
     padding: 0px 50px;
     gap: 12px;
+}
+
+.divAgregarMedicamento .divFlexRow {
+    padding: 0;
 }
 
 .divDatosUsuarioNuevo,
@@ -418,10 +432,7 @@ button:hover {
     justify-content: none;
 }
 
-/* ocultar elementos con display flex  */
-.displayNone {
-    display: none;
-}
+
 
 /* Por ej en buscar usuario reutilizo el form de modificar usuario pero los botones modificar no son necesarios */
 #ocultar {
@@ -442,6 +453,7 @@ button:hover {
     flex-direction: column;
     justify-content: center;
     gap: 7px;
+    margin: 0 auto;
     /* padding: 30px; */
 }
 
@@ -473,6 +485,9 @@ button:hover {
     width: 340px;
 }
 
+#formAgregarMedicamento {
+    padding-bottom: 25px;
+}
 
 /* modificar usuario  */
 .divBuscarDocumento {
@@ -480,7 +495,8 @@ button:hover {
     margin: 0 auto;
 }
 
-.divBuscarDocumento .fa-magnifying-glass {
+.divBuscarDocumento .fa-magnifying-glass,
+.divBuscarNombreGenerico .fa-magnifying-glass {
     margin-left: 10px;
 }
 
@@ -519,6 +535,7 @@ button:hover {
     cursor: pointer;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
+    align-content: center;
 }
 
 
@@ -602,7 +619,18 @@ input,
     align-items: center;
 }
 
+#formAgregarMedicamento .divDatosMedicamento {
+    gap: 5px;
+}
 
+/* ocultar elementos con display flex  */
+.displayNone {
+    display: none !important;
+}
+
+#formAgregarMedicamento .displayNone {
+    display: none;
+}
 
 /* .input e input restablecer pass  */
 .input,
@@ -664,7 +692,10 @@ input:focus {
 /* User logeado con varios roles p: Usted tiene varios roles. Por favor,seleccione el que desea ejecutar. */
 /* Restablecer contraseña p: Te enviaremos un enlace para restablecer tu contraseña.  Por favor, ingresa tu correo electrónico.*/
 .divSelectRol p,
-.divRecuperarPassword p {
+.divRecuperarPassword p,
+.divModificarUsuario p,
+.divBuscarUsuarios p,
+.divDatosMedicamentoNuevo p {
     width: 80%;
     margin: 30px auto;
     margin-bottom: 20px;
@@ -675,6 +706,9 @@ input:focus {
     background-color: #007bffd7;
 }
 
+.divDatosMedicamentoNuevo p{
+    margin: 20px auto;
+}
 
 /* Form contenedor del select de roles */
 #formSeleccionarRol {
@@ -720,10 +754,10 @@ input:focus {
     padding-bottom: 21px;
 }
 
-.divModificarUsuario h4,
+/* .divModificarUsuario h4,
 .divBuscarUsuarios h4 {
     margin-bottom: 15px;
-}
+} */
 
 .divModificarUsuario .h4ModificarUsuario {
     margin-bottom: 0;
@@ -800,11 +834,94 @@ input:focus {
     margin-top: 10px;
 }
 
+
+
+/* AGREGAR MEDICAMENTO */
+.divMedicamentosExistentes {
+    width: 90%;
+}
+
+.divContenedorItems {
+    /* width: 90%; */
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--color-fondo);
+    padding: 8px;
+}
+
+.cardItem {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--azulSemiOscuro);
+    border-radius: 9px;
+    width: 95%;
+    margin: 0 auto;
+}
+
+.datosItem {
+    padding: 5px 8px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.datoItem {
+    display: flex;
+}
+
+.labelCenter142px {
+    display: inline-block;
+    /* Cambia display a inline-block */
+    font-size: 0.9rem;
+    width: 142px;
+    text-align: center;
+}
+
+.inputItemMedicamento {
+    /* font-size: 0.8rem; */
+    width: auto;
+    background-color: #fff;
+}
+
 .footer {
     background-color: var(--azulOscuro);
     color: #fff;
     height: 80px;
     max-width: 1370px;
     margin: 0px auto;
+}
 
+.divMedicamentoForma,
+.divMedicamentoPresentacion,
+.divMedicamentoConcentracion,
+.divBuscarNombreGenerico {
+    position: relative;
+}
+
+.listaFiltrada {
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 2;
+    top: 26px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: end;
+}
+
+.listaFiltradaItem {
+    background-color: var(--color-fondo);
+    padding: 5px;
+    cursor: pointer;
+    width: 62%;
+    color: var(--azulOscuro);
+}
+
+.listaFiltradaItem:hover {
+    background-color: var(--azulSemiOscuro);
+    color: #fff;
 }

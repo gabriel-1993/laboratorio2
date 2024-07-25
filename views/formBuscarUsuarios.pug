@@ -7,7 +7,10 @@ block content
   section.flexCenter.section.column
     .divBuscarUsuarios.center.column.blur
       h3.text-center.text-fondoAzul.borderRadiusTop5px Buscar Usuario
-      h4.text-center.text-fondoCeleste Filtrar Documento en Lista de Usuarios
+      h4.text-center.text-fondoCeleste Buscar Documento
+
+      p Por favor ingrese el documento del usuario que desea buscar, puede buscar el documento en la lista de usuarios...
+
       div.flexCenter.divBuscarDocumento
         label(for="buscarDocumento" class="labelCenter") Documento
         input(type="text" id="buscarDocumento" name="buscarDocumento" autocomplete="off") 
@@ -58,6 +61,7 @@ block content
               input(type="text" id="domicilio" name="domicilio" autocomplete="off")
     .divMostrarUsuariosTodos.center.column.blur
       h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Usuarios
+
       .divContenedorCardsUsuarios 
 
     script(src="/js/formBuscarUsuariosCliente.js", type="module") // Incluye el archivo JavaScript del cliente
