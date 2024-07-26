@@ -72,6 +72,56 @@ class Medicamento {
         return ({ id, descripcion });
     }
 
+    // AGERGAR FAMILIA
+    static async agregarFamilia(descripcion, transaction = null) {
+        try {
+            const query = `
+            INSERT INTO familia (descripcion) VALUES (?)
+        `;
+            await sequelize.query(query, {
+                replacements: [descripcion],
+                type: sequelize.QueryTypes.INSERT,
+                transaction
+            });
+
+            const [result] = await sequelize.query('SELECT LAST_INSERT_ID() AS id', {
+                type: sequelize.QueryTypes.SELECT,
+                transaction
+            });
+
+            return result.id;
+
+        } catch (error) {
+            console.error('Error al agregar familia:', error);
+            throw error;
+        }
+    }
+
+    // AGERGAR CATEGORIA
+    static async agregarCategoria(descripcion, transaction = null) {
+        try {
+            const query = `
+                INSERT INTO categoria (descripcion) VALUES (?)
+            `;
+            await sequelize.query(query, {
+                replacements: [descripcion],
+                type: sequelize.QueryTypes.INSERT,
+                transaction
+            });
+
+            const [result] = await sequelize.query('SELECT LAST_INSERT_ID() AS id', {
+                type: sequelize.QueryTypes.SELECT,
+                transaction
+            });
+
+            return result.id;
+
+        } catch (error) {
+            console.error('Error al agregar categoria:', error);
+            throw error;
+        }
+    }
+
     // AGERGAR FORMA FARMACEUTICA NUEVA
     static async agregarFormaFarmaceutica(descripcion, transaction = null) {
         try {
@@ -366,6 +416,78 @@ class Medicamento {
 
 
 
+    //Buscar todos los medicamentos 
+    static async buscarMedicamentos(transaction = null) {
+        try {
+            const medicamentos = await sequelize.query(
+                `SELECT 
+                *
+             FROM medicamento`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!medicamentos || medicamentos.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return medicamentos;
+        } catch (error) {
+            console.error('Error al buscar todos los medicamentos disponibles:', error);
+            throw error;
+        }
+    }
+
+    //Buscar todas las familias
+    static async buscarFamilias(transaction = null) {
+        try {
+            const familias = await sequelize.query(
+                `SELECT 
+                *
+             FROM familia`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!familias || familias.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return familias;
+        } catch (error) {
+            console.error('Error al buscar todas las familias disponibles:', error);
+            throw error;
+        }
+    }
+
+    //BUSCAR TODAS LAS CATEGORIAS
+    static async buscarCategorias(transaction = null) {
+        try {
+            const categorias = await sequelize.query(
+                `SELECT 
+                    *
+                 FROM categoria`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!categorias || categorias.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return categorias;
+        } catch (error) {
+            console.error('Error al buscar todas las categorias disponibles:', error);
+            throw error;
+        }
+    }
+
     //Buscar todas las formas 
     static async buscarFormas(transaction = null) {
         try {
@@ -438,29 +560,6 @@ class Medicamento {
         }
     }
 
-    //Buscar todos los medicamentos (si quieren aplicar uno y esta en estado = 0, los modifico a estado = 1 
-    static async buscarMedicamentos(transaction = null) {
-        try {
-            const medicamentos = await sequelize.query(
-                `SELECT 
-            *
-         FROM medicamento`,
-                {
-                    type: sequelize.QueryTypes.SELECT,
-                    transaction
-                }
-            );
-
-            if (!medicamentos || medicamentos.length === 0) {
-                return null; // No se encontraron items
-            }
-
-            return medicamentos;
-        } catch (error) {
-            console.error('Error al buscar todos los medicamentos disponibles:', error);
-            throw error;
-        }
-    }
 
 
 
@@ -498,14 +597,16 @@ class Medicamento {
     }
 
 
-    static async crear({ nombre_generico, nombre_comercial, id_familia, id_categoria }, transaction = null) {
-        const query = `INSERT INTO medicamento (nombre_generico, nombre_comercial, id_familia, id_categoria) VALUES (?, ?, ?, ?)`;
+    static async crear({ nombre_generico, nombre_comercial, familia_id, categoria_id }, transaction = null) {
+        const estado = 1;
+        const query = `INSERT INTO medicamento (nombre_generico, nombre_comercial, estado, familia_id, categoria_id) VALUES (?, ?, ?, ?, ?)`;
         const [result] = await sequelize.query(query, {
-            replacements: [nombre_generico, nombre_comercial, familia_id, categoria_id],
+            replacements: [nombre_generico, nombre_comercial, estado, familia_id, categoria_id],
             type: sequelize.QueryTypes.INSERT,
             transaction
         });
-        return new Medicamento({ id: result[0], nombre_generico, nombre_comercial, estado: 'ACTIVO', familia_id, categoria_id });
+
+        return new Medicamento({ id: result, nombre_generico, nombre_comercial, estado, familia_id, categoria_id });
     }
 
 

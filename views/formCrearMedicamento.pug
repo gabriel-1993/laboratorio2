@@ -28,14 +28,14 @@ block content
               div 
                 label(for="nombreComercial" class="labelCenter130px") Nombre Comercial
                 input(type="text" id="nombreComercial" name="nombreComercial" autocomplete="off" placeholder="opcional") 
-              div 
+              .divMedicamentoFamilia 
                 label(for="familia" class="labelCenter130px") Familia
-                input(type="text" id="familia" class="selectFamilia" name="familia")
-              div(id="familia-list" class="familia-list displayNone") <!-- Div para mostrar las coincidencias -->
-              div 
+                input(type="text" id="familia" class="selectFamilia" name="familia"   placeholder="Puede ingresar una nueva")
+                ul(id="familia-list" class="familia-list displayNone") <!-- Div para mostrar las coincidencias -->
+              .divMedicamentoCategoria 
                 label(for="categoria" class="labelCenter130px") Categoria
-                input(id="categoria" class="selectCategoria" name="categoria")
-              div(id="categoria-list" class="categoria-list displayNone") <!-- Div para mostrar las coincidencias -->
+                input(id="categoria" class="selectCategoria" name="categoria"  placeholder="Puede ingresar una nueva")
+                ul(id="categoria-list" class="categoria-list displayNone") <!-- Div para mostrar las coincidencias -->
     
               .divMedicamentoForma 
                 label(for="formaFarmaceutica" class="labelCenter130px labelFormaFarmaceutica") Forma Farmaceutica

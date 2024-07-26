@@ -896,7 +896,9 @@ input:focus {
 .divMedicamentoForma,
 .divMedicamentoPresentacion,
 .divMedicamentoConcentracion,
-.divBuscarNombreGenerico {
+.divBuscarNombreGenerico,
+.divMedicamentoFamilia,
+.divMedicamentoCategoria {
     position: relative;
 }
 

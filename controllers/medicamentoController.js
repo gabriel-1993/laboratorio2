@@ -13,7 +13,7 @@ const mostrarFormAgregarMedicamento = (req, res) => {
 //BUSCAR MEDICAMENTO CON NOMBRE GENERICO UNICO
 const buscarNombreGenerico = async (req, res) => {
   const { nombre_generico } = req.query;
-  const regex = /^[A-Z0-9 ]{6,100}$/;
+  const regex = /^[A-Za-z0-9 ]{6,100}$/;
 
   if (!regex.test(nombre_generico)) {
     return res.status(400).json({ mensaje: 'El nombre genérico debe tener entre 6 y 100 caracteres y solo puede contener letras mayúsculas, números y espacios.' });
@@ -36,7 +36,7 @@ const buscarNombreGenerico = async (req, res) => {
       return res.status(200).json(medicamentoExistente);
     } else {
       await transaction.commit(); // Commit the transaction
-      return res.status(200).json({ mensaje: 'Medicamento no encontrado. Por favor, ingrese todos los datos para agregarlo.' });
+      return res.status(200).json({ mensaje: 'Medicamento no encontrado.Por favor, ingrese todos los datos para agregarlo.' });
     }
   } catch (error) {
     await transaction.rollback();
@@ -64,20 +64,25 @@ const buscarItemsMedicamento = async (req, res) => {
   }
 };
 
-// Controlador para obtener formas, presentaciones y concentraciones disponibles
-const obtenerMedicamentosFormasPresentacionesConcentraciones = async (req, res) => {
+// Controlador para obtener todos los medicamentos, familias, categorias, formas, presentaciones y concentraciones disponibles
+const obtenerMedicamentosCategoriasFamiliasFormasPresentacionesConcentraciones = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
-    const [medicamentos, formas, presentaciones, concentraciones] = await Promise.all([
+    const [medicamentos, familias, categorias, formas, presentaciones, concentraciones] = await Promise.all([
       Medicamento.buscarMedicamentos(transaction),
+      Medicamento.buscarFamilias(transaction),
+      Medicamento.buscarCategorias(transaction),
       Medicamento.buscarFormas(transaction),
       Medicamento.buscarPresentaciones(transaction),
-      Medicamento.buscarConcentraciones(transaction)
+      Medicamento.buscarConcentraciones(transaction),
+
     ]);
 
     await transaction.commit();
     return res.status(200).json({
       medicamentos,
+      familias,
+      categorias,
       formas,
       presentaciones,
       concentraciones
@@ -166,7 +171,6 @@ async function agregarItemMedicamento(req, res) {
 
   try {
     // Validar forma farmacéutica 
-    console.log(asignarForma);
     if (typeof asignarForma === 'string') {
       if (!regex.test(asignarForma)) {
         return res.status(400).json({ error: 'Forma farmacéutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras, espacios y números.' });
@@ -180,10 +184,7 @@ async function agregarItemMedicamento(req, res) {
       //Validar si forma ya esta asignada al medicamento:
       const result = await Medicamento.consultarMedicamentoFormaFarmaceutica(medicamentoEncontrado.id, asignarForma.id, transaction);
       //Si result es null : no esta asignada la forma al medicamento: asignarla.
-      console.log(result);
-
       if (result == null) {
-
         await Medicamento.asignarFormaMedicamento(medicamentoEncontrado.id, asignarForma.id, transaction);
       }
     }
@@ -256,18 +257,171 @@ async function agregarItemMedicamento(req, res) {
   }
 }
 
+async function agregarMedicamentoNuevoEitem(req, res) {
+
+  let { nombreGenerico, nombreComercial, asignarFamilia, asignarCategoria, asignarForma, asignarPresentacion, asignarConcentracion } = req.body;
+  let transaction;
+
+  try {
+    // Inicia una transacción
+    transaction = await sequelize.transaction();
+
+    //MEDICAMENTO NECESITA EL ID DE FAMILIA Y CATEGORIA : PRIMERO ASEGURAMOS QUE ESTEN ESTOS IDS
+    const familiaYcategoria = /^[a-zA-Z\s]{6,99}$/;
+
+    // AGREGAR FAMILIA SI ES UN STRING, LLEGO SOLO LA DESCRIPCION SIN ID
+    if (typeof asignarFamilia === 'string') {
+      if (!familiaYcategoria.test(asignarFamilia)) {
+        return res.status(400).json({ error: 'Familia debe comenzar con letras, min 6 max 99 caracteres.Puede ingresar letras y espacios.' });
+      } else {
+        asignarFamilia = { descripcion: asignarFamilia };
+        asignarFamilia.id = await Medicamento.agregarFamilia(asignarFamilia.descripcion, transaction);
+      }
+    }
+
+    //AGREGAR CATEGORIA SI ES UN STRING, LLEGO SOLO LA DESCRIPCION SIN ID
+    if (typeof asignarCategoria === 'string') {
+      if (!familiaYcategoria.test(asignarCategoria)) {
+        return res.status(400).json({ error: 'Categoria debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras y espacios.' });
+      } else {
+        asignarCategoria = { descripcion: asignarCategoria };
+        asignarCategoria.id = await Medicamento.agregarCategoria(asignarCategoria.descripcion, transaction);
+      }
+    }
+
+    // VALIDAR NOMBRE GENERICO(OBLIGATORIO) Y NOMBRE COMERCIAL(opcional)
+    const nombreGenericoRegex = /^[A-Za-z0-9 ]{6,100}$/;
+    if (!nombreGenericoRegex.test(nombreGenerico)) {
+      return res.status(400).json({ error:'Nombre genérico debe contener solo letras, números y espacios, min 6 y max 100 caracteres.' });
+    }
+
+
+    const nombreComercialRegex = /^[a-zA-Z\s]{6,99}$/;
+    if (nombreComercial !== '') {
+        nombreComercial = nombreComercial.trim().toUpperCase();
+        if (!nombreComercialRegex.test(nombreComercial)) {
+          return res.status(400).json({ error:'Nombre comercial debe contener solo letras y espacios, min 6 y max 99 caracteres.' });
+        }
+    }
+
+
+
+
+    // Crea el nuevo medicamento
+    const nuevoMedicamento = await Medicamento.crear(
+      {
+        nombre_generico: nombreGenerico,
+        nombre_comercial: nombreComercial,
+        familia_id: asignarFamilia.id,
+        categoria_id: asignarCategoria.id
+      },
+      transaction
+    );
+
+    // Validar forma farmacéutica 
+    const regexForma = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;
+    if (typeof asignarForma === 'string') {
+      if (!regexForma.test(asignarForma)) {
+        return res.status(400).json({ error: 'Forma farmacéutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras, espacios y números.' });
+      } else {
+        asignarForma = { descripcion: asignarForma };
+        asignarForma.id = await Medicamento.agregarFormaFarmaceutica(asignarForma.descripcion, transaction);
+        await Medicamento.asignarFormaMedicamento(nuevoMedicamento.id, asignarForma.id, transaction);
+      }
+    } else {
+      //SI no es un string llega el id de la forma , asignarla.
+      await Medicamento.asignarFormaMedicamento(nuevoMedicamento.id, asignarForma.id, transaction);
+    }
+
+
+
+    // Validar presentación
+    const regexPresenConcen = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+    if (typeof asignarPresentacion === 'string') {
+      if (!regexPresenConcen.test(asignarPresentacion)) {
+        return res.status(400).json({ error: 'Presentación debe comenzar con número/s, min 6 max 99 caracteres. Puede ingresar números, espacios y letras. (Ej: 15 UNIDADES)' });
+      } else {
+        asignarPresentacion = { descripcion: asignarPresentacion };
+        asignarPresentacion.id = await Medicamento.agregarPresentacion(asignarPresentacion.descripcion, transaction);
+        await Medicamento.asignarPresentacionMedicamento(nuevoMedicamento.id, asignarPresentacion.id, transaction);
+      }
+    } else {
+      //SI NO es 'string' llega el id de la presentacion:
+      await Medicamento.asignarPresentacionMedicamento(nuevoMedicamento.id, asignarPresentacion.id, transaction);
+
+    }
+
+    // Validar concentración
+    if (typeof asignarConcentracion === 'string') {
+      if (!regexPresenConcen.test(asignarConcentracion)) {
+        return res.status(400).json({ error: 'Concentración debe comenzar con número/s, min 6 max 99 caracteres. Puede ingresar números, espacios y letras. (Ej: 200 MG)' });
+      } else {
+        asignarConcentracion = { descripcion: asignarConcentracion };
+        asignarConcentracion.id = await Medicamento.agregarConcentracion(asignarConcentracion.descripcion, transaction);
+        await Medicamento.asignarConcentracionMedicamento(nuevoMedicamento.id, asignarConcentracion.id, transaction);
+      }
+    } else {
+      //SI NO es 'string' llega el id de la concentracion:
+      await Medicamento.asignarConcentracionMedicamento(nuevoMedicamento.id, asignarConcentracion.id, transaction);
+    }
+
+
+
+
+
+    const estado = 1;
+
+    // Agregar ítem de medicamento
+    await Medicamento.agregarItemMedicamento({
+      medicamentoId: nuevoMedicamento.id,
+      formaFarmaceuticaId: asignarForma.id,
+      presentacionId: asignarPresentacion.id,
+      concentracionId: asignarConcentracion.id,
+      estado,
+      transaction
+    });
+
+    // Confirmar la transacción
+    await transaction.commit();
+
+    return res.status(200).json({
+      medicamentoId: nuevoMedicamento.id,
+      formaFarmaceuticaId: asignarForma.id,
+      presentacionId: asignarPresentacion.id,
+      concentracionId: asignarConcentracion.id,
+      estado
+    });
+
+
+
+
+
+
+
+
+
+  } catch (error) {
+    // Si ocurre algún error, realiza el rollback de la transacción
+    if (transaction) await transaction.rollback();
+
+    // Maneja el error y responde al cliente
+    console.error('Error al agregar nuevo medicamento y asignaciones:', error);
+    res.status(500).json({ error: 'Error al agregar nuevo medicamento y asignaciones' });
+  }
+}
 
 
 export default {
   mostrarFormAgregarMedicamento,
   buscarNombreGenerico,
   buscarItemsMedicamento,
-  obtenerMedicamentosFormasPresentacionesConcentraciones,
+  obtenerMedicamentosCategoriasFamiliasFormasPresentacionesConcentraciones,
   agregarFormaFarmaceutica,
   agregarPresentacion,
   agregarConcentracion,
   asignarFormaMedicamento,
   asignarPresentacionMedicamento,
   asignarConcentracionMedicamento,
-  agregarItemMedicamento
+  agregarItemMedicamento,
+  agregarMedicamentoNuevoEitem
 };

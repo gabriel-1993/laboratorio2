@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const divDatosMedicamento = document.querySelector('.divDatosMedicamento ');
     const nombre_comercial_input = document.getElementById('nombreComercial');
     const familia_input = document.getElementById('familia');
+    const familia_lista = document.querySelector('.familia-list');
     const categoria_input = document.getElementById('categoria');
+    const categoria_lista = document.querySelector('.categoria-list');
+
 
     // Formas, presentaciones y concentraciones en el form agregar medicamento
     const forma_farmaceutica_input = document.querySelector('#formaFarmaceutica');
@@ -32,26 +35,52 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     //VARIABLES CON MAYOR SCOPE PARA TRAER MEDICAMENTOS ,FORMAS ,PRESENTACIONES y CONCENTRACIONES Y VALIDAR POR EJ ELEMENTOS REPETIDOS O CUALES SON NUEVOS
     //TAMBIEN SE MUESTRAN EN UNA LISTA DEBAJO DEL INPUT CUANDO SE VAN A INGRESAR CON UN FILTRO POR LETRAS INGRESADAS
-    let medicamentosFormasPresentacionesConcentraciones;
+    let medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones;
     let medicamentosBase;
+    let categoriasBase;
+    let familiasBase;
     let concentracionesBase;
     let formasBase;
     let presentacionesBase;
+
+    //REINICIAR BUSQUEDA
+    // luego de buscar nombre generico si modifican el input se reinicia todo el form
+    // vaciar variables con mayor scope y divs con contenido
+    function reiniciarBusqueda() {
+        divContenedorItems.innerHTML = '';
+        medicamentoEncontrado = '';
+        itemsMedicamento = '';
+        nombre_comercial_input.value = '';
+        familia_input.value = '';
+        categoria_input.value = '';
+        medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones = '';
+        medicamentosBase = '';
+        categoriasBase = '';
+        familiasBase = '';
+        concentracionesBase = '';
+        formasBase = '';
+        presentacionesBase = '';
+        divDatosMedicamento.classList.add('displayNone');
+        divMedicamentosExistentes.classList.add('displayNone');
+        divContenedorItems.classList.add('displayNone');
+        btnAgregar.classList.add('displayNone');
+    }
 
 
 
 
     //TRAER TOD@S MEDICAMENTOS,FORMAS,PRESENTACIONES,CONCENTRACIONES de la base de datos: *************************************************************************************************************
+  
     //-->>luego de buscar un nombre generico: (se muestran al darle click en el input correspondiente y se filtra el listado por letras ingresadas) 
-    async function fetchMedicamentosFormasPresentacionesConcentraciones() {
+    async function fetchMedicamentosCategoriasFamiliasFormasPresentacionesConcentraciones() {
         try {
-            const response = await fetch('/medicamentosFormasPresentacionesConcentraciones'); // Ajusta la URL según tu API
+            const response = await fetch('/medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones'); // Ajusta la URL según tu API
             const data = await response.json();
 
             if (response.ok) {
                 return data;
             } else {
-                console.error('Error al obtener las formas disponibles:', formas.message);
+                console.error('Error al obtener medicamentos, categorias, familias , formas, presentaciones y concentraciones:', formas.message);
                 return null;
             }
         } catch (error) {
@@ -59,23 +88,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             return null;
         }
     }
+
     //OBTENER MEDICAMENTOS FORMAS PRESENTACIONES CONCENTRACIONES EN LA BASE DE DATOS
-    medicamentosFormasPresentacionesConcentraciones = await fetchMedicamentosFormasPresentacionesConcentraciones();
+    medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones = await fetchMedicamentosCategoriasFamiliasFormasPresentacionesConcentraciones();
+
     //DESTRUCTURING PARA ORDENARLOS Y PODER UTILIZARLOS
-    medicamentosBase = medicamentosFormasPresentacionesConcentraciones.medicamentos;
-    concentracionesBase = medicamentosFormasPresentacionesConcentraciones.concentraciones;
-    presentacionesBase = medicamentosFormasPresentacionesConcentraciones.presentaciones;
-    formasBase = medicamentosFormasPresentacionesConcentraciones.formas;
+    medicamentosBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.medicamentos;
+    categoriasBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.categorias;
+    familiasBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.familias;
+    concentracionesBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.concentraciones;
+    presentacionesBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.presentaciones;
+    formasBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.formas;
+
     // agrupar datos con inputs y uls para reutilizar el mismo codigo en mostrar y filtrar listas(medicamento,forma,presen,concen...)
-    const datosMedicamentosFormasConcentracionesPresentaciones = [
+    const datosMedicamentosFamiliasCategoriasFormasConcentracionesPresentaciones = [
         { input: nombre_generico_input, lista: nombre_generico_lista, array: medicamentosBase },
+        { input: familia_input, lista: familia_lista, array: familiasBase },
+        { input: categoria_input, lista: categoria_lista, array: categoriasBase },
         { input: forma_farmaceutica_input, lista: forma_farmaceutica_lista, array: formasBase },
         { input: presentacion_input, lista: presentacion_lista, array: presentacionesBase },
         { input: concentracion_input, lista: concentracion_lista, array: concentracionesBase }
     ];
+
     // MOSTRAR medicamentos, formas , presentaciones y concentraciones en el form medicamento
     //FILTRAR listado por letras ingresadas
-    datosMedicamentosFormasConcentracionesPresentaciones.forEach(({ input, lista, array }) => {
+    datosMedicamentosFamiliasCategoriasFormasConcentracionesPresentaciones.forEach(({ input, lista, array }) => {
         input.addEventListener('click', () => {
             mostrarLista(array, lista);
         });
@@ -89,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 );
                 mostrarLista(filtrados, lista);
             } else {
-                //sino es medicamento
+                //sino :es medicamento
                 const filtrados = array.filter(item =>
                     item.nombre_generico.toLowerCase().includes(filtro)
                 );
@@ -106,6 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     });
+
     function mostrarLista(array, listaUl) {
         listaUl.innerHTML = '';
         array.forEach(elem => {
@@ -123,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         listaUl.classList.add('listaFiltrada');
     }
     function ocultarListas() {
-        datosMedicamentosFormasConcentracionesPresentaciones.forEach(({ lista }) => {
+        datosMedicamentosFamiliasCategoriasFormasConcentracionesPresentaciones.forEach(({ lista }) => {
             lista.innerHTML = '';
             lista.classList.add('displayNone');
             // lista.classList.remove('listaFiltrada');
@@ -132,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // OCULTAR lista con click fuera o scroll
     document.addEventListener('click', (e) => {
         let clickEnInputOLaLista = false;
-        datosMedicamentosFormasConcentracionesPresentaciones.forEach(({ input, lista }) => {
+        datosMedicamentosFamiliasCategoriasFormasConcentracionesPresentaciones.forEach(({ input, lista }) => {
             if (lista.contains(e.target) || e.target === input) {
                 clickEnInputOLaLista = true;
             }
@@ -143,35 +181,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
     window.addEventListener('scroll', ocultarListas);
+
     //************************************************************************************************************************************************************************************************** */
 
 
 
-    //REINICIAR BUSQUEDA
-    // luego de buscar nombre generico si modifican el input se reinicia todo el form
-    // vaciar variables con mayor scope y divs con contenido
-    function reiniciarBusqueda() {
-        divContenedorItems.innerHTML = '';
-        medicamentoEncontrado = '';
-        itemsMedicamento = '';
-        nombre_comercial_input.value = '';
-        familia_input.value = '';
-        categoria_input.value = '';
-        medicamentosFormasPresentacionesConcentraciones = '';
-        medicamentosBase = '';
-        concentracionesBase = '';
-        formasBase = '';
-        presentacionesBase = '';
-        divDatosMedicamento.classList.add('displayNone');
-        divMedicamentosExistentes.classList.add('displayNone');
-        divContenedorItems.classList.add('displayNone');
-        btnAgregar.classList.add('displayNone');
-    }
+
     //BUSCAR SI EL NOMBRE GENERICO YA EXISTE : PARA RENDERIZAR FORM EL BLANCO O FORM EN BLANCO MAS ITEMS AGREGADOS PREVIAMENTE
     async function buscarNombreGenerico() {
         //VALIDAR NOMBRE GENERICO INGRESADO ANTES DE HACER EL FETCH, SINO MOSTRAR MSJ DE ERROR...
         const nombre_generico = nombre_generico_input.value.trim().toUpperCase();
-        const regex = /^[A-Z0-9 ]{6,100}$/;
+        const regex = /^[A-Za-z0-9 ]{6,100}$/;
         if (regex.test(nombre_generico)) {
             //ENVIAR NOMBRE GENERICO AL SERVIDOR. Si existe ,regresa el medicamento con todos sus datos
             try {
@@ -218,7 +238,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         //MEDICAMENTO ENCONTRADO:
         // mostrar datos true: medicamento existente mostrar su lista, undefined medicamento(nuevo) no encontrado...
         if (medicamentoEncontrado !== false && medicamentoEncontrado != 'undefined') {
-
             //MOSTRAR CAMPOS DE MEDICAMENTO CON SUS DATOS
             divDatosMedicamento.classList.remove('displayNone');
             nombre_comercial_input.value = medicamentoEncontrado.nombre_comercial;
@@ -242,17 +261,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             //ITEM: RENDERIZARLOS Y GUARDARLOS en la variable para VALIDAR mas adelante que NO ingresen un item REPETIDO
             itemsMedicamento = obtenerYMostrarItems(medicamentoEncontrado);
 
-
-            // destructuring al objeto data para almacenar los 3 arrays
-            // concentracionesMedicamento = data.concentraciones;
-            // presentacionesMedicamento = data.presentaciones;
-            // formasMedicamento = data.formas;
-
-
             // EVENTO EN NOMBRE GENERICO ,SI ES MODIFICADO LUEGO DE BUSCARLO SE REINICIA TODO EL FORM
             nombre_generico_input.addEventListener('input', reiniciarBusqueda);
         } else {
             //MEDICAMENTO NUEVO
+            //REINICIAR DATOS SI ANTES SE HABIA ENCONTRADO OTRO MEDICAMENTO
+            divMedicamentosExistentes.classList.add('displayNone');
+            divContenedorItems.innerHTML = '';
+            divContenedorItems.classList.add('displayNone');
+            divDatosMedicamento.classList.add('displayNone');
+            nombre_comercial_input.disabled = false;
+            familia_input.disabled = false;
+            categoria_input.disabled = false;
             divDatosMedicamento.classList.remove('displayNone');
             btnAgregar.classList.remove('displayNone');
         }
@@ -373,9 +393,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 inputEstado.classList.add('inputItemMedicamento');
 
                 if (estadoBool) {
-                    inputEstado.value = 'Disponible';
+                    inputEstado.value = 'DISPONIBLE';
                 } else {
-                    inputEstado.value = 'No Disponible';
+                    inputEstado.value = 'NO DISPONIBLE';
                 }
 
                 divEstado.appendChild(labelEstado);
@@ -451,10 +471,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 //guardar card en el contenedor general de medicamentos items
                 divContenedorItems.appendChild(cardItem);
 
-
             });
-
-
         }
 
 
@@ -471,7 +488,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // CAPTURAR FORMA,PRESENTACION Y CONCENTRACION PARA APLICARLES EXPRESIONES REGULARES LAS MISMAS SE APLICAN TAMBIEN EN EL SERVIDOR
+
+    // VALIDAR FAMILIA Y CATEGORIA PARA APLICARLES EXPRESIONES REGULARES LAS MISMAS SE APLICAN TAMBIEN EN EL SERVIDOR
+    function validarFamiliaYcategoria(familiaIngresada, categoriaIngresada) {
+        msjs = [];
+
+        // Expresión regular
+        const regex = /^[a-zA-Z\s]{6,99}$/;
+
+        // Validar forma, presentacion y concentracion ingresada
+        if (!regex.test(familiaIngresada)) {
+            msjs.push('Familia debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras y espacios.');
+        }
+        if (!regex.test(categoriaIngresada)) {
+            msjs.push('Categoria debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras y espacios.');
+        }
+
+        if (msjs.length > 0) {
+            mostrarMsjCliente('Datos incorrectos', msjs);
+            return false;
+        }
+        return true;
+    }
+
+    // VALIDAR FORMA,PRESENTACION Y CONCENTRACION PARA APLICARLES EXPRESIONES REGULARES LAS MISMAS SE APLICAN TAMBIEN EN EL SERVIDOR
     function validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada) {
         msjs = [];
 
@@ -513,21 +553,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     //CAPTURAR ID(forma,presen,concen) PARA ASIGNARLOS EN MEDICAMENTO ITEM 
     //SI ES UNA FORMA,PRESENTACION o CONCENTRACION NUEVA, SE AGREGA EN EL CONTROLADOR A LA BASE, SE CAPTURA SU ID 
     //( ASIGNAR ID AL MEDICAMENTO Y LUEGO ASIGNAR ID EN MEDICAMENTO ITEM )
-    function procesarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada, formasBase, presentacionesBase, concentracionesBase) {
 
-        //VALIDAR SI INGRESAN FORMA,PRES,CONC EXISTENTE = CAPTURAR su ID 
-        function capturarId(elementoBuscado, arrayElementos) {
-            let resultado = null;
+    //VALIDAR SI INGRESAN CATEGORIA, FAMILIA, FORMA, PRES, CONC EXISTENTE = CAPTURAR su ID 
+    function capturarId(elementoBuscado, arrayElementos) {
+        let resultado = null;
 
-            for (let e of arrayElementos) {
-                if (elementoBuscado === e.descripcion) {
-                    resultado = e;
-                    break;  // Salir del bucle una vez encontrado el objeto
-                }
+        for (let e of arrayElementos) {
+            if (elementoBuscado === e.descripcion) {
+                resultado = e;
+                break;  // Salir del bucle una vez encontrado el objeto
             }
-            return resultado;
         }
+        return resultado;
+    }
 
+    //APLICAR CAPTURARID SINO GUARDAR DESCRIPCION INGRESADA PARA AGREGARLA EN LA BASE
+    function procesarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada, formasBase, presentacionesBase, concentracionesBase) {
         //RECUPERAR ID , SI NO SE RECUPERA ID SE DEBE AGREGAR A LA BASE PRIMERO
         let asignarForma = capturarId(formaIngresada, formasBase);
         let asignarPresentacion = capturarId(presentacionIngresada, presentacionesBase);
@@ -546,6 +587,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         return { asignarForma, asignarPresentacion, asignarConcentracion };
+    }
+
+    function procesarFamiliaYcategoria(familiaIngresada, categoriaIngresada, familiasBase, categoriasBase) {
+        //RECUPERAR ID , SI NO SE RECUPERA ID SE DEBE AGREGAR A LA BASE PRIMERO
+        let asignarFamilia = capturarId(familiaIngresada, familiasBase);
+        let asignarCategoria = capturarId(categoriaIngresada, categoriasBase);
+
+        //Si es undefined no se encontro en las listas por lo tanto no hay id. Enviamos Descripcion para agregarla y capturar su id en el controlador.
+        //Agregamos la descripcion de cada una antes de enviar las variables asignar.
+        if (asignarFamilia == undefined) {
+            asignarFamilia = familiaIngresada;
+        }
+        if (asignarCategoria == undefined) {
+            asignarCategoria = categoriaIngresada;
+        }
+
+        return { asignarFamilia, asignarCategoria };
     }
 
     // AGREGAR ITEM A MEDICAMENTO EXISTENTE: cuando se encuentra el nombre_generico
@@ -581,11 +639,95 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    async function agregarMedicamentoNuevoEitem(nombreGenerico, nombreComercial, asignarFamilia, asignarCategoria, asignarForma, asignarPresentacion, asignarConcentracion) {
+        // ENVIAR DATOS
+        const data = {
+            nombreGenerico,
+            nombreComercial,
+            asignarFamilia,
+            asignarCategoria,
+            asignarForma,
+            asignarPresentacion,
+            asignarConcentracion
+        };
+
+        try {
+            const response = await fetch('/agregarMedicamentoNuevoEitem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Error en la solicitud: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            mostrarMsjCliente('Medicamento nuevo agregado', ['El medicamento fue agregado con exito, puedes agregar mas items del mismo medicamento.']);
+
+        } catch (error) {
+            // console.error('Error:', error);
+            mostrarMsjCliente('Error al agregar Medicamento item', [error.message]);
+        }
+
+    }
+
     //B O T O N   A G R E G A R  M E D I C A M E N T O ---- >> MEDICAMENTO NUEVO COMPLETO /  MEDICAMENTO ENCONTRADO
     btnAgregar.addEventListener('click', async () => {
 
         // M E D I C A M E N T O  N U E V O  C O M P L E T O : Agregar medicamento, asignar O crear y asignar:familia,categoria, forma, presentacion, concentracion. crear item dek medicamento.
         if (medicamentoEncontrado === false) {
+            msjs = [];
+            let nombreGenerico = nombre_generico_input.value.trim().toUpperCase();
+
+            const regex = /^[A-Za-z0-9 ]{6,100}$/;
+            if (!regex.test(nombreGenerico)) {
+                msjs.push('Nombre genérico debe contener solo letras, números y espacios, min 6 y max 100 caracteres.');
+            }
+
+
+            // Dato opcional puede estar vacio
+            const regex2 = /^[a-zA-Z\s]{6,99}$/;
+            let nombreComercial = nombre_comercial_input.value;
+            if (nombreComercial !== '') {
+                nombreComercial = nombreComercial.trim().toUpperCase();
+                if (!regex2.test(nombreComercial)) {
+                    msjs.push('Nombre comercial debe contener solo letras y espacios, min 6 y max 99 caracteres.');
+                }
+            }
+
+            //MOSTRAR MSJS DE ERROR POR NOMBRE GENERICO Y/O NOMBRE COMERICAL
+            if (msjs.length > 0) {
+                mostrarMsjCliente('Dato incorrecto', msjs);
+                return;
+            }
+
+            let familiaIngresada = familia_input.value.trim().toUpperCase();
+            let categoriaIngresada = categoria_input.value.trim().toUpperCase();
+
+            // VALIDAR CON EXPRESIONES REGULARES: si no cumple muestra msjs de error al usuario
+            if (!validarFamiliaYcategoria(familiaIngresada, categoriaIngresada)) {
+                return;
+            }
+
+            const { asignarFamilia, asignarCategoria } = procesarFamiliaYcategoria(familiaIngresada, categoriaIngresada, familiasBase, categoriasBase)
+
+            let formaIngresada = forma_farmaceutica_input.value.trim().toUpperCase();
+            let presentacionIngresada = presentacion_input.value.trim().toUpperCase();
+            let concentracionIngresada = concentracion_input.value.trim().toUpperCase();
+
+            // VALIDAR CON EXPRESIONES REGULARES: si no cumple muestra msjs de error al usuario
+            if (!validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada)) {
+                return;
+            }
+
+            const { asignarForma, asignarPresentacion, asignarConcentracion } = procesarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada, formasBase, presentacionesBase, concentracionesBase);
+
+            const res = await agregarMedicamentoNuevoEitem(nombreGenerico, nombreComercial, asignarFamilia, asignarCategoria, asignarForma, asignarPresentacion, asignarConcentracion);
+
         } else {
 
             // M E D I C A M E N T O    E N C O N T R A D O : A G R E G A R   N U E V O   I T E M : asignar o crear y asignar forma, presentacion y concentracion. crear item del medicamento.
