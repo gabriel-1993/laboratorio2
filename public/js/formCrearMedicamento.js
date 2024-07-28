@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     //TRAER TOD@S MEDICAMENTOS,FORMAS,PRESENTACIONES,CONCENTRACIONES de la base de datos: *************************************************************************************************************
-  
+
     //-->>luego de buscar un nombre generico: (se muestran al darle click en el input correspondiente y se filtra el listado por letras ingresadas) 
     async function fetchMedicamentosCategoriasFamiliasFormasPresentacionesConcentraciones() {
         try {
@@ -188,43 +188,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     //BUSCAR SI EL NOMBRE GENERICO YA EXISTE : PARA RENDERIZAR FORM EL BLANCO O FORM EN BLANCO MAS ITEMS AGREGADOS PREVIAMENTE
-    async function buscarNombreGenerico() {
-        //VALIDAR NOMBRE GENERICO INGRESADO ANTES DE HACER EL FETCH, SINO MOSTRAR MSJ DE ERROR...
-        const nombre_generico = nombre_generico_input.value.trim().toUpperCase();
-        const regex = /^[A-Za-z0-9 ]{6,100}$/;
-        if (regex.test(nombre_generico)) {
-            //ENVIAR NOMBRE GENERICO AL SERVIDOR. Si existe ,regresa el medicamento con todos sus datos
-            try {
-                const response = await fetch(`/buscarNombreGenerico?nombre_generico=${encodeURIComponent(nombre_generico)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+    async function buscarNombreGenerico(nombre_generico) {
 
-                const result = await response.json();
-
-                if (response.ok) {
-                    if (result.mensaje) {
-                        mostrarMsjCliente('Medicamento nuevo', [result.mensaje]);
-                        return false;
-                    } else {
-                        mostrarMsjCliente('Medicamento encontrado', ['El medicamento ya existe, puede agregar combinaciones distintas a las existentes.']);
-                        return result;
-                    }
-                } else {
-                    mostrarMsjCliente('Error', [result.mensaje]);
-                    return [false];
+        //ENVIAR NOMBRE GENERICO AL SERVIDOR. Si existe ,regresa el medicamento con todos sus datos
+        try {
+            const response = await fetch(`/buscarNombreGenerico?nombre_generico=${encodeURIComponent(nombre_generico)}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            } catch (error) {
-                mostrarMsjCliente('Error...', [error.message]);
-            }
-        } else {
-            //Msj error para expresion regular 
-            mostrarMsjCliente('Dato incorrecto', ['Nombre genérico debe contener solo letras, números y espacios, min 6 y max 100 caracteres.'])
-            return;
-        }
+            });
 
+            const result = await response.json();
+
+            if (response.ok) {
+                if (result.mensaje) {
+                    mostrarMsjCliente('Medicamento nuevo', [result.mensaje]);
+                    return false;
+                } else {
+                    mostrarMsjCliente('Medicamento encontrado', ['El medicamento ya existe, puede agregar combinaciones distintas a las existentes.']);
+                    return result;
+                }
+            } else {
+                mostrarMsjCliente('Error', [result.mensaje]);
+                return [false];
+            }
+        } catch (error) {
+            mostrarMsjCliente('Error...', [error.message]);
+        }
     }
 
 
@@ -232,8 +223,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     // BUSCAR el nombre generico y mostrar el form en blanco o el form y los items existentes...
     btnBuscar.addEventListener('click', async () => {
 
+        // VALIDAR NOMBRE GENERICO INGRESADO ANTES DE HACER EL FETCH, SINO MOSTRAR MSJ DE ERROR...
+        const nombre_generico = nombre_generico_input.value.trim().toUpperCase();
+        const regex = /^[A-Za-z0-9 ]{6,100}$/;
+
+        // Verificar si el nombre genérico cumple con la expresión regular
+        // Inicializar msjs para almacenar los mensajes
+
+        // Verificar si el nombre genérico cumple con la expresión regular
+        if (!regex.test(nombre_generico)) {
+            // Msj error para expresión regular
+            msjs.push('Nombre genérico debe contener solo letras, números y espacios, min 6 y max 100 caracteres.');
+            mostrarMsjCliente('Dato incorrecto', msjs);
+            return;
+        }
+
         // VARIABLE CON MAYOR SCOPE para otras funciones
-        medicamentoEncontrado = await buscarNombreGenerico();
+        medicamentoEncontrado = await buscarNombreGenerico(nombre_generico);
 
         //MEDICAMENTO ENCONTRADO:
         // mostrar datos true: medicamento existente mostrar su lista, undefined medicamento(nuevo) no encontrado...

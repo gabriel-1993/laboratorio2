@@ -239,6 +239,10 @@ body {
     border-radius: 4px;
 }
 
+.width100 {
+    width: 100%;
+}
+
 
 /* Botones iniciar sesion, enviar enlace(para restablecer pass) */
 button {
@@ -338,7 +342,8 @@ button:hover {
 
 .btnAgregarUsuario,
 .btnModificarUsuario,
-.btnAgregarMedicamento {
+.btnAgregarMedicamento,
+.btnModificarMedicamento {
     display: flex;
     justify-content: center;
     margin: 0 auto;
@@ -350,8 +355,9 @@ button:hover {
     width: 170px;
 }
 
-.btnAgregarMedicamento {
+.btnAgregarMedicamento, .btnModificarMedicamento, .btnModificarMedicamentoItem {
     width: auto;
+    font-size: 0.9rem;
 }
 
 
@@ -375,7 +381,8 @@ button:hover {
 .divCrearUsuario,
 .divModificarUsuario,
 .divBuscarUsuarios,
-.divAgregarMedicamento {
+.divAgregarMedicamento,
+.divModificarMedicamento {
     width: 420px;
     height: auto;
     display: flex;
@@ -390,7 +397,7 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.divAgregarMedicamento {
+.divAgregarMedicamento, .divModificarMedicamento {
     margin-top: 20px;
     margin-bottom: 18px;
 }
@@ -415,7 +422,7 @@ button:hover {
     gap: 12px;
 }
 
-.divAgregarMedicamento .divFlexRow {
+.divAgregarMedicamento .divFlexRow, .divModificarMedicamento .divFlexRow {
     padding: 0;
 }
 
@@ -448,7 +455,8 @@ button:hover {
 #formModificarRolProfesional,
 #formMostrarRolProfesional,
 #formBuscarUsuario,
-#formAgregarMedicamento {
+#formAgregarMedicamento,
+#formModificarMedicamento {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -479,13 +487,14 @@ button:hover {
 #formModificarRolProfesional,
 #formBuscarUsuario,
 #formMostrarRolProfesional,
-#formAgregarMedicamento {
+#formAgregarMedicamento,
+#formModificarMedicamento {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
 }
 
-#formAgregarMedicamento {
+#formAgregarMedicamento, #formModificarMedicamento {
     padding-bottom: 25px;
 }
 
@@ -574,7 +583,9 @@ button:hover {
 input,
 .selectRolesCrearUsuario,
 .selectRolesModificarUsuario,
-.selectEstadoModificarUsuario {
+.selectEstadoModificarUsuario,
+.selectEstadoModificarMedicamento,
+.selectEstadoModificarMedicamentoItem {
     width: 130px;
     text-align: center;
     border-top-right-radius: 3px;
@@ -587,7 +598,9 @@ input,
 
 .selectRolesCrearUsuario,
 .selectRolesModificarUsuario,
-.selectEstadoModificarUsuario {
+.selectEstadoModificarUsuario,
+.selectEstadoModificarMedicamento,
+.selectEstadoModificarMedicamentoItem {
     text-align: start;
 }
 
@@ -600,7 +613,9 @@ input,
 .selectCategoria,
 .selectForma,
 .selectPresentacion,
-.selectConcentracion {
+.selectConcentracion,
+.selectEstadoModificarMedicamento,
+.selectEstadoModificarMedicamentoItem {
     flex: 1 1 auto;
     /* El input ocupa todo el espacio restante */
 }
@@ -613,13 +628,14 @@ input,
 #formModificarRolProfesional div,
 #formMostrarRolProfesional div,
 #formBuscarUsuario div,
-#formAgregarMedicamento div {
+#formAgregarMedicamento div,
+#formModificarMedicamento div {
     width: 100%;
     display: flex;
     align-items: center;
 }
 
-#formAgregarMedicamento .divDatosMedicamento {
+#formAgregarMedicamento .divDatosMedicamento, #formModificarMedicamento .divDatosMedicamento, #formModificarMedicamento .divDatosMedicamentoItem {
     gap: 5px;
 }
 
@@ -643,6 +659,8 @@ input,
 .selectForma,
 .selectPresentacion,
 .selectConcentracion,
+.selectEstadoModificarMedicamento,
+.selectEstadoModificarMedicamentoItem,
 input {
     padding: 4px;
     font-weight: 100;
@@ -661,7 +679,9 @@ input {
 .selectCategoria,
 .selectForma,
 .selectPresentacion,
-.selectConcentracion {
+.selectConcentracion,
+.selectEstadoModificarMedicamento,
+.selectEstadoModificarMedicamentoItem {
     padding: 3px;
 }
 
@@ -706,7 +726,7 @@ input:focus {
     background-color: #007bffd7;
 }
 
-.divDatosMedicamentoNuevo p{
+.divDatosMedicamentoNuevo p, .divDatosMedicamentoModificar p{
     margin: 20px auto;
 }
 

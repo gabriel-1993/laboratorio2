@@ -5,24 +5,23 @@ block content
     ul
     button.btn-Msj 
   section.flexCenter.section.column
-    .divAgregarMedicamento.center.column.blur
-      h3.text-center.text-fondoAzul.borderRadiusTop5px Agregar Medicamento
-      h4.text-center.text-fondoCeleste Datos Medicamento
+    .divModificarMedicamento.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Modificar Medicamento 
+      h4.text-center.text-fondoCeleste Buscar Medicamento
 
       .divFlexRow
         .divDatosMedicamentoNuevo
-          p Por favor ingrese el Nombre Generico del medicamento que desea agregar.
+          p.pMedicamentoBusqueda Por favor ingrese el Nombre Generico del medicamento que desea modificar.
 
-          form( id="formAgregarMedicamento" autocomplete="off")
+          form( id="formModificarMedicamento" autocomplete="off")
+            h4.h4Medicamento.text-center.text-fondoCeleste.borderRadius4px.displayNone Datos Medicamento
+
             .divBuscarNombreGenerico 
               div
                 label(for="nombreGenerico" class="labelCenter130px") Nombre Generico
                 input(type="text" id="nombreGenerico" name="nombreGenerico" autocomplete="off") 
                 i.fa-solid.fa-magnifying-glass.btnBuscar
               ul(id="medicamentos-list" class="medicamentos-list displayNone") <!-- Div para mostrar las coincidencias -->
-
-
-  
             div(id="nombreGenerico-list" class="nombreGenerico-list displayNone") <!-- Div para mostrar las coincidencias -->
             div.divDatosMedicamento.column.displayNone
               div 
@@ -36,25 +35,41 @@ block content
                 label(for="categoria" class="labelCenter130px") Categoria
                 input(id="categoria" class="selectCategoria" name="categoria"  placeholder="Puede ingresar una nueva")
                 ul(id="categoria-list" class="categoria-list displayNone") <!-- Div para mostrar las coincidencias -->
-    
+              div
+                label(for="estadoM" class="labelCenter130px") Estado
+                select(id="estadoM" class="selectEstadoModificarMedicamento" name="estadoM")
+                  option(value="1") DISPONIBLE
+                  option(value="0") NO DISPONIBLE                           
+            button(type="button" class="btnModificarMedicamento displayNone") Modificar Medicamento
+            div.divDatosMedicamentoItem.column.displayNone
+              h4.h4MedicamentoItem.width100.text-center.text-fondoCeleste.borderRadius4px.displayNone Datos Medicamento Item
+              .divMedicamentoItem 
+                label(for="medicamentoItem" class="labelCenter130px labelMedicamentoItem") Medicamento Item
+                input(id="medicamentoItem" class="selectMedicamentoItem" name="medicamentoItem"  placeholder="Ingrese ID del Item ")
+                ul(id="medicamentoItem-list" class="medicamentoItem-list displayNone") <!-- Div para mostrar las coincidencias -->
               .divMedicamentoForma 
                 label(for="formaFarmaceutica" class="labelCenter130px labelFormaFarmaceutica") Forma Farmaceutica
-                input(id="formaFarmaceutica" class="selectForma" name="formaFarmaceutica"  placeholder="Puede ingresar una nueva")
+                input(id="formaFarmaceutica" class="selectForma" name="formaFarmaceutica" disabled)
                 ul(id="formaFarmaceutica-list" class="formaFarmaceutica-list displayNone") <!-- Div para mostrar las coincidencias -->
               .divMedicamentoPresentacion 
                 label(for="presentacion" class="labelCenter130px") Presentacion
-                input(id="presentacion" class="selectPresentacion" name="presentacion" placeholder="Puede ingresar una nueva")
+                input(id="presentacion" class="selectPresentacion" name="presentacion" disabled)
                 ul(id="presentacion-list" class="presentacion-list displayNone") <!-- Div para mostrar las coincidencias -->
               .divMedicamentoConcentracion 
                 label(for="concentracion" class="labelCenter130px") Concentracion
-                input(id="concentracion" class="selectConcentracion" name="concentracion" placeholder="Puede ingresar una nueva") 
+                input(id="concentracion" class="selectConcentracion" name="concentracion" disabled) 
                 ul(id="concentracion-list" class="concentracion-list displayNone") <!-- Div para mostrar las coincidencias -->
-               
-          button(type="button" class="btnAgregarMedicamento displayNone") Agregar Medicamento
+              div
+                label(for="estadoI" class="labelCenter130px") Estado
+                select(id="estadoI" class="selectEstadoModificarMedicamentoItem" name="estadoI")
+                  option(value="1") DISPONIBLE
+                  option(value="0") NO DISPONIBLE                 
+              button(type="button" class="btnModificarMedicamentoItem displayNone") Modificar Item
+    
+
     .divMedicamentosExistentes.center.column.blur.displayNone 
       h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Items del Medicamento 
-      h4.text-center.text-fondoCeleste Puede agregar items distintos a los existentes
+      h4.text-center.text-fondoCeleste Datos de items
       .divContenedorItems.displayNone
 
-  script(src="/js/formCrearMedicamento.js", type="module") // Incluye el archivo JavaScript del cliente
-
+  script(src="/js/formModificarMedicamento.js", type="module") // Incluye el archivo JavaScript del cliente

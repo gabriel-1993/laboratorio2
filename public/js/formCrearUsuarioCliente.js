@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Cuando el rol seleccionado es "PROFESIONAL", mostramos el div con datos obligatorios para profesionales
                 if (rolSeleccionado.rol_descripcion === 'PROFESIONAL') {
-                    divDatosProfesional.style.display = 'flex';
+                    divDatosProfesional.classList.remove('displayNone');
                 }
             } else {
                 selectRoles.value = '-1';

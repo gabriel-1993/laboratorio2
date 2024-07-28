@@ -3,7 +3,6 @@ import express from 'express';
 const router = express.Router();
 import medicamentoController from '../controllers/medicamentoController.js';
 
-
 //Renderizar la vista/form de agregar Medicamento
 router.get("/agregarMedicamento", medicamentoController.mostrarFormAgregarMedicamento);
 
@@ -21,6 +20,12 @@ router.post('/agregarItemMedicamento', medicamentoController.agregarItemMedicame
 
 //Medicamento NUEVO (nombre_generico no encontrado) se agrega el medicamento y luego se agrega el primer item del medicamento creado
 router.post('/agregarMedicamentoNuevoEitem', medicamentoController.agregarMedicamentoNuevoEitem);
+
+//MODIFICAR MEDICAMENTO
+router.get("/modificarMedicamento", medicamentoController.mostrarFormModificarMedicamento);
+
+//MODIFICAR DATOS DEL MEDICAMENTO ( NO ITEM )
+router.post("/modificarMedicamento", medicamentoController.modificarMedicamento);
 
 
 export default router;

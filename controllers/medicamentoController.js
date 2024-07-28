@@ -10,6 +10,170 @@ const mostrarFormAgregarMedicamento = (req, res) => {
   }
 };
 
+// RENDERIZAR FORM PRINCIPAL PARA MODIFICAR MEDICAMENTO
+const mostrarFormModificarMedicamento = (req, res) => {
+  if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
+    res.render('formModificarMedicamento');
+  } else {
+    res.status(403).json({ mensaje: 'Acceso denegado' });
+  }
+};
+
+//EXPRESIONES REGULARES
+//VALIDAR NOMBRES : comparten la misma expresion regular
+function validarNombre(nombre, tipo) {
+  const regex = /^[A-Za-z0-9 ]{6,100}$/;
+  let mensaje;
+
+  // Determinar el mensaje de error basado en el tipo
+  switch (tipo) {
+    case 'generico':
+      mensaje = 'Nombre genérico debe contener solo letras, números y espacios, min 6 y max 100 caracteres.';
+      break;
+    case 'comercial':
+      mensaje = 'Nombre comercial debe contener solo letras, números y espacios, min 6 y max 100 caracteres.';
+      break;
+    default:
+      console.error('Tipo de nombre no válido.');
+      return false;
+  }
+
+  // Verificar si el nombre cumple con la expresión regular
+  if (!regex.test(nombre)) {
+    msjs.push(mensaje);
+    mostrarMsjCliente('Dato incorrecto', msjs);
+    return false;
+  }
+
+  return true;
+}
+
+//EXPRESIONES REGULARES
+//VALIDAR CATEGORIA O FAMILIA : comparten la misma expresion regular
+function validarFamiliaOcategoria(valor, tipo) {
+  const regex = /^[a-zA-Z\s]{6,99}$/;
+  let mensaje = [];
+  // Determinar el mensaje de error basado en el tipo
+  switch (tipo) {
+    case 'tipoFamilia':
+      mensaje.push('Familia debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras y espacios.');
+      break;
+    case 'tipoCategoria':
+      mensaje.push('Categoría debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras y espacios.');
+      break;
+    default:
+      console.error('Tipo de campo no válido.');
+      return false;
+  }
+
+  // Verificar si el valor cumple con la expresión regular
+  if (!regex.test(valor)) {
+    mostrarMsjCliente('Dato incorrecto', mensaje);
+    return false;
+  }
+
+  return true;
+}
+
+
+async function modificarMedicamento(req, res) {
+  let { medicamentoEncontrado, estado, nombreGenerico, nombreComercial, familia, categoria } = req.body;
+
+  if (!estado || !nombreGenerico || !familia || !categoria) {
+    return res.status(400).json({ message: 'Datos obligatorios: estado, nombre generico, familia, categoria' });
+  }
+
+  const transaction = await sequelize.transaction();
+  let modificarMedicamento = false;
+  let familiaModificada = false;
+  let categoriaModificada = false;
+
+  try {
+    // Validar y procesar estado
+    if (estado.modificar) {
+      modificarMedicamento = true;
+    }
+
+    // Validar y procesar nombre genérico
+    if (nombreGenerico.modificar) {
+      let genericoValidacion = validarNombre(nombreGenerico.descripcion, 'generico');
+      if (genericoValidacion) {
+        nombreGenerico = nombreGenerico.descripcion;
+        modificarMedicamento = true;
+      } else {
+        return res.status(400).json({ message: 'Nombre generico no valido' });
+      }
+    } else {
+      nombreGenerico = nombreGenerico.descripcion;
+    }
+
+    // Validar y procesar nombre comercial
+    if (nombreComercial.modificar) {
+      let comercialValidacion = validarNombre(nombreComercial.descripcion, 'comercial');
+      if (comercialValidacion) {
+        nombreComercial = nombreComercial.descripcion;
+        modificarMedicamento = true;
+      } else {
+        return res.status(400).json({ message: 'Nombre comercial no valido' });
+      }
+    } else if (nombreComercial.descripcion === 'DATO DESCONOCIDO') {
+      nombreComercial = '';
+    } else {
+      nombreComercial = nombreComercial.descripcion;
+    }
+
+    // Procesar familia
+    if (familia.modificar) {
+      let familiaValidacion = validarFamiliaOcategoria(familia.descripcion, 'tipoFamilia');
+      if (familiaValidacion) {
+        await Medicamento.modificarDescripcionFamilia(familia.id, familia.descripcion, transaction);
+        familiaModificada = true;
+      } else {
+        return res.status(400).json({ message: 'Familia no valida' });
+      }
+    } else if (familia.asignarExistente) {
+      await Medicamento.modificarFamiliaIdMedicamento(familia.id, medicamentoEncontrado.id, transaction);
+      familiaModificada = true;
+    }
+    // Procesar categoría
+    if (categoria.modificar) {
+      let categoriaValidacion = validarFamiliaOcategoria(categoria.descripcion, 'tipoCategoria');
+      if (categoriaValidacion) {
+        await Medicamento.modificarDescripcionCategoria(categoria.id, categoria.descripcion, transaction);
+        categoriaModificada = true;
+      } else {
+        return res.status(400).json({ message: 'Categoria no valida' });
+      }
+    } else if (categoria.asignarExistente) {
+      await Medicamento.modificarCategoriaIdMedicamento(categoria.id, medicamentoEncontrado.id, transaction);
+      categoriaModificada = true;
+    }
+
+    // Procesar medicamento si se realizaron modificaciones
+    if (modificarMedicamento || familiaModificada || categoriaModificada) {
+      await Medicamento.modificarMedicamento(
+        medicamentoEncontrado.id,
+        estado.estado,
+        nombreGenerico,
+        nombreComercial,
+        transaction
+      );
+
+      // Commit si se realizaron modificaciones
+      await transaction.commit();
+      return res.status(200).json({ message: 'Medicamento modificado exitosamente' });
+    } else {
+      await transaction.rollback();
+      return res.status(400).json({ message: 'Datos incorrectos, no hay cambios en los datos actuales' });
+    }
+  } catch (error) {
+    await transaction.rollback();
+    console.error('Error al modificar medicamento:', error);
+    return res.status(500).json({ message: 'Error al modificar medicamento: ' + error.message });
+  }
+}
+
+
 //BUSCAR MEDICAMENTO CON NOMBRE GENERICO UNICO
 const buscarNombreGenerico = async (req, res) => {
   const { nombre_generico } = req.query;
@@ -292,16 +456,16 @@ async function agregarMedicamentoNuevoEitem(req, res) {
     // VALIDAR NOMBRE GENERICO(OBLIGATORIO) Y NOMBRE COMERCIAL(opcional)
     const nombreGenericoRegex = /^[A-Za-z0-9 ]{6,100}$/;
     if (!nombreGenericoRegex.test(nombreGenerico)) {
-      return res.status(400).json({ error:'Nombre genérico debe contener solo letras, números y espacios, min 6 y max 100 caracteres.' });
+      return res.status(400).json({ error: 'Nombre genérico debe contener solo letras, números y espacios, min 6 y max 100 caracteres.' });
     }
 
 
     const nombreComercialRegex = /^[a-zA-Z\s]{6,99}$/;
     if (nombreComercial !== '') {
-        nombreComercial = nombreComercial.trim().toUpperCase();
-        if (!nombreComercialRegex.test(nombreComercial)) {
-          return res.status(400).json({ error:'Nombre comercial debe contener solo letras y espacios, min 6 y max 99 caracteres.' });
-        }
+      nombreComercial = nombreComercial.trim().toUpperCase();
+      if (!nombreComercialRegex.test(nombreComercial)) {
+        return res.status(400).json({ error: 'Nombre comercial debe contener solo letras y espacios, min 6 y max 99 caracteres.' });
+      }
     }
 
 
@@ -423,5 +587,7 @@ export default {
   asignarPresentacionMedicamento,
   asignarConcentracionMedicamento,
   agregarItemMedicamento,
-  agregarMedicamentoNuevoEitem
+  agregarMedicamentoNuevoEitem,
+  mostrarFormModificarMedicamento,
+  modificarMedicamento
 };

@@ -11,7 +11,117 @@ class Medicamento {
         this.familia_id = familia_id;
         this.categoria_id = categoria_id;
     }
+    //MODIFICAR DATOS DE LA TABLA MEDICAMENTO
+    static async modificarMedicamento(medicamentoId, estado, nombreGenerico, nombreComercial, transaction = null) {
+        try {
+            const query = `
+            UPDATE medicamento
+            SET estado = ?,
+                nombre_generico = ?,
+                nombre_comercial = ?
+            WHERE id = ?
+          `;
 
+            const valores = [estado, nombreGenerico, nombreComercial, medicamentoId];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar el medicamento:', error);
+            throw error;
+        }
+    }
+
+    //MODIFICAR DESCRIPCION DE FAMILIA (TABLA FAMILIA)
+    static async modificarDescripcionFamilia(familiaId, descripcion, transaction = null) {
+        try {
+            const query = `
+            UPDATE familia
+            SET descripcion = ?
+            WHERE id = ?
+          `;
+
+            const valores = [descripcion, familiaId]; // Cambia el orden aquí
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar descripcion familia:', error);
+            throw error;
+        }
+    }
+
+    //MODIFICAR DESCRIPCION DE CATEGORIA (TABLA CATEGORIA)
+    static async modificarDescripcionCategoria(categoriaId, descripcion, transaction = null) {
+        try {
+            const query = `
+                UPDATE categoria
+                SET descripcion = ?
+                WHERE id = ?
+              `;
+
+            const valores = [descripcion, categoriaId];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar descripcion categoria:', error);
+            throw error;
+        }
+    }
+
+    //MODIFICAR ID FAMILIA EN MEDICAMENTO(TABLA MEDICAMENTO)
+    static async modificarFamiliaIdMedicamento(familiaId, medicamentoId, transaction = null) {
+        try {
+            const query = `
+            UPDATE medicamento 
+            SET familia_id = ? 
+            WHERE id = ?
+          `;
+
+            const valores = [familiaId, medicamentoId];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar id familia en medicamento:', error);
+            throw error;
+        }
+    }
+
+    //MODIFICAR ID CATEGORIA EN MEDICAMENTO(TABLA MEDICAMENTO)
+    static async modificarCategoriaIdMedicamento(categoriaId, medicamentoId, transaction = null) {
+        try {
+            const query = `
+                UPDATE medicamento 
+                SET categoria_id = ? 
+                WHERE id = ?
+              `;
+
+            const valores = [categoriaId, medicamentoId];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar id categoria en medicamento:', error);
+            throw error;
+        }
+    }
 
     // VALIDAR SI EXISTE EL NOMBRE GENERICO COMO MEDICAMENTO
     static async validarNombreGenerico(nombre, transaction = null) {
@@ -608,9 +718,6 @@ class Medicamento {
 
         return new Medicamento({ id: result, nombre_generico, nombre_comercial, estado, familia_id, categoria_id });
     }
-
-
-
 
 
 }
