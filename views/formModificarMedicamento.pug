@@ -46,7 +46,7 @@ block content
               .divMedicamentoItem 
                 label(for="medicamentoItem" class="labelCenter130px labelMedicamentoItem") Medicamento Item
                 input(id="medicamentoItem" class="selectMedicamentoItem" name="medicamentoItem"  placeholder="Ingrese ID del Item ")
-                ul(id="medicamentoItem-list" class="medicamentoItem-list displayNone") <!-- Div para mostrar las coincidencias -->
+                i.fa-solid.fa-magnifying-glass.btnBuscarItem
               .divMedicamentoForma 
                 label(for="formaFarmaceutica" class="labelCenter130px labelFormaFarmaceutica") Forma Farmaceutica
                 input(id="formaFarmaceutica" class="selectForma" name="formaFarmaceutica" disabled)
@@ -61,7 +61,8 @@ block content
                 ul(id="concentracion-list" class="concentracion-list displayNone") <!-- Div para mostrar las coincidencias -->
               div
                 label(for="estadoI" class="labelCenter130px") Estado
-                select(id="estadoI" class="selectEstadoModificarMedicamentoItem" name="estadoI")
+                select(id="estadoI" class="selectEstadoModificarMedicamentoItem" name="estadoI" disabled)
+                  option(value="-1")  
                   option(value="1") DISPONIBLE
                   option(value="0") NO DISPONIBLE                 
               button(type="button" class="btnModificarMedicamentoItem displayNone") Modificar Item

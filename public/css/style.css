@@ -505,7 +505,8 @@ button:hover {
 }
 
 .divBuscarDocumento .fa-magnifying-glass,
-.divBuscarNombreGenerico .fa-magnifying-glass {
+.divBuscarNombreGenerico .fa-magnifying-glass,
+.divMedicamentoItem  .fa-magnifying-glass {
     margin-left: 10px;
 }
 

@@ -27,5 +27,7 @@ router.get("/modificarMedicamento", medicamentoController.mostrarFormModificarMe
 //MODIFICAR DATOS DEL MEDICAMENTO ( NO ITEM )
 router.post("/modificarMedicamento", medicamentoController.modificarMedicamento);
 
+//MODIFICAR DATOS DE MEDICAMENTO ITEM
+router.post("/modificarMedicamentoItem", medicamentoController.modificarMedicamentoItem);
 
 export default router;

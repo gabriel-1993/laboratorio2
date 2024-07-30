@@ -11,6 +11,22 @@ class Medicamento {
         this.familia_id = familia_id;
         this.categoria_id = categoria_id;
     }
+
+    // M E D I C A M E N T O *******************************************************************************************************
+
+    //CREAR MEDICAMENTO
+    static async crear({ nombre_generico, nombre_comercial, familia_id, categoria_id }, transaction = null) {
+        const estado = 1;
+        const query = `INSERT INTO medicamento (nombre_generico, nombre_comercial, estado, familia_id, categoria_id) VALUES (?, ?, ?, ?, ?)`;
+        const [result] = await sequelize.query(query, {
+            replacements: [nombre_generico, nombre_comercial, estado, familia_id, categoria_id],
+            type: sequelize.QueryTypes.INSERT,
+            transaction
+        });
+
+        return new Medicamento({ id: result, nombre_generico, nombre_comercial, estado, familia_id, categoria_id });
+    }
+
     //MODIFICAR DATOS DE LA TABLA MEDICAMENTO
     static async modificarMedicamento(medicamentoId, estado, nombreGenerico, nombreComercial, transaction = null) {
         try {
@@ -31,94 +47,6 @@ class Medicamento {
             });
         } catch (error) {
             console.error('Error al modificar el medicamento:', error);
-            throw error;
-        }
-    }
-
-    //MODIFICAR DESCRIPCION DE FAMILIA (TABLA FAMILIA)
-    static async modificarDescripcionFamilia(familiaId, descripcion, transaction = null) {
-        try {
-            const query = `
-            UPDATE familia
-            SET descripcion = ?
-            WHERE id = ?
-          `;
-
-            const valores = [descripcion, familiaId]; // Cambia el orden aquí
-
-            await sequelize.query(query, {
-                replacements: valores,
-                type: sequelize.QueryTypes.UPDATE,
-                transaction
-            });
-        } catch (error) {
-            console.error('Error al modificar descripcion familia:', error);
-            throw error;
-        }
-    }
-
-    //MODIFICAR DESCRIPCION DE CATEGORIA (TABLA CATEGORIA)
-    static async modificarDescripcionCategoria(categoriaId, descripcion, transaction = null) {
-        try {
-            const query = `
-                UPDATE categoria
-                SET descripcion = ?
-                WHERE id = ?
-              `;
-
-            const valores = [descripcion, categoriaId];
-
-            await sequelize.query(query, {
-                replacements: valores,
-                type: sequelize.QueryTypes.UPDATE,
-                transaction
-            });
-        } catch (error) {
-            console.error('Error al modificar descripcion categoria:', error);
-            throw error;
-        }
-    }
-
-    //MODIFICAR ID FAMILIA EN MEDICAMENTO(TABLA MEDICAMENTO)
-    static async modificarFamiliaIdMedicamento(familiaId, medicamentoId, transaction = null) {
-        try {
-            const query = `
-            UPDATE medicamento 
-            SET familia_id = ? 
-            WHERE id = ?
-          `;
-
-            const valores = [familiaId, medicamentoId];
-
-            await sequelize.query(query, {
-                replacements: valores,
-                type: sequelize.QueryTypes.UPDATE,
-                transaction
-            });
-        } catch (error) {
-            console.error('Error al modificar id familia en medicamento:', error);
-            throw error;
-        }
-    }
-
-    //MODIFICAR ID CATEGORIA EN MEDICAMENTO(TABLA MEDICAMENTO)
-    static async modificarCategoriaIdMedicamento(categoriaId, medicamentoId, transaction = null) {
-        try {
-            const query = `
-                UPDATE medicamento 
-                SET categoria_id = ? 
-                WHERE id = ?
-              `;
-
-            const valores = [categoriaId, medicamentoId];
-
-            await sequelize.query(query, {
-                replacements: valores,
-                type: sequelize.QueryTypes.UPDATE,
-                transaction
-            });
-        } catch (error) {
-            console.error('Error al modificar id categoria en medicamento:', error);
             throw error;
         }
     }
@@ -146,22 +74,224 @@ class Medicamento {
         }
     }
 
-    // BUSCAR CATEGORIA POR SU ID( ID esta asignado en medicamento)
-    static async buscarCategoriaId(categoria_id, transaction = null) {
-        const query = `SELECT * FROM categoria WHERE id = ?`;
-        const [rows] = await sequelize.query(query, {
-            replacements: [categoria_id],
-            type: sequelize.QueryTypes.SELECT,
-            transaction
-        });
+    //Buscar todos los medicamentos 
+    static async buscarMedicamentos(transaction = null) {
+        try {
+            const medicamentos = await sequelize.query(
+                `SELECT 
+                *
+             FROM medicamento`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
 
-        if (rows.length === 0) {
-            return null; // Si no hay resultados, retornamos null 
+            if (!medicamentos || medicamentos.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return medicamentos;
+        } catch (error) {
+            console.error('Error al buscar todos los medicamentos disponibles:', error);
+            throw error;
         }
+    }
 
-        // Si hay resultados, entonces creamos y retornamos un objeto Medicamento
-        const { id, descripcion } = rows;
-        return ({ id, descripcion });
+
+
+
+    // MEDICAMENTO ITEM ****************************************************************************************************************
+    // AGREGAR ITEM MEDICAMENTO (PREVIAMENTE DEBE ESTAR AGREGADA FORMA PRESENTACION Y CONCENTRACION EN SUS TABLAS COMO EN LA DE RELACION CON MEDICAMENTO)
+    static async agregarItemMedicamento({ medicamentoId, formaFarmaceuticaId, presentacionId, concentracionId, estado, transaction = null }) {
+        try {
+            // Preparar la consulta SQL con placeholders para evitar SQL Injection
+            const sql = `
+                INSERT INTO medicamento_item 
+                    (medicamento_id, formafarmaceutica_id, presentacion_id, concentracion_id, estado) 
+                VALUES 
+                    (?, ?, ?, ?, ?)
+            `;
+
+            // Ejecutar la consulta con Sequelize utilizando la transacción opcional
+            await sequelize.query(sql, {
+                replacements: [medicamentoId, formaFarmaceuticaId, presentacionId, concentracionId, estado],
+                type: sequelize.QueryTypes.INSERT,
+                transaction: transaction
+            });
+
+            // Retornar los datos insertados como confirmación
+            return {
+                medicamentoId,
+                formaFarmaceuticaId,
+                presentacionId,
+                concentracionId,
+                estado
+            };
+        } catch (error) {
+            // Revertir la transacción en caso de error (si se está utilizando una transacción)
+            console.error('Error al agregar ítem de medicamento :', error);
+            throw error;
+        }
+    }
+
+    // MEDICAMENTO ITEM: MODIFICAR ID DE FORMA 
+    static async medicamentoItemModificarIdForma(forma_id, item_id, transaction = null) {
+        try {
+            const query = `
+        UPDATE medicamento_item
+        SET formafarmaceutica_id = ?
+        WHERE item_id = ?
+      `;
+
+            const valores = [forma_id, item_id];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar idForma en MedicamentoITEM:', error);
+            throw error;
+        }
+    }
+
+
+    // MEDICAMENTO ITEM: MODIFICAR ID DE PRESENTACION 
+    static async medicamentoItemModificarIdPresentacion(presentacion_id, item_id, transaction = null) {
+        try {
+            const query = `
+        UPDATE medicamento_item
+        SET presentacion_id = ?
+        WHERE item_id = ?
+      `;
+
+            const valores = [presentacion_id, item_id];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar ID PRESENTACION en MedicamentoITEM:', error);
+            throw error;
+        }
+    }
+
+
+    // MEDICAMENTO ITEM: MODIFICAR ID DE CONCENTRACION 
+    static async medicamentoItemModificarIdConcentracion(concentracion_id, item_id, transaction = null) {
+        try {
+            const query = `
+        UPDATE medicamento_item
+        SET concentracion_id = ?
+        WHERE item_id = ?
+      `;
+
+            const valores = [concentracion_id, item_id];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar ID CONCENTRACION en MedicamentoITEM:', error);
+            throw error;
+        }
+    }
+
+    //MODIFICAR EL ESTADO DE TODOS LOS ITEMS QUE COMPARTAN IDMEDICAMENTO
+    static async modificarEstadoMedicamentosItemsId( estadoNum, medicamentoId, transaction = null) {
+        try {
+            const query = `
+                        UPDATE medicamento_item
+                        SET estado = ?
+                        WHERE medicamento_id = ?
+                    `;
+
+            const valores = [ estadoNum, medicamentoId];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar el estado de los items de Medicamento:', error);
+            throw error;
+        }
+    }
+
+
+    // MODIFICAR EL ESTADO DE UN ITEM INDIVIDUAL
+    static async modificarEstadoItemMedicamento(valor, item_id, transaction = null) {
+        try {
+            const query = `
+                            UPDATE medicamento_item
+                            SET estado = ?
+                            WHERE item_id = ?
+                        `;
+
+            const valores = [valor, item_id];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar estado en MedicamentoITEM:', error);
+            throw error;
+        }
+    }
+
+
+    // F A M I L I A ***************************************************************************************************************
+    //MODIFICAR DESCRIPCION DE FAMILIA (TABLA FAMILIA)
+    static async modificarDescripcionFamilia(familiaId, descripcion, transaction = null) {
+        try {
+            const query = `
+            UPDATE familia
+            SET descripcion = ?
+            WHERE id = ?
+          `;
+
+            const valores = [descripcion, familiaId]; // Cambia el orden aquí
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar descripcion familia:', error);
+            throw error;
+        }
+    }
+
+    //MODIFICAR ID FAMILIA EN MEDICAMENTO(TABLA MEDICAMENTO)
+    static async modificarFamiliaIdMedicamento(familiaId, medicamentoId, transaction = null) {
+        try {
+            const query = `
+                UPDATE medicamento 
+                SET familia_id = ? 
+                WHERE id = ?
+              `;
+
+            const valores = [familiaId, medicamentoId];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar id familia en medicamento:', error);
+            throw error;
+        }
     }
 
     //BUSCAR FAMILIA POR SU ID (ID esta asignado en medicamento)
@@ -207,6 +337,36 @@ class Medicamento {
         }
     }
 
+    //Buscar todas las familias
+    static async buscarFamilias(transaction = null) {
+        try {
+            const familias = await sequelize.query(
+                `SELECT 
+                    *
+                 FROM familia`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!familias || familias.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return familias;
+        } catch (error) {
+            console.error('Error al buscar todas las familias disponibles:', error);
+            throw error;
+        }
+    }
+
+
+
+
+
+    //C A T E G O R I A ************************************************************************************************************
+
     // AGERGAR CATEGORIA
     static async agregarCategoria(descripcion, transaction = null) {
         try {
@@ -231,6 +391,100 @@ class Medicamento {
             throw error;
         }
     }
+
+    //MODIFICAR DESCRIPCION DE CATEGORIA (TABLA CATEGORIA)
+    static async modificarDescripcionCategoria(categoriaId, descripcion, transaction = null) {
+        try {
+            const query = `
+                UPDATE categoria
+                SET descripcion = ?
+                WHERE id = ?
+              `;
+
+            const valores = [descripcion, categoriaId];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar descripcion categoria:', error);
+            throw error;
+        }
+    }
+
+    //MODIFICAR ID CATEGORIA EN MEDICAMENTO(TABLA MEDICAMENTO)
+    static async modificarCategoriaIdMedicamento(categoriaId, medicamentoId, transaction = null) {
+        try {
+            const query = `
+                UPDATE medicamento 
+                SET categoria_id = ? 
+                WHERE id = ?
+              `;
+
+            const valores = [categoriaId, medicamentoId];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar id categoria en medicamento:', error);
+            throw error;
+        }
+    }
+
+    // BUSCAR CATEGORIA POR SU ID( ID esta asignado en medicamento)
+    static async buscarCategoriaId(categoria_id, transaction = null) {
+        const query = `SELECT * FROM categoria WHERE id = ?`;
+        const [rows] = await sequelize.query(query, {
+            replacements: [categoria_id],
+            type: sequelize.QueryTypes.SELECT,
+            transaction
+        });
+
+        if (rows.length === 0) {
+            return null; // Si no hay resultados, retornamos null 
+        }
+
+        // Si hay resultados, entonces creamos y retornamos un objeto Medicamento
+        const { id, descripcion } = rows;
+        return ({ id, descripcion });
+    }
+
+    //BUSCAR TODAS LAS CATEGORIAS
+    static async buscarCategorias(transaction = null) {
+        try {
+            const categorias = await sequelize.query(
+                `SELECT 
+                        *
+                     FROM categoria`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!categorias || categorias.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return categorias;
+        } catch (error) {
+            console.error('Error al buscar todas las categorias disponibles:', error);
+            throw error;
+        }
+    }
+
+
+
+
+
+
+
+    // F O R M A   F A R M A C E U T I C A ******************************************************************************************
 
     // AGERGAR FORMA FARMACEUTICA NUEVA
     static async agregarFormaFarmaceutica(descripcion, transaction = null) {
@@ -257,6 +511,94 @@ class Medicamento {
         }
     }
 
+
+    // VALIDAR QUE FORMA ID NO ESTA ASIGNADA AL MEDICAMENTO(evitar errores)
+    static async validarFormaIdEnMedicamento(medicamentoId, formaId, transaction = null) {
+        try {
+            const query = `
+            SELECT COUNT(*) AS count
+            FROM medicamento_formafarmaceutica
+            WHERE medicamento_id = ? AND formaFarmaceutica_id = ?
+        `;
+            const [results, metadata] = await sequelize.query(query, {
+                replacements: [medicamentoId, formaId],
+                type: sequelize.QueryTypes.SELECT,
+                transaction
+            });
+
+            return results[0].count > 0;
+        } catch (error) {
+            console.error('Error al validar combinación de medicamento y forma farmacéutica:', error);
+            throw error;
+        }
+    }
+
+    //ASIGNAR FORMA FARMACEUTICA A MEDICAMENTO
+    static async asignarFormaMedicamento(medicamentoId, formaId, transaction = null) {
+        try {
+            const query = `
+                INSERT INTO medicamento_formafarmaceutica (medicamento_id, formaFarmaceutica_id) VALUES (?, ?)
+            `;
+            await sequelize.query(query, {
+                replacements: [medicamentoId, formaId],
+                type: sequelize.QueryTypes.INSERT,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al asignar forma farmacéutica al medicamento:', error);
+            throw error;
+        }
+    }
+
+    //CONSULTAR SI FORMA FARMACEUTICA ESTA ASIGNADA A UN MEDICAMENTO
+    static async consultarMedicamentoFormaFarmaceutica(medicamentoId, formaId, transaction = null) {
+        const query = `SELECT * FROM medicamento_formafarmaceutica WHERE medicamento_id = ? AND formaFarmaceutica_id = ?`;
+        const [result] = await sequelize.query(query, {
+            replacements: [medicamentoId, formaId],
+            type: sequelize.QueryTypes.SELECT,
+            transaction
+        });
+
+        // Verificar si result es undefined
+        if (!result || result.length === 0) {
+            return null; // Si no hay resultados, retornamos null 
+        }
+
+        // Si hay resultados, entonces creamos y retornamos un objeto 
+        const { medicamento_id, formaFarmaceutica_id } = result;
+        return { medicamento_id, formaFarmaceutica_id };
+    }
+
+    //Buscar todas las formas 
+    static async buscarFormas(transaction = null) {
+        try {
+            const formas = await sequelize.query(
+                `SELECT 
+            *
+         FROM formafarmaceutica`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!formas || formas.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return formas;
+        } catch (error) {
+            console.error('Error al buscar todas las formas disponibles:', error);
+            throw error;
+        }
+    }
+
+
+
+
+
+    //P R E S E N T A C I O N ******************************************************************************************************
+
     // AGERGAR PRESENTACION NUEVA
     static async agregarPresentacion(descripcion, transaction = null) {
         try {
@@ -281,6 +623,90 @@ class Medicamento {
             throw error;
         }
     }
+
+    //ASIGNAR PRESENTACION A MEDICAMENTO
+    static async asignarPresentacionMedicamento(medicamentoId, presentacionId, transaction = null) {
+        try {
+            const query = `
+                    INSERT INTO medicamento_presentacion (medicamento_id, presentacion_id) VALUES (?, ?)
+                `;
+            await sequelize.query(query, {
+                replacements: [medicamentoId, presentacionId],
+                type: sequelize.QueryTypes.INSERT,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al asignar presentacion al medicamento:', error);
+            throw error;
+        }
+    }
+
+    //CONSULTAR SI PRESENTACION ESTA ASIGNADA A UN MEDICAMENTO
+    static async consultarMedicamentoPresentacion(medicamentoId, presentacionId, transaction = null) {
+        const query = `SELECT * FROM medicamento_presentacion WHERE medicamento_id = ? AND presentacion_id = ?`;
+        const [result] = await sequelize.query(query, {
+            replacements: [medicamentoId, presentacionId],
+            type: sequelize.QueryTypes.SELECT,
+            transaction
+        });
+
+        if (!result || result.length === 0) {
+            return null; // Si no hay resultados, retornamos null 
+        }
+
+        // Si hay resultados, entonces creamos y retornamos un objeto 
+        const { medicamento_id, presentacion_id } = result;
+        return ({ medicamento_id, presentacion_id });
+    }
+
+    // Buscar todas las presentaciones 
+    static async buscarPresentaciones(transaction = null) {
+        try {
+            const presentaciones = await sequelize.query(
+                `SELECT 
+                *
+             FROM presentacion`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!presentaciones || presentaciones.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return presentaciones;
+        } catch (error) {
+            console.error('Error al buscar todas las presentaciones disponibles:', error);
+            throw error;
+        }
+    }
+
+    // VALIDAR QUE PRESENTACION ID NO ESTA ASIGNADA AL MEDICAMENTO(evitar errores)
+    static async validarPresentacionIdEnMedicamento(medicamentoId, presentacionId, transaction = null) {
+        try {
+            const query = `
+                SELECT COUNT(*) AS count
+                FROM medicamento_presentacion
+                WHERE medicamento_id = ? AND presentacion_id = ?
+            `;
+            const [results, metadata] = await sequelize.query(query, {
+                replacements: [medicamentoId, presentacionId],
+                type: sequelize.QueryTypes.SELECT,
+                transaction
+            });
+
+            return results[0].count > 0;
+        } catch (error) {
+            console.error('Error al validar combinación de medicamento y presentacion:', error);
+            throw error;
+        }
+    }
+
+
+
+    // C O N C E N T R A C I O N ***************************************************************************************************
 
     // AGERGAR CONCENTRACION NUEVA
     static async agregarConcentracion(descripcion, transaction = null) {
@@ -307,40 +733,6 @@ class Medicamento {
         }
     }
 
-    //ASIGNAR FORMA FARMACEUTICA A MEDICAMENTO
-    static async asignarFormaMedicamento(medicamentoId, formaId, transaction = null) {
-        try {
-            const query = `
-                INSERT INTO medicamento_formafarmaceutica (medicamento_id, formaFarmaceutica_id) VALUES (?, ?)
-            `;
-            await sequelize.query(query, {
-                replacements: [medicamentoId, formaId],
-                type: sequelize.QueryTypes.INSERT,
-                transaction
-            });
-        } catch (error) {
-            console.error('Error al asignar forma farmacéutica al medicamento:', error);
-            throw error;
-        }
-    }
-
-    //ASIGNAR PRESENTACION A MEDICAMENTO
-    static async asignarPresentacionMedicamento(medicamentoId, presentacionId, transaction = null) {
-        try {
-            const query = `
-                INSERT INTO medicamento_presentacion (medicamento_id, presentacion_id) VALUES (?, ?)
-            `;
-            await sequelize.query(query, {
-                replacements: [medicamentoId, presentacionId],
-                type: sequelize.QueryTypes.INSERT,
-                transaction
-            });
-        } catch (error) {
-            console.error('Error al asignar presentacion al medicamento:', error);
-            throw error;
-        }
-    }
-
     //ASIGNAR CONCENTRACION A MEDICAMENTO
     static async asignarConcentracionMedicamento(medicamentoId, concentracionId, transaction = null) {
         try {
@@ -356,43 +748,6 @@ class Medicamento {
             console.error('Error al asignar concentracion al medicamento:', error);
             throw error;
         }
-    }
-
-    //CONSULTAR SI FORMA FARMACEUTICA ESTA ASIGNADA A UN MEDICAMENTO
-    static async consultarMedicamentoFormaFarmaceutica(medicamentoId, formaId, transaction = null) {
-        const query = `SELECT * FROM medicamento_formafarmaceutica WHERE medicamento_id = ? AND formaFarmaceutica_id = ?`;
-        const [result] = await sequelize.query(query, {
-            replacements: [medicamentoId, formaId],
-            type: sequelize.QueryTypes.SELECT,
-            transaction
-        });
-
-        // Verificar si result es undefined
-        if (!result || result.length === 0) {
-            return null; // Si no hay resultados, retornamos null 
-        }
-
-        // Si hay resultados, entonces creamos y retornamos un objeto 
-        const { medicamento_id, formaFarmaceutica_id } = result;
-        return { medicamento_id, formaFarmaceutica_id };
-    }
-
-    //CONSULTAR SI PRESENTACION ESTA ASIGNADA A UN MEDICAMENTO
-    static async consultarMedicamentoPresentacion(medicamentoId, presentacionId, transaction = null) {
-        const query = `SELECT * FROM medicamento_presentacion WHERE medicamento_id = ? AND presentacion_id = ?`;
-        const [result] = await sequelize.query(query, {
-            replacements: [medicamentoId, presentacionId],
-            type: sequelize.QueryTypes.SELECT,
-            transaction
-        });
-
-        if (!result || result.length === 0) {
-            return null; // Si no hay resultados, retornamos null 
-        }
-
-        // Si hay resultados, entonces creamos y retornamos un objeto 
-        const { medicamento_id, presentacion_id } = result;
-        return ({ medicamento_id, presentacion_id });
     }
 
     //CONSULTAR SI CONCENTRACION ESTA ASIGNADA A UN MEDICAMENTO
@@ -413,11 +768,59 @@ class Medicamento {
         return ({ medicamento_id, concentracion_id });
     }
 
-    // BUSCAR ITEM MEDICAMENTO POR MEDICAMENTO ID
+    //Buscar todas las concentraciones
+    static async buscarConcentraciones(transaction = null) {
+        try {
+            const concentraciones = await sequelize.query(
+                `SELECT 
+                *
+             FROM concentracion`,
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!concentraciones || concentraciones.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return concentraciones;
+        } catch (error) {
+            console.error('Error al buscar todas las concentraciones disponibles:', error);
+            throw error;
+        }
+    }
+
+    // VALIDAR QUE CONCENTRACION ID NO ESTA ASIGNADA AL MEDICAMENTO(evitar errores)
+    static async validarConcentracionIdEnMedicamento(medicamentoId, concentracionId, transaction = null) {
+        try {
+            const query = `
+                SELECT COUNT(*) AS count
+                FROM medicamento_concentracion
+                WHERE medicamento_id = ? AND concentracionId = ?
+            `;
+            const [results, metadata] = await sequelize.query(query, {
+                replacements: [medicamentoId, concentracionId],
+                type: sequelize.QueryTypes.SELECT,
+                transaction
+            });
+
+            return results[0].count > 0;
+        } catch (error) {
+            console.error('Error al validar combinación de medicamento y concentracion:', error);
+            throw error;
+        }
+    }
+
+
+
+
+    // BUSCAR ITEM MEDICAMENTO POR MEDICAMENTO ID **************************************************************************************************************************
     //Por cada item encontrado devuelve su concentracion_id, estado, formafarmaceutica_id, medicamento_id, presentacion_id
     // (Queda pendiente buscar la descripciones de cada ID para renderizarlas)
 
-    // BUSCAR ITEM DEL MEDICAMENTO POR SU ID Y TRAER LAS DESCRIPCIONES DE FORMA,PRESENTACION Y CONCENTRACION
+    // BUSCAR ITEM DEL MEDICAMENTO POR SU ID Y TRAER LAS DESCRIPCIONES DE FORMA,PRESENTACION Y CONCENTRACION 
     static async buscarItemsMedicamento(medicamento_id, transaction = null) {
         try {
             const query = `
@@ -524,201 +927,7 @@ class Medicamento {
         }
     }
 
-
-
-    //Buscar todos los medicamentos 
-    static async buscarMedicamentos(transaction = null) {
-        try {
-            const medicamentos = await sequelize.query(
-                `SELECT 
-                *
-             FROM medicamento`,
-                {
-                    type: sequelize.QueryTypes.SELECT,
-                    transaction
-                }
-            );
-
-            if (!medicamentos || medicamentos.length === 0) {
-                return null; // No se encontraron items
-            }
-
-            return medicamentos;
-        } catch (error) {
-            console.error('Error al buscar todos los medicamentos disponibles:', error);
-            throw error;
-        }
-    }
-
-    //Buscar todas las familias
-    static async buscarFamilias(transaction = null) {
-        try {
-            const familias = await sequelize.query(
-                `SELECT 
-                *
-             FROM familia`,
-                {
-                    type: sequelize.QueryTypes.SELECT,
-                    transaction
-                }
-            );
-
-            if (!familias || familias.length === 0) {
-                return null; // No se encontraron items
-            }
-
-            return familias;
-        } catch (error) {
-            console.error('Error al buscar todas las familias disponibles:', error);
-            throw error;
-        }
-    }
-
-    //BUSCAR TODAS LAS CATEGORIAS
-    static async buscarCategorias(transaction = null) {
-        try {
-            const categorias = await sequelize.query(
-                `SELECT 
-                    *
-                 FROM categoria`,
-                {
-                    type: sequelize.QueryTypes.SELECT,
-                    transaction
-                }
-            );
-
-            if (!categorias || categorias.length === 0) {
-                return null; // No se encontraron items
-            }
-
-            return categorias;
-        } catch (error) {
-            console.error('Error al buscar todas las categorias disponibles:', error);
-            throw error;
-        }
-    }
-
-    //Buscar todas las formas 
-    static async buscarFormas(transaction = null) {
-        try {
-            const formas = await sequelize.query(
-                `SELECT 
-            *
-         FROM formafarmaceutica`,
-                {
-                    type: sequelize.QueryTypes.SELECT,
-                    transaction
-                }
-            );
-
-            if (!formas || formas.length === 0) {
-                return null; // No se encontraron items
-            }
-
-            return formas;
-        } catch (error) {
-            console.error('Error al buscar todas las formas disponibles:', error);
-            throw error;
-        }
-    }
-
-    // Buscar todas las presentaciones 
-    static async buscarPresentaciones(transaction = null) {
-        try {
-            const presentaciones = await sequelize.query(
-                `SELECT 
-                *
-             FROM presentacion`,
-                {
-                    type: sequelize.QueryTypes.SELECT,
-                    transaction
-                }
-            );
-
-            if (!presentaciones || presentaciones.length === 0) {
-                return null; // No se encontraron items
-            }
-
-            return presentaciones;
-        } catch (error) {
-            console.error('Error al buscar todas las presentaciones disponibles:', error);
-            throw error;
-        }
-    }
-
-    //Buscar todas las concentraciones
-    static async buscarConcentraciones(transaction = null) {
-        try {
-            const concentraciones = await sequelize.query(
-                `SELECT 
-                *
-             FROM concentracion`,
-                {
-                    type: sequelize.QueryTypes.SELECT,
-                    transaction
-                }
-            );
-
-            if (!concentraciones || concentraciones.length === 0) {
-                return null; // No se encontraron items
-            }
-
-            return concentraciones;
-        } catch (error) {
-            console.error('Error al buscar todas las concentraciones disponibles:', error);
-            throw error;
-        }
-    }
-
-
-
-
-    // AGREGAR ITEM MEDICAMENTO (PREVIAMENTE DEBE ESTAR AGREGADA FORMA PRESENTACION Y CONCENTRACION EN SUS TABLAS COMO EN LA DE RELACION CON MEDICAMENTO)
-    static async agregarItemMedicamento({ medicamentoId, formaFarmaceuticaId, presentacionId, concentracionId, estado, transaction = null }) {
-        try {
-            // Preparar la consulta SQL con placeholders para evitar SQL Injection
-            const sql = `
-                INSERT INTO medicamento_item 
-                    (medicamento_id, formafarmaceutica_id, presentacion_id, concentracion_id, estado) 
-                VALUES 
-                    (?, ?, ?, ?, ?)
-            `;
-
-            // Ejecutar la consulta con Sequelize utilizando la transacción opcional
-            await sequelize.query(sql, {
-                replacements: [medicamentoId, formaFarmaceuticaId, presentacionId, concentracionId, estado],
-                type: sequelize.QueryTypes.INSERT,
-                transaction: transaction
-            });
-
-            // Retornar los datos insertados como confirmación
-            return {
-                medicamentoId,
-                formaFarmaceuticaId,
-                presentacionId,
-                concentracionId,
-                estado
-            };
-        } catch (error) {
-            // Revertir la transacción en caso de error (si se está utilizando una transacción)
-            console.error('Error al agregar ítem de medicamento :', error);
-            throw error;
-        }
-    }
-
-
-    static async crear({ nombre_generico, nombre_comercial, familia_id, categoria_id }, transaction = null) {
-        const estado = 1;
-        const query = `INSERT INTO medicamento (nombre_generico, nombre_comercial, estado, familia_id, categoria_id) VALUES (?, ?, ?, ?, ?)`;
-        const [result] = await sequelize.query(query, {
-            replacements: [nombre_generico, nombre_comercial, estado, familia_id, categoria_id],
-            type: sequelize.QueryTypes.INSERT,
-            transaction
-        });
-
-        return new Medicamento({ id: result, nombre_generico, nombre_comercial, estado, familia_id, categoria_id });
-    }
-
+    //************************************************************************************************************************************************************************** */
 
 }
 

@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     // Formas, presentaciones y concentraciones en el form agregar medicamento
+    const medicamento_item_input = document.querySelector('.selectMedicamentoItem');
+    const btnBuscarItem = document.querySelector('.btnBuscarItem');
     const forma_farmaceutica_input = document.querySelector('#formaFarmaceutica');
     const forma_farmaceutica_lista = document.querySelector('.formaFarmaceutica-list');
     const presentacion_input = document.querySelector('#presentacion');
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let msjs = [];
     let medicamentoEncontrado;
     let itemsMedicamento;
+    let itemEncontrado;
 
     //VARIABLES CON MAYOR SCOPE PARA TRAER MEDICAMENTOS ,FORMAS ,PRESENTACIONES y CONCENTRACIONES Y VALIDAR POR EJ ELEMENTOS REPETIDOS O CUALES SON NUEVOS
     //TAMBIEN SE MUESTRAN EN UNA LISTA DEBAJO DEL INPUT CUANDO SE VAN A INGRESAR CON UN FILTRO POR LETRAS INGRESADAS
@@ -102,6 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             listaUl.classList.remove('displayNone');
             listaUl.classList.add('listaFiltrada');
+
         }
 
         function ocultarListas() {
@@ -121,8 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             { input: categoria_input, lista: categoria_lista, array: categoriasBase, key: 'descripcion' },
             { input: forma_farmaceutica_input, lista: forma_farmaceutica_lista, array: formasBase, key: 'descripcion' },
             { input: presentacion_input, lista: presentacion_lista, array: presentacionesBase, key: 'descripcion' },
-            { input: concentracion_input, lista: concentracion_lista, array: concentracionesBase, key: 'descripcion' }
-        ];
+            { input: concentracion_input, lista: concentracion_lista, array: concentracionesBase, key: 'descripcion' }];
 
         // Mostrar y filtrar listas en el formulario de medicamentos
         datosMedicamentosFamiliasCategoriasFormasConcentracionesPresentaciones.forEach(({ input, lista, array, key }) => {
@@ -272,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
 
-        // MOSTRAR ITEMS DEL MEDICAMENTO ENCONTRADO 
+        // MOSTRAR ITEMS DEL MEDICAMENTO ENCONTRADO . CREAR CARDS Y RENDERIZARLAS (card contiene: h4, un div por renglon 3 divs(label+input) en cada renglon).
         function mostrarItems(medicamentoEncontrado, items) {
 
             divMedicamentosExistentes.classList.remove('displayNone');
@@ -280,12 +283,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             divContenedorItems.innerHTML = '';
             divContenedorItems.classList.remove('displayNone');
 
-            let estadoBool = true;
-            if (medicamentoEncontrado.estado === 0) {
-                estadoBool = false;
-            }
-
             items.forEach(element => {
+
+                let estadoBool = true;
+                if (element.estado === 0) {
+                    estadoBool = false;
+                }
 
                 const cardItem = document.createElement('div');
                 cardItem.classList.add('cardItem')
@@ -293,7 +296,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const h4 = document.createElement('h4');
                 h4.classList.add('text-fondoAzul');
                 h4.classList.add('borderRadiusTop5px');
-                h4.innerHTML = `Medicamento ItemID ${element.item_id}`;
+                h4.innerHTML = `Medicamento Item ID ${element.item_id}`;
                 cardItem.appendChild(h4);
 
                 //primer renglon con datos del item ( nombre generico, nombre comercial, estado)
@@ -506,8 +509,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
+
     // M O D I F I C A R   M E D I C A M E N T O  *******************************************************************************************************************************************************
-   
+
+
     //VALIDAR NOMBRES : comparten la misma expresion regular
     function validarNombre(nombre, tipo) {
         const regex = /^[A-Za-z0-9 ]{6,100}$/;
@@ -559,32 +564,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return false;
         }
 
-        return true;
-    }
-
-    // VALIDAR FORMA,PRESENTACION Y CONCENTRACION PARA APLICARLES EXPRESIONES REGULARES LAS MISMAS SE APLICAN TAMBIEN EN EL SERVIDOR
-    function validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada) {
-        msjs = [];
-
-        // Expresión regular
-        const regex = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;
-        // const regex2 = /^[0-9]+ [A-Za-z][A-Za-z0-9 ]{1,97}$/;
-        const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
-
-        // Validar forma, presentacion y concentracion ingresada
-        if (!regex.test(formaIngresada)) {
-            msjs.push('Forma farmaceutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras,espacios y numeros.');
-        }
-        if (!regex2.test(presentacionIngresada)) {
-            msjs.push('Presentacion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 15 UNIDADES)');
-        }
-        if (!regex2.test(concentracionIngresada)) {
-            msjs.push('Concentracion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 200 MG)');
-        }
-        if (msjs.length > 0) {
-            mostrarMsjCliente('Datos incorrectos', msjs);
-            return false;
-        }
         return true;
     }
 
@@ -659,15 +638,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                         descripcion: familiaObj.descripcion,
                         id: familiaObj.id,
                         asignarExistente: true,
-                        modificar: false
+                        crearYasignar: false
                     };
                 } else {
-                    // Si no coincide con las demas ,modificar la actual
+                    // Si no coincide con las demas , crear una nueva y asignarla
                     return {
                         descripcion: familia,
-                        id: medicamentoEncontrado.familia_id,
+                        id: '',
                         asignarExistente: false,
-                        modificar: true
+                        crearYasignar: true
                     };
                 }
             }
@@ -699,15 +678,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                         descripcion: categoriaObj.descripcion,
                         id: categoriaObj.id,
                         asignarExistente: true,
-                        modificar: false
+                        crearYasignar: false
                     };
                 } else {
-                    // Si no coincide con las demas ,modificar la actual
+                    // Si no coincide con las demas , crear una nueva y asignarla
                     return {
                         descripcion: categoria,
-                        id: medicamentoEncontrado.categoria.id,
+                        id: '',
                         asignarExistente: false,
-                        modificar: true
+                        crearYasignar: true
                     };
                 }
             }
@@ -772,8 +751,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     }
 
-    //B O T O N   M O D I F I C A R   M E D I C A M E N T O **********************************************************************************************************************************************
 
+    //B O T O N   M O D I F I C A R   M E D I C A M E N T O **********************************************************************************************************************************************
     btnModificarMedicamento.addEventListener('click', async () => {
 
         // LOS STRING CAPTURADOS LUEGO PASAN A .DESCRIPCION EN UN OBJETO CON LA MISMA VARIABLE
@@ -784,7 +763,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let estado = selectEstadoMedicamento.value;
         estado = parseInt(estado, 10);
 
- 
+
         //SI NO HAY NINGUN CAMBIO SE MUESTRA MSJ DE ERROR Y SE EVITA EL FETCH
         // Verificar si todos los campos coinciden
         if (
@@ -807,6 +786,423 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         //FETCH AL CONTROLADOR CON LOS DATOS: AL FINALIZAR MUESTRA MSJ DE EXITO O MSJ DE ERROR
         await fetchModificarMedicamento(medicamentoEncontrado, estado, nombreGenerico, nombreComercial, familia, categoria);
+    });
+
+
+
+
+    // B O T O N    B U S C A R  I T E M   E S P E C I F I C O (F O R M    M O D I F I C A R  I T E M)------------------------------------------------------------------
+    // Función para validar el ID ingresado
+    function validarIdIngresado(id) {
+        if (id === '') {
+            mostrarMsjCliente('Dato vacío', ['Por favor ingrese el ID del Item que desea modificar.']);
+            return false;
+        }
+
+        const idEntero = parseInt(id, 10);
+        if (isNaN(idEntero)) {
+            mostrarMsjCliente('Item ID incorrecto', ['Ingrese el ID del medicamento-item que desea modificar. En la lista de items, cada uno tiene su ID en el título.']);
+            return false;
+        }
+
+        return idEntero;
+    }
+
+
+    // Función para buscar el item en la lista
+    function buscarItemPorId(id, items) {
+        for (const item of items) {
+            if (id === item.item_id) {
+                return item;
+            }
+        }
+
+        mostrarMsjCliente('Item ID incorrecto', ['El Item ID no se encontró en el listado de Items del Medicamento actual', 'Verifique el ID en el listado de Items.']);
+        return null;
+    }
+
+
+    // Función para mostrar los datos del item encontrado
+    function mostrarDatosItem(item) {
+        forma_farmaceutica_input.value = item.descripcion_forma;
+        forma_farmaceutica_input.disabled = false;
+        presentacion_input.value = item.descripcion_presentacion;
+        presentacion_input.disabled = false;
+        concentracion_input.value = item.descripcion_concentracion;
+        concentracion_input.disabled = false;
+        selectEstadoItem.value = item.estado;
+        selectEstadoItem.disabled = false;
+    }
+
+    // LUEGO DE BUSCAR ITEM ID: SI ES MODIFICADO SE REINICIA LA BUSQUEDA PARA EVITAR ERRORES
+    function reiniciarBusquedaItem() {
+        forma_farmaceutica_input.value = '';
+        forma_farmaceutica_input.disabled = true;
+        presentacion_input.value = '';
+        presentacion_input.disabled = true;
+        concentracion_input.value = '';
+        concentracion_input.disabled = true;
+        selectEstadoItem.value = '';
+        selectEstadoItem.disabled = true;
+        itemEncontrado = '';
+    }
+
+
+    // E V E N T O    B U S C A R    I T E M-------------------------------------------------------------------------------------------------------------------------------------
+    btnBuscarItem.addEventListener('click', async () => {
+
+        //Capturar num ingresado , si es correcto parsearlo como entero para compararlo con los ids de items
+        let idIngresado = medicamento_item_input.value.trim();
+        idIngresado = validarIdIngresado(idIngresado);
+        if (!idIngresado) {
+            return;
+        }
+        //BUSCAR ITEM POR EL ID INGRESADO itemEncontrado declarado al pincipio de la hoja con mayor scope para otras funciones
+        itemEncontrado = buscarItemPorId(idIngresado, itemsMedicamento);
+        //MOSTRAR DATOS DEL ITEM ENCONTRADO
+        if (itemEncontrado) {
+            mostrarDatosItem(itemEncontrado);
+        } else {
+            return;
+        }
+    });
+
+
+    //SI MODIFICAN ID ITEM LUEGO DE BUSCARLO : REINICIAR BUSQUEDA PARA EVITAR ERRORES
+    medicamento_item_input.addEventListener('input', () => {
+        reiniciarBusquedaItem();
+        return;
+    });
+
+
+
+
+
+    //M O D I F I C A R    I T E M    M E D I C A M E N T O--------------------------------------------------------------------------------------------------------------------------------
+    // VALIDAR FORMA,PRESENTACION Y CONCENTRACION PARA APLICARLES EXPRESIONES REGULARES LAS MISMAS SE APLICAN TAMBIEN EN EL SERVIDOR
+    function validarForma(formaIngresada) {
+        const regex = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;
+        let msjs = [];
+
+        if (!regex.test(formaIngresada)) {
+            msjs.push('Forma farmaceutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras, espacios y números.');
+        }
+
+        if (msjs.length > 0) {
+            mostrarMsjCliente('Datos incorrectos', msjs);
+            return false;
+        }
+        return true;
+    }
+
+    function validarPresentacion(presentacionIngresada) {
+        const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+        let msjs = [];
+
+        if (!regex2.test(presentacionIngresada)) {
+            msjs.push('Presentacion debe comenzar con número/s, min 6 max 99 caracteres. Puede ingresar números, espacios y letras. (Ej: 15 UNIDADES)');
+        }
+
+        if (msjs.length > 0) {
+            mostrarMsjCliente('Datos incorrectos', msjs);
+            return false;
+        }
+        return true;
+    }
+
+    function validarConcentracion(concentracionIngresada) {
+        const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+        let msjs = [];
+
+        if (!regex2.test(concentracionIngresada)) {
+            msjs.push('Concentracion debe comenzar con número/s, min 6 max 99 caracteres. Puede ingresar números, espacios y letras. (Ej: 200 MG)');
+        }
+
+        if (msjs.length > 0) {
+            mostrarMsjCliente('Datos incorrectos', msjs);
+            return false;
+        }
+        return true;
+    }
+
+
+
+    //Validar FormaFarmaceutica esta modificada o no, si existe en la base o es nueva : CREAR OBJETO PARA CONTROLADOR
+    function procesarFormaFarmaceutica(formaFarmaceutica, itemEncontrado, itemsMedicamento) {
+        // SI MODIFICARON FormaFarmaceutica
+        if (formaFarmaceutica !== itemEncontrado.descripcion_forma) {
+            // VALIDAR CON EXPRESION REGULAR MOSTRAR MSJS ERROR
+            if (!validarForma(formaFarmaceutica)) {
+                return null;
+            } else {
+                // EXPRESION OK: VALIDAR SI EXISTE EN LA BASE O ES PARA AGREGAR
+                let existe = itemsMedicamento.some(element => element.descripcion_forma === formaFarmaceutica);
+
+                if (existe) {
+                    return {
+                        id: existe.formafarmaceutica_id,
+                        descripcion: '',
+                        asignarExistente: true,
+                        crearYasignar: false
+                    }
+                } else {
+                    // SI NO ESTA REPETIDO: CREAR UN OBJETO CON LA DESCRIPCION Y crearYasignar: true
+
+                    return {
+                        id: '',
+                        descripcion: formaFarmaceutica,
+                        asignarExistente: false,
+                        crearYasignar: true
+                    };
+                }
+            }
+        } else {
+            // SI NO ES DISTINTO AL ENCONTRADO ORIGINAL: false, false
+            return {
+                id: itemEncontrado.formafarmaceutica_id,
+                descripcion: '',
+                asignarExistente: false,
+                crearYasignar: false
+            };
+        }
+    }
+
+    //Validar Presentacion esta modificada o no, si existe en la base o es nueva : CREAR OBJETO PARA CONTROLADOR
+    function procesarPresentacion(presentacion, itemEncontrado, itemsMedicamento) {
+        // SI MODIFICARON presentacion
+        if (presentacion !== itemEncontrado.descripcion_presentacion) {
+            // VALIDAR CON EXPRESION REGULAR MOSTRAR MSJS ERROR
+            if (!validarPresentacion(presentacion)) {
+                return null;
+            } else {
+                // EXPRESION OK: VALIDAR SI EXISTE EN LA BASE O ES PARA AGREGAR
+                let existe = itemsMedicamento.some(element => element.descripcion_presentacion === presentacion);
+
+                if (existe) {
+                    return {
+                        id: existe.presentacion_id,
+                        descripcion: '',
+                        asignarExistente: true,
+                        crearYasignar: false
+                    }
+                } else {
+                    // SI NO ESTA REPETIDO: CREAR UN OBJETO CON LA DESCRIPCION Y crearYasignar: true
+                    return {
+                        id: '',
+                        descripcion: presentacion,
+                        asignarExistente: false,
+                        crearYasignar: true
+                    };
+                }
+            }
+        } else {
+            // SI NO ES DISTINTO AL ENCONTRADO ORIGINAL: false, false
+            return {
+                id: itemEncontrado.presentacion_id,
+                descripcion: '',
+                asignarExistente: false,
+                crearYasignar: false
+            };
+        }
+    }
+
+    //Validar Concentracion esta modificada o no, si existe en la base o es nueva : CREAR OBJETO PARA CONTROLADOR
+    function procesarConcentracion(concentracion, itemEncontrado, itemsMedicamento) {
+        // SI MODIFICARON concentracion
+        if (concentracion !== itemEncontrado.descripcion_concentracion) {
+            // VALIDAR CON EXPRESION REGULAR MOSTRAR MSJS ERROR
+            if (!validarConcentracion(concentracion)) {
+                return null;
+            } else {
+                // EXPRESION OK: VALIDAR SI EXISTE EN LA BASE O ES PARA AGREGAR
+                let existe = itemsMedicamento.some(element => element.descripcion_concentracion === concentracion);
+
+                if (existe) {
+                    return {
+                        id: existe.concentracion_id,
+                        descripcion: '',
+                        asignarExistente: true,
+                        crearYasignar: false
+                    };
+                } else {
+                    // SI NO ESTA REPETIDO: CREAR UN OBJETO CON LA DESCRIPCION Y crearYasignar: true
+                    return {
+                        id: '',
+                        descripcion: concentracion,
+                        asignarExistente: false,
+                        crearYasignar: true
+                    };
+                }
+            }
+        } else {
+            // SI NO ES DISTINTO AL ENCONTRADO ORIGINAL: false, false
+            return {
+                id: itemEncontrado.concentracion_id,
+                descripcion: '',
+                asignarExistente: false,
+                crearYasignar: false
+            };
+        }
+    }
+
+
+
+
+
+
+    //B O T O N   M O D I F I C A R    I T E M    M E D I C A M E N T O
+    // btnModificarMedicamentoItem.addEventListener('click', async () => {
+
+
+    //     let formaIngresada = forma_farmaceutica_input.value.trim().toUpperCase();
+    //     let presentacionIngresada = presentacion_input.value.trim().toUpperCase();
+    //     let concentracionIngresada = concentracion_input.value.trim().toUpperCase();
+    //     let estadoIngresado = selectEstadoItem.value;
+    //     console.log(itemEncontrado);
+    //     console.log(itemsMedicamento);
+
+    //     if (medicamento_item_input.value.trim() === '') {
+    //         mostrarMsjCliente('Datos vacios', ['Datos vacios, primero debe ingresar el ID ITEM y buscarlo con la LUPA.']);
+    //         return;
+    //     }
+
+    //     //SI NO HAY NINGUNA MODIFICACION MOSTRAR MSJ AL USUARIO
+    //     if (formaIngresada == itemEncontrado.descripcion_forma && presentacionIngresada == itemEncontrado.descripcion_presentacion
+    //         && concentracionIngresada == itemEncontrado.descripcion_concentracion
+    //         && estadoIngresado == itemEncontrado.estado) {
+    //         mostrarMsjCliente('Datos incorrectos', ['No se encontraron modificaciones en el Item, primero debe hacer las modificaciones.']);
+    //         return;
+    //     }
+
+
+    //     //SI HAY CAMBIOS VALIDAR LOS DATOS INGRESADOS
+    //     if (!validarForma(formaIngresada) || !validarPresentacion(presentacionIngresada) || !validarConcentracion(concentracionIngresada)) {
+    //         return;
+    //     }
+
+    //     formaIngresada = procesarFormaFarmaceutica(formaIngresada, itemEncontrado, itemsMedicamento);
+    //     presentacionIngresada = procesarPresentacion(presentacionIngresada, itemEncontrado, itemsMedicamento);
+    //     concentracionIngresada = procesarConcentracion(concentracionIngresada, itemEncontrado, itemsMedicamento);
+
+    //     console.log(estadoIngresado);
+    //     if (estadoIngresado === itemEncontrado.estado) {
+    //         estadoIngresado = {
+    //             modificar: false,
+    //             valor: estadoIngresado
+    //         }
+    //     } else {
+    //         estadoIngresado = {
+    //             modificar: true,
+    //             valor: estadoIngresado
+    //         }
+    //     }
+
+
+
+    // });
+
+    async function fetchModificarMedicamentoItem(medicamento_id, item_id, formaIngresada, presentacionIngresada, concentracionIngresada, estadoIngresado) {
+        // ENVIAR DATOS
+        const data = {
+            medicamento_id,
+            item_id,
+            formaIngresada,
+            presentacionIngresada,
+            concentracionIngresada,
+            estadoIngresado
+        };
+        console.log(data);
+        try {
+            const response = await fetch('/modificarMedicamentoItem', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Error en la solicitud: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            mostrarMsjCliente('Medicamento Item modificado', ['Medicamento Item modificado con exito.']);
+
+        } catch (error) {
+            // console.error('Error:', error);
+            mostrarMsjCliente('Error al modificar Medicamento item', [error.message]);
+        }
+
+    }
+
+
+
+    // B O T O N    M O D I F I C A R   M E D I C A M E N T O   I T E M (INDIVIDUAL)
+
+    btnModificarMedicamentoItem.addEventListener('click', async () => {
+
+        // Obtener valores ingresados y normalizarlos
+        let formaIngresada = forma_farmaceutica_input.value.trim().toUpperCase();
+        let presentacionIngresada = presentacion_input.value.trim().toUpperCase();
+        let concentracionIngresada = concentracion_input.value.trim().toUpperCase();
+        let estadoIngresado = selectEstadoItem.value;
+
+        // Verificar si el ID del medicamento está vacío
+        if (medicamento_item_input.value.trim() === '') {
+            mostrarMsjCliente('Datos vacíos', ['Primero debe ingresar el ID ITEM y buscarlo con la LUPA.']);
+            return;
+        }
+        if (formaIngresada.value === '' || presentacionIngresada.value === '' || concentracionIngresada.value === '' || estadoIngresado == -1) {
+            mostrarMsjCliente('Datos vacíos', ['Todos los datos son obligatorios en Medicamento Item.']);
+            return;
+        }
+
+        // Verificar si no hay ninguna modificación
+        const noModificaciones = (
+            formaIngresada === itemEncontrado.descripcion_forma &&
+            presentacionIngresada === itemEncontrado.descripcion_presentacion &&
+            concentracionIngresada === itemEncontrado.descripcion_concentracion
+            && estadoIngresado == itemEncontrado.estado
+        );
+
+        if (noModificaciones) {
+            mostrarMsjCliente('Datos incorrectos', ['No se encontraron modificaciones en el Item, primero debe hacer las modificaciones.']);
+            return;
+        }
+
+        // Validar los datos ingresados
+        const datosValidos = (
+            validarForma(formaIngresada) &&
+            validarPresentacion(presentacionIngresada) &&
+            validarConcentracion(concentracionIngresada)
+        );
+
+        if (!datosValidos) {
+            return;
+        }
+
+        // Procesar los datos ingresados
+        formaIngresada = procesarFormaFarmaceutica(formaIngresada, itemEncontrado, itemsMedicamento);
+        presentacionIngresada = procesarPresentacion(presentacionIngresada, itemEncontrado, itemsMedicamento);
+        concentracionIngresada = procesarConcentracion(concentracionIngresada, itemEncontrado, itemsMedicamento);
+
+        // Procesar el estado ingresado
+        estadoIngresado = parseInt(estadoIngresado, 10);
+        estadoIngresado = {
+            modificar: estadoIngresado !== itemEncontrado.estado,
+            valor: estadoIngresado
+        };
+
+        console.log(formaIngresada);
+        console.log(presentacionIngresada);
+        console.log(concentracionIngresada);
+        console.log(estadoIngresado);
+
+        //FETCH MODIFICAR MEDICAMENTO ITEM, MUESTRA MSJ AL USUARIO AL FINALIZAR
+        fetchModificarMedicamentoItem(medicamentoEncontrado.id, itemEncontrado.item_id, formaIngresada, presentacionIngresada, concentracionIngresada, estadoIngresado);
+
+
     });
 
 

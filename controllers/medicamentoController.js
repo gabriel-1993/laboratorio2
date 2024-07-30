@@ -75,24 +75,22 @@ function validarFamiliaOcategoria(valor, tipo) {
   return true;
 }
 
-
+//MODIFICAR MEDICAMENTO --------------------------------------------------------------------------------------------------------------------------------------------
 async function modificarMedicamento(req, res) {
   let { medicamentoEncontrado, estado, nombreGenerico, nombreComercial, familia, categoria } = req.body;
 
-  if (!estado || !nombreGenerico || !familia || !categoria) {
+  if (!medicamentoEncontrado || !estado || !nombreGenerico || !familia || !categoria) {
     return res.status(400).json({ message: 'Datos obligatorios: estado, nombre generico, familia, categoria' });
   }
 
-  const transaction = await sequelize.transaction();
+
   let modificarMedicamento = false;
   let familiaModificada = false;
   let categoriaModificada = false;
+  const transaction = await sequelize.transaction();
+
 
   try {
-    // Validar y procesar estado
-    if (estado.modificar) {
-      modificarMedicamento = true;
-    }
 
     // Validar y procesar nombre genérico
     if (nombreGenerico.modificar) {
@@ -123,10 +121,11 @@ async function modificarMedicamento(req, res) {
     }
 
     // Procesar familia
-    if (familia.modificar) {
+    if (familia.crearYasignar) {
       let familiaValidacion = validarFamiliaOcategoria(familia.descripcion, 'tipoFamilia');
       if (familiaValidacion) {
-        await Medicamento.modificarDescripcionFamilia(familia.id, familia.descripcion, transaction);
+        const idFamilia = await Medicamento.agregarFamilia(familia.descripcion, transaction);
+        await Medicamento.modificarFamiliaIdMedicamento(idFamilia, medicamentoEncontrado.id, transaction);
         familiaModificada = true;
       } else {
         return res.status(400).json({ message: 'Familia no valida' });
@@ -135,11 +134,13 @@ async function modificarMedicamento(req, res) {
       await Medicamento.modificarFamiliaIdMedicamento(familia.id, medicamentoEncontrado.id, transaction);
       familiaModificada = true;
     }
+
     // Procesar categoría
-    if (categoria.modificar) {
+    if (categoria.crearYasignar) {
       let categoriaValidacion = validarFamiliaOcategoria(categoria.descripcion, 'tipoCategoria');
       if (categoriaValidacion) {
-        await Medicamento.modificarDescripcionCategoria(categoria.id, categoria.descripcion, transaction);
+        const idCategoria = await Medicamento.agregarCategoria(categoria.descripcion, transaction);
+        await Medicamento.modificarCategoriaIdMedicamento(idCategoria, medicamentoEncontrado.id, transaction);
         categoriaModificada = true;
       } else {
         return res.status(400).json({ message: 'Categoria no valida' });
@@ -148,6 +149,18 @@ async function modificarMedicamento(req, res) {
       await Medicamento.modificarCategoriaIdMedicamento(categoria.id, medicamentoEncontrado.id, transaction);
       categoriaModificada = true;
     }
+
+
+    // Validar y procesar estado
+    if (estado.modificar) {
+      // MODIFICAR TODOS LOS ITEMS DEL MEDICAMENTO CON EL ESTADO DE MEDICAMENTO
+      await Medicamento.modificarEstadoMedicamentosItemsId(estado.estado, medicamentoEncontrado.id, transaction);
+      //Modificar el estado del medicamento
+      modificarMedicamento = true;
+    }
+
+
+
 
     // Procesar medicamento si se realizaron modificaciones
     if (modificarMedicamento || familiaModificada || categoriaModificada) {
@@ -172,6 +185,165 @@ async function modificarMedicamento(req, res) {
     return res.status(500).json({ message: 'Error al modificar medicamento: ' + error.message });
   }
 }
+
+
+
+
+//MODIFICAR MEDICAMENTO ITEM (INDIVIDUAL)-------------------------------------------------------------------------------------------------------------------------
+// /EXPRESIONES PARA FORMA PRESENTACION Y CONCENTRACION
+function validarForma(formaIngresada) {
+  const regex = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;
+  let msjs = [];
+
+  if (!regex.test(formaIngresada)) {
+    msjs.push('Forma farmaceutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras, espacios y números.');
+  }
+
+  if (msjs.length > 0) {
+    mostrarMsjCliente('Datos incorrectos', msjs);
+    return false;
+  }
+  return true;
+}
+
+function validarPresentacion(presentacionIngresada) {
+  const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+  let msjs = [];
+
+  if (!regex2.test(presentacionIngresada)) {
+    msjs.push('Presentacion debe comenzar con número/s, min 6 max 99 caracteres. Puede ingresar números, espacios y letras. (Ej: 15 UNIDADES)');
+  }
+
+  if (msjs.length > 0) {
+    mostrarMsjCliente('Datos incorrectos', msjs);
+    return false;
+  }
+  return true;
+}
+
+function validarConcentracion(concentracionIngresada) {
+  const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+  let msjs = [];
+
+  if (!regex2.test(concentracionIngresada)) {
+    msjs.push('Concentracion debe comenzar con número/s, min 6 max 99 caracteres. Puede ingresar números, espacios y letras. (Ej: 200 MG)');
+  }
+
+  if (msjs.length > 0) {
+    mostrarMsjCliente('Datos incorrectos', msjs);
+    return false;
+  }
+  return true;
+}
+
+
+async function modificarMedicamentoItem(req, res) {
+  let { medicamento_id, item_id, formaIngresada, presentacionIngresada, concentracionIngresada, estadoIngresado } = req.body;
+
+  if (!medicamento_id || !item_id || !formaIngresada || !presentacionIngresada || !concentracionIngresada || !estadoIngresado) {
+    return res.status(400).json({ message: 'Datos obligatorios: medicamentoID, ItemID, forma farmaceutica, presentacion, concentracion, estado' });
+  }
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    // FORMA FARMACEUTICA----------------------------------------------------------------------------------------------------------------------
+
+    if (formaIngresada.asignarExistente) {
+      // VALIDAR SI FORMA ID ESTA ASIGNADA AL MEDICAMENTO 
+      const existe = await Medicamento.validarFormaIdEnMedicamento(medicamento_id, formaIngresada.id, transaction);
+      if (!existe) {
+        //SI FORMA ID NO ESTA ASIGNADA AL MEDICAMENTO : ASIGNARLA
+        await Medicamento.asignarFormaMedicamento(medicamento_id, formaIngresada.id, transaction);
+      }
+      //ASIGNAR A MEDICAMENTO ITEM(INDIVIDUAL) EL ID FORMA
+      await Medicamento.medicamentoItemModificarIdForma(formaIngresada.id, item_id, transaction);
+
+    } else if (formaIngresada.crearYasignar) {
+      const formaValidacion = validarForma(formaIngresada.descripcion);
+      if (formaValidacion) {
+        // CREAR UNA NUEVA FORMA CON DESCRIPCION, CAPTURAR SU ID Y MODIFICAR ID DE FORMA EN ITEM MEDICAMENO
+        const idForma = await Medicamento.agregarFormaFarmaceutica(formaIngresada.descripcion, transaction);
+        // ASIGNAR FORMA AL MEDICAMENTO GENERICO
+        await Medicamento.asignarFormaMedicamento(medicamento_id, idForma, transaction);
+        //ASIGNAR ID FORMA A MEDICAMENTO ITEM
+        await Medicamento.medicamentoItemModificarIdForma(idForma, item_id, transaction);
+      } else {
+        return res.status(400).json({ message: 'Forma farmaceutica ingresada no valido' });
+      }
+    }
+
+    // PRESENTACION-------------------------------------------------------------------------------------------------------------------------------
+    // ASIGNAR EXISTENTE
+    if (presentacionIngresada.asignarExistente) {
+      // VALIDAR SI PRESENTACION ID ESTA ASIGNADA AL MEDICAMENTO 
+      const existe = await Medicamento.validarPresentacionIdEnMedicamento(medicamento_id, presentacionIngresada.id, transaction);
+      if (!existe) {
+        //SI PRESENTACION ID NO ESTA ASIGNADA AL MEDICAMENTO : ASIGNARLA
+        await Medicamento.asignarPresentacionMedicamento(medicamento_id, presentacionIngresada.id, transaction);
+      }
+      //ASIGNAR A MEDICAMENTO ITEM(INDIVIDUAL) EL ID PRESENTACION
+      await Medicamento.medicamentoItemModificarIdPresentacion(presentacionIngresada.id, item_id, transaction);
+
+    } else if (presentacionIngresada.crearYasignar) {
+      //CREAR NUEVA Y ASIGNARLA A ITEM Y A MEDICAMENTO
+      const presentacionValidacion = validarPresentacion(presentacionIngresada.descripcion);
+
+      if (presentacionValidacion) {
+        // CREAR UNA PRESENTACION CON DESCRIPCION, CAPTURAR SU ID Y MODIFICAR ID DE PRESENTACION EN ITEM MEDICAMENO
+        const idPresentacion = await Medicamento.agregarPresentacion(presentacionIngresada.descripcion, transaction);
+        //ASIGNAR PRESENTACION AL MEDICAMENTO
+        await Medicamento.asignarPresentacionMedicamento(medicamento_id, idPresentacion, transaction);
+        //ASIGNAR PRESENTACION AL MEDICAMENTO ITEM(INDIVIDUAL)
+        await Medicamento.medicamentoItemModificarIdPresentacion(idPresentacion, item_id, transaction);
+      } else {
+        return res.status(400).json({ message: 'Presentacion ingresada no valido' });
+      }
+    }
+
+    // CONCENTRACION---------------------------------------------------------------------------------------------------------------------------------
+    if (concentracionIngresada.asignarExistente) {
+
+      //VALIDAR SI CONCENTRACION ID ESTA ASIGNADA AL MEDICAMENTO
+      const existe = await Medicamento.validarConcentracionIdEnMedicamento(medicamento_id, concentracionIngresada.id, transaction);
+      if (!existe) {
+        //SI CONCENTRACION ID NO ESTA ASIGNADA AL MEDICAMENTO: ASIGNARLA
+        await Medicamento.asignarConcentracionMedicamento(medicamento_id, concentracionIngresada.id, transaction);
+      }
+      //ASIGNAR EL ID CONCENTRACION AL ITEM MEDICAMENTO
+      await Medicamento.medicamentoItemModificarIdConcentracion(concentracionIngresada.id, item_id, transaction);
+
+    } else if (concentracionIngresada.crearYasignar) {
+      //CREAR NUEVA Y ASIGNARLA A ITEM Y A MEDICAMENTO: validar descripcion
+      const concentracionValidacion = validarConcentracion(concentracionIngresada.descripcion);
+      if (concentracionValidacion) {
+        // CREAR UNA CONCENTRACION CON DESCRIPCION, CAPTURAR SU ID Y MODIFICAR ID DE CONCENTRACION EN ITEM MEDICAMENO
+        const idConcentracion = await Medicamento.agregarConcentracion(concentracionIngresada.descripcion, transaction);
+        //ASIGNAR CONCENTRACION AL MEDICAMENTO
+        await Medicamento.asignarConcentracionMedicamento(medicamento_id, idConcentracion, transaction);
+        //ASIGNAR ID CONCENTRACION AL MEDICAMENTO ITEM
+        await Medicamento.medicamentoItemModificarIdConcentracion(idConcentracion, item_id, transaction);
+      } else {
+        return res.status(400).json({ message: 'Concentracion ingresada no valido' });
+      }
+    }
+
+    // ESTADO
+    if (estadoIngresado.modificar) {
+      await Medicamento.modificarEstadoItemMedicamento(estadoIngresado.valor, item_id, transaction);
+    }
+
+    await transaction.commit();
+    return res.status(200).json({ message: 'Medicamento modificado exitosamente' });
+  } catch (error) {
+    await transaction.rollback();
+    console.error('Error al modificar medicamento item:', error);
+    return res.status(500).json({ message: 'Error al modificar medicamento item: ' + error.message });
+  }
+}
+
+
+
 
 
 //BUSCAR MEDICAMENTO CON NOMBRE GENERICO UNICO
@@ -421,6 +593,7 @@ async function agregarItemMedicamento(req, res) {
   }
 }
 
+// MEDICAMENTO NUEVO SE AGREGA JUNTO CON EL PRIMER ITEM
 async function agregarMedicamentoNuevoEitem(req, res) {
 
   let { nombreGenerico, nombreComercial, asignarFamilia, asignarCategoria, asignarForma, asignarPresentacion, asignarConcentracion } = req.body;
@@ -589,5 +762,6 @@ export default {
   agregarItemMedicamento,
   agregarMedicamentoNuevoEitem,
   mostrarFormModificarMedicamento,
-  modificarMedicamento
+  modificarMedicamento,
+  modificarMedicamentoItem
 };

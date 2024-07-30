@@ -518,30 +518,76 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // VALIDAR FORMA,PRESENTACION Y CONCENTRACION PARA APLICARLES EXPRESIONES REGULARES LAS MISMAS SE APLICAN TAMBIEN EN EL SERVIDOR
-    function validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada) {
-        msjs = [];
+    // function validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada) {
+    //     msjs = [];
 
-        // Expresión regular
+    //     // Expresión regular
+    //     const regex = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;
+    //     // const regex2 = /^[0-9]+ [A-Za-z][A-Za-z0-9 ]{1,97}$/;
+    //     const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+
+    //     // Validar forma, presentacion y concentracion ingresada
+    //     if (!regex.test(formaIngresada)) {
+    //         msjs.push('Forma farmaceutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras,espacios y numeros.');
+    //     }
+    //     if (!regex2.test(presentacionIngresada)) {
+    //         msjs.push('Presentacion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 15 UNIDADES)');
+    //     }
+    //     if (!regex2.test(concentracionIngresada)) {
+    //         msjs.push('Concentracion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 200 MG)');
+    //     }
+    //     if (msjs.length > 0) {
+    //         mostrarMsjCliente('Datos incorrectos', msjs);
+    //         return false;
+    //     }
+    //     return true;
+    // }
+
+    function validarForma(formaIngresada) {
         const regex = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;
-        // const regex2 = /^[0-9]+ [A-Za-z][A-Za-z0-9 ]{1,97}$/;
-        const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
-
-        // Validar forma, presentacion y concentracion ingresada
+        let msjs = [];
+    
         if (!regex.test(formaIngresada)) {
-            msjs.push('Forma farmaceutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras,espacios y numeros.');
+            msjs.push('Forma farmaceutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras, espacios y números.');
         }
-        if (!regex2.test(presentacionIngresada)) {
-            msjs.push('Presentacion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 15 UNIDADES)');
-        }
-        if (!regex2.test(concentracionIngresada)) {
-            msjs.push('Concentracion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 200 MG)');
-        }
+    
         if (msjs.length > 0) {
             mostrarMsjCliente('Datos incorrectos', msjs);
             return false;
         }
         return true;
     }
+    
+    function validarPresentacion(presentacionIngresada) {
+        const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+        let msjs = [];
+    
+        if (!regex2.test(presentacionIngresada)) {
+            msjs.push('Presentacion debe comenzar con número/s, min 6 max 99 caracteres. Puede ingresar números, espacios y letras. (Ej: 15 UNIDADES)');
+        }
+    
+        if (msjs.length > 0) {
+            mostrarMsjCliente('Datos incorrectos', msjs);
+            return false;
+        }
+        return true;
+    }
+    
+    function validarConcentracion(concentracionIngresada) {
+        const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+        let msjs = [];
+    
+        if (!regex2.test(concentracionIngresada)) {
+            msjs.push('Concentracion debe comenzar con número/s, min 6 max 99 caracteres. Puede ingresar números, espacios y letras. (Ej: 200 MG)');
+        }
+    
+        if (msjs.length > 0) {
+            mostrarMsjCliente('Datos incorrectos', msjs);
+            return false;
+        }
+        return true;
+    }
+    
 
     // VALIDAR QUE FORMA, PRESENTACION Y CONCENTRACION NO ESTEN CARGADAS CON LOS MISMOS DATOS ANTERIORMENTE
     function validarItemRepetido(itemsMedicamento, formaIngresada, presentacionIngresada, concentracionIngresada) {
@@ -726,9 +772,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             let concentracionIngresada = concentracion_input.value.trim().toUpperCase();
 
             // VALIDAR CON EXPRESIONES REGULARES: si no cumple muestra msjs de error al usuario
-            if (!validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada)) {
+            // if (!validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada)) {
+            //     return;
+            // }
+            if(!validarForma(formaIngresada) || !validarPresentacion(presentacionIngresada) || !validarConcentracion(concentracionIngresada)){
                 return;
-            }
+            };
 
             const { asignarForma, asignarPresentacion, asignarConcentracion } = procesarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada, formasBase, presentacionesBase, concentracionesBase);
 
