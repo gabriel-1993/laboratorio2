@@ -355,7 +355,9 @@ button:hover {
     width: 170px;
 }
 
-.btnAgregarMedicamento, .btnModificarMedicamento, .btnModificarMedicamentoItem {
+.btnAgregarMedicamento,
+.btnModificarMedicamento,
+.btnModificarMedicamentoItem {
     width: auto;
     font-size: 0.9rem;
 }
@@ -382,7 +384,8 @@ button:hover {
 .divModificarUsuario,
 .divBuscarUsuarios,
 .divAgregarMedicamento,
-.divModificarMedicamento {
+.divModificarMedicamento,
+.divBuscarMedicamentos {
     width: 420px;
     height: auto;
     display: flex;
@@ -397,7 +400,9 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.divAgregarMedicamento, .divModificarMedicamento {
+.divAgregarMedicamento,
+.divModificarMedicamento,
+.divBuscarMedicamentos {
     margin-top: 20px;
     margin-bottom: 18px;
 }
@@ -422,7 +427,9 @@ button:hover {
     gap: 12px;
 }
 
-.divAgregarMedicamento .divFlexRow, .divModificarMedicamento .divFlexRow {
+.divAgregarMedicamento .divFlexRow,
+.divModificarMedicamento .divFlexRow,
+.divBuscarMedicamentos .divFlexRow {
     padding: 0;
 }
 
@@ -494,7 +501,8 @@ button:hover {
     width: 340px;
 }
 
-#formAgregarMedicamento, #formModificarMedicamento {
+#formAgregarMedicamento,
+#formModificarMedicamento {
     padding-bottom: 25px;
 }
 
@@ -506,7 +514,7 @@ button:hover {
 
 .divBuscarDocumento .fa-magnifying-glass,
 .divBuscarNombreGenerico .fa-magnifying-glass,
-.divMedicamentoItem  .fa-magnifying-glass {
+.divMedicamentoItem .fa-magnifying-glass {
     margin-left: 10px;
 }
 
@@ -636,7 +644,9 @@ input,
     align-items: center;
 }
 
-#formAgregarMedicamento .divDatosMedicamento, #formModificarMedicamento .divDatosMedicamento, #formModificarMedicamento .divDatosMedicamentoItem {
+#formAgregarMedicamento .divDatosMedicamento,
+#formModificarMedicamento .divDatosMedicamento,
+#formModificarMedicamento .divDatosMedicamentoItem {
     gap: 5px;
 }
 
@@ -716,7 +726,8 @@ input:focus {
 .divRecuperarPassword p,
 .divModificarUsuario p,
 .divBuscarUsuarios p,
-.divDatosMedicamentoNuevo p {
+.divDatosMedicamentoNuevo p,
+.divDatosBuscarMedicamentos p{
     width: 80%;
     margin: 30px auto;
     margin-bottom: 20px;
@@ -727,7 +738,9 @@ input:focus {
     background-color: #007bffd7;
 }
 
-.divDatosMedicamentoNuevo p, .divDatosMedicamentoModificar p{
+.divDatosMedicamentoNuevo p,
+.divDatosMedicamentoModificar p,
+.divDatosBuscarMedicamentos p{
     margin: 20px auto;
 }
 

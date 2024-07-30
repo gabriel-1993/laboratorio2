@@ -11,6 +11,15 @@ const mostrarFormAgregarMedicamento = (req, res) => {
 };
 
 // RENDERIZAR FORM PRINCIPAL PARA MODIFICAR MEDICAMENTO
+const mostrarFormListaMedicamentos = (req, res) => {
+  if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
+    res.render('formMostrarListaMedicamentos');
+  } else {
+    res.status(403).json({ mensaje: 'Acceso denegado' });
+  }
+};
+
+// RENDERIZAR FORM PARA /BUSCAR MEDICAMENTOS
 const mostrarFormModificarMedicamento = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formModificarMedicamento');
@@ -185,8 +194,6 @@ async function modificarMedicamento(req, res) {
     return res.status(500).json({ message: 'Error al modificar medicamento: ' + error.message });
   }
 }
-
-
 
 
 //MODIFICAR MEDICAMENTO ITEM (INDIVIDUAL)-------------------------------------------------------------------------------------------------------------------------
@@ -763,5 +770,6 @@ export default {
   agregarMedicamentoNuevoEitem,
   mostrarFormModificarMedicamento,
   modificarMedicamento,
-  modificarMedicamentoItem
+  modificarMedicamentoItem,
+  mostrarFormListaMedicamentos
 };

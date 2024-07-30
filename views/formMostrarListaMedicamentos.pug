@@ -1,0 +1,46 @@
+extends indexAdmin
+
+block content
+  .divMsj 
+    ul
+    button.btn-Msj 
+  section.flexCenter.section.column
+    .divBuscarMedicamentos.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Buscar Medicamento 
+      h4.text-center.text-fondoCeleste Ingresar Nombre Generico
+
+      .divFlexRow
+        .divDatosBuscarMedicamentos
+          p.pMedicamentoBusqueda Por favor, ingrese el Nombre Generico del medicamento que desea buscar. 
+
+          form( id="formModificarMedicamento" autocomplete="off")
+            h4.h4Medicamento.text-center.text-fondoCeleste.borderRadius4px.displayNone Datos Medicamento
+
+            .divBuscarNombreGenerico 
+              div
+                label(for="nombreGenerico" class="labelCenter130px") Nombre Generico
+                input(type="text" id="nombreGenerico" name="nombreGenerico" autocomplete="off") 
+                i.fa-solid.fa-magnifying-glass.btnBuscar
+              ul(id="medicamentos-list" class="medicamentos-list displayNone") <!-- Div para mostrar las coincidencias -->
+            div.divDatosMedicamento.column.displayNone
+              div 
+                label(for="nombreComercial" class="labelCenter130px") Nombre Comercial
+                input(type="text" id="nombreComercial" name="nombreComercial" autocomplete="off" placeholder="opcional") 
+              .divMedicamentoFamilia 
+                label(for="familia" class="labelCenter130px") Familia
+                input(type="text" id="familia" class="selectFamilia" name="familia"   placeholder="Puede ingresar una nueva")
+                ul(id="familia-list" class="familia-list displayNone") <!-- Div para mostrar las coincidencias -->
+              .divMedicamentoCategoria 
+                label(for="categoria" class="labelCenter130px") Categoria
+                input(id="categoria" class="selectCategoria" name="categoria"  placeholder="Puede ingresar una nueva")
+                ul(id="categoria-list" class="categoria-list displayNone") <!-- Div para mostrar las coincidencias -->
+              div
+                label(for="estadoM" class="labelCenter130px") Estado
+                select(id="estadoM" class="selectEstadoModificarMedicamento" name="estadoM")
+
+    .divMedicamentosExistentes.center.column.blur.displayNone
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Items del Medicamento 
+      h4.text-center.text-fondoCeleste.h4MedicamentoItem.displayNone Datos de items
+      .divContenedorItems
+
+  script(src="/js/formMostrarMedicamentos.js", type="module") // Incluye el archivo JavaScript del cliente

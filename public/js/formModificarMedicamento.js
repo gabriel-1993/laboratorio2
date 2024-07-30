@@ -216,6 +216,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         concentracionesBase = '';
         formasBase = '';
         presentacionesBase = '';
+        addDisplayNone();
     };
 
     function addDisplayNone() {
@@ -507,6 +508,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     });
 
+    nombre_generico_input.addEventListener('input', reiniciarBusqueda);
 
 
 

@@ -21,6 +21,7 @@ router.post('/agregarItemMedicamento', medicamentoController.agregarItemMedicame
 //Medicamento NUEVO (nombre_generico no encontrado) se agrega el medicamento y luego se agrega el primer item del medicamento creado
 router.post('/agregarMedicamentoNuevoEitem', medicamentoController.agregarMedicamentoNuevoEitem);
 
+
 //MODIFICAR MEDICAMENTO
 router.get("/modificarMedicamento", medicamentoController.mostrarFormModificarMedicamento);
 
@@ -29,5 +30,10 @@ router.post("/modificarMedicamento", medicamentoController.modificarMedicamento)
 
 //MODIFICAR DATOS DE MEDICAMENTO ITEM
 router.post("/modificarMedicamentoItem", medicamentoController.modificarMedicamentoItem);
+
+//BUSCAR MEDICAMENTOS
+router.get("/buscarMedicamentos", medicamentoController.mostrarFormListaMedicamentos);
+
+
 
 export default router;
