@@ -17,97 +17,71 @@ document.addEventListener('DOMContentLoaded', async function () {
     const familia_lista = document.querySelector('.familia-list');
     const categoria_input = document.getElementById('categoria');
     const categoria_lista = document.querySelector('.categoria-list');
-    const selectEstadoMedicamento = document.querySelector('.selectEstadoModificarMedicamento');
+    const selectEstadoMedicamento = document.querySelector('.selectEstadoMostrarMedicamento');
     const btnBuscar = document.querySelector('.btnBuscar');
-
 
     //VARIABLES CON MAYOR SCOPE
     let msjs = [];
     let medicamentoEncontrado;
     let itemsMedicamento;
-    let itemEncontrado;
-
-    //VARIABLES CON MAYOR SCOPE PARA TRAER MEDICAMENTOS ,FORMAS ,PRESENTACIONES y CONCENTRACIONES Y VALIDAR POR EJ ELEMENTOS REPETIDOS O CUALES SON NUEVOS
-    //TAMBIEN SE MUESTRAN EN UNA LISTA DEBAJO DEL INPUT CUANDO SE VAN A INGRESAR CON UN FILTRO POR LETRAS INGRESADAS
-    let medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones;
     let medicamentosBase;
-    let categoriasBase;
-    let familiasBase;
-    let concentracionesBase;
-    let formasBase;
-    let presentacionesBase;
 
 
-    //TRAER TOD@S MEDICAMENTOS,FORMAS,PRESENTACIONES,CONCENTRACIONES de la base de datos: *************************************************************************************************************
-    //-->>luego de buscar un nombre generico: (se muestran al darle click en el input correspondiente y se filtra el listado por letras ingresadas) 
-    async function fetchMedicamentosCategoriasFamiliasFormasPresentacionesConcentraciones() {
+    //TRAER TOD@S MEDICAMENTOS *************************************************************************************************************
+    async function fetchBuscarMedicamentosTodos() {
         try {
-            const response = await fetch('/medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones');
+            const response = await fetch('/buscarMedicamentosTodos');
             const data = await response.json();
 
             if (response.ok) {
-                return data;
+                // Suponiendo que 'medicamentos' es la propiedad que contiene el array
+                return data.medicamentos || [];
             } else {
-                console.error('Error al obtener medicamentos, categorias, familias , formas, presentaciones y concentraciones:', formas.message);
-                return null;
+                console.error('Error al obtener todos los medicamentos:');
+                return [];
             }
         } catch (error) {
-            console.error('Error al llamar a medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones:', error);
-            return null;
+            console.error('Error al llamar a todos los medicamentos:', error);
+            return [];
         }
     }
 
     // Obtener datos de la base de datos
-    medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones = await fetchMedicamentosCategoriasFamiliasFormasPresentacionesConcentraciones();
+    medicamentosBase = await fetchBuscarMedicamentosTodos();
 
-    //DESTRUCTURING PARA ORDENARLOS Y PODER UTILIZARLOS
-    medicamentosBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.medicamentos;
-    categoriasBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.categorias;
-    familiasBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.familias;
-    concentracionesBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.concentraciones;
-    presentacionesBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.presentaciones;
-    formasBase = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones.formas;
 
-    //EJECUTAR EL FETCH ANTERIOR Y CARGAR LAS LISTAS CON LOS EVENTOS PARA FILTRAR RESULTADOS Y OCULTAR LISTAS 
+    //EJECUTAR EL FETCH ANTERIOR Y CARGAR LA LISTA medicamento CON LOS EVENTOS PARA FILTRAR RESULTADOS Y OCULTAR LISTAS 
     async function cargarListasInputConFiltro() {
 
         function mostrarLista(array, listaUl) {
+
             listaUl.innerHTML = '';
             array.forEach(elem => {
                 const li = document.createElement('li');
                 li.classList.add('listaFiltradaItem');
                 if (elem.nombre_generico) {
                     li.textContent = elem.nombre_generico;
-                } else {
-                    li.textContent = elem.descripcion;
                 }
                 li.dataset.id = elem.id;
                 listaUl.appendChild(li);
             });
             listaUl.classList.remove('displayNone');
             listaUl.classList.add('listaFiltrada');
-
         }
 
         function ocultarListas() {
-            datosMedicamentosFamiliasCategorias.forEach(({ lista }) => {
+            datosMedicamentos.forEach(({ lista }) => {
                 lista.innerHTML = '';
                 lista.classList.add('displayNone');
-                // lista.classList.remove('listaFiltrada');
             });
         }
 
-        const { medicamentos: medicamentosBase, categorias: categoriasBase, familias: familiasBase, concentraciones: concentracionesBase, presentaciones: presentacionesBase, formas: formasBase } = medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones;
-
-        // Agrupar datos con inputs y listas para reutilizar el mismo código en mostrar y filtrar listas
-        const datosMedicamentosFamiliasCategorias = [
-            { input: nombre_generico_input, lista: nombre_generico_lista, array: medicamentosBase, key: 'nombre_generico' },
-            { input: familia_input, lista: familia_lista, array: familiasBase, key: 'descripcion' },
-            { input: categoria_input, lista: categoria_lista, array: categoriasBase, key: 'descripcion' }
-        ]
+        const datosMedicamentos = [
+            { input: nombre_generico_input, lista: nombre_generico_lista, array: medicamentosBase, key: 'nombre_generico' }
+        ];
 
         // Mostrar y filtrar listas en el formulario de medicamentos
-        datosMedicamentosFamiliasCategorias.forEach(({ input, lista, array, key }) => {
+        datosMedicamentos.forEach(({ input, lista, array, key }) => {
             input.addEventListener('click', () => {
                 mostrarLista(array, lista, key);
             });
@@ -129,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Ocultar lista con clic fuera o scroll
         document.addEventListener('click', (e) => {
             let clickEnInputOLaLista = false;
-            datosMedicamentosFamiliasCategorias.forEach(({ input, lista }) => {
+            datosMedicamentos.forEach(({ input, lista }) => {
                 if (lista.contains(e.target) || e.target === input) {
                     clickEnInputOLaLista = true;
                 }
@@ -143,8 +117,48 @@ document.addEventListener('DOMContentLoaded', async function () {
         window.addEventListener('scroll', ocultarListas);
     }
 
-    //EJECUTAR CARGAR LISTAS(nombre generico, categoria, familia, forma, presen, concen)
+    //EJECUTAR CARGAR LISTA
     cargarListasInputConFiltro();
+
+    //REINICIAR BUSQUEDA : se ejecuta en linea  4 8 2 
+    // luego de buscar nombre generico si modifican el input se reinicia todo el form
+    // vaciar variables con mayor scope y divs con contenido
+    function reiniciarBusqueda() {
+        divContenedorItems.innerHTML = '';
+        medicamentoEncontrado = '';
+        itemsMedicamento = '';
+        nombre_comercial_input.value = '';
+        familia_input.value = '';
+        categoria_input.value = '';
+        medicamentosBase = '';
+        addDisplayNone();
+    };
+
+    function addDisplayNone() {
+        h4Medicamento.classList.add('displayNone');
+        h4MedicamentoItem.classList.add('displayNone');
+        //ocultar p el nombre ya fue ingresado
+        pMedicamentoBusqueda.classList.remove('displayNone');
+        divDatosMedicamento.classList.add('displayNone');
+        divMedicamentosExistentes.classList.add('displayNone');
+    };
+
+    function removeDisplayNone() {
+        h4Medicamento.classList.remove('displayNone');
+        h4MedicamentoItem.classList.remove('displayNone');
+        pMedicamentoBusqueda.classList.add('displayNone');
+        divDatosMedicamento.classList.remove('displayNone');
+        //mostrar el p que solicita el nombre generico
+        divMedicamentosExistentes.classList.remove('displayNone');
+    };
+    //Si es modificado nombre generico se reinica toda la busqueda 
+    //nombre_generico_input.addEventListener('input', reiniciarBusquedaToggleDisplay);
+    function reiniciarBusquedaToggleDisplay() {
+        addDisplayNone();
+        reiniciarBusqueda();
+    }
+
+
 
     //************************************************************************************************************************************************************************************************** */
 
@@ -177,52 +191,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    //REINICIAR BUSQUEDA
-    // luego de buscar nombre generico si modifican el input se reinicia todo el form
-    // vaciar variables con mayor scope y divs con contenido
-    function reiniciarBusqueda() {
-        divContenedorItems.innerHTML = '';
-        medicamentoEncontrado = '';
-        itemsMedicamento = '';
-        nombre_comercial_input.value = '';
-        familia_input.value = '';
-        categoria_input.value = '';
-        medicamentosCategoriasFamiliasFormasPresentacionesConcentraciones = '';
-        medicamentosBase = '';
-        categoriasBase = '';
-        familiasBase = '';
-        concentracionesBase = '';
-        formasBase = '';
-        presentacionesBase = '';
-        addDisplayNone();
-    };
-
-    function addDisplayNone() {
-        h4Medicamento.classList.add('displayNone');
-        h4MedicamentoItem.classList.add('displayNone');
-        //ocultar p el nombre ya fue ingresado
-        pMedicamentoBusqueda.classList.remove('displayNone');
-        divDatosMedicamento.classList.add('displayNone');
-        divMedicamentosExistentes.classList.add('displayNone');
-    };
-
-    function removeDisplayNone() {
-        h4Medicamento.classList.remove('displayNone');
-        h4MedicamentoItem.classList.remove('displayNone');
-        pMedicamentoBusqueda.classList.add('displayNone');
-        divDatosMedicamento.classList.remove('displayNone');
-        //mostrar el p que solicita el nombre generico
-        divMedicamentosExistentes.classList.remove('displayNone');
-    };
-    //Si es modificado nombre generico se reinica toda la busqueda para evitar errores
-    //nombre_generico_input.addEventListener('input', reiniciarBusquedaToggleDisplay);
-    function reiniciarBusquedaToggleDisplay() {
-        addDisplayNone();
-        reiniciarBusqueda();
-    }
-
     //DOS FUNCIONES EN UNA
-    // OBTENER ITEMS EXISTENTES DEL MEDICAMENTO ENCONTRADO PARA MOSTRAR SU LISTA Y PARA VALIDAR QUE NO SE ENVIE ITEM REPETIDO(De todas formas la base lo rechazaria pero lo controlamos en el front)
+    // OBTENER ITEMS EXISTENTES DEL MEDICAMENTO ENCONTRADO PARA MOSTRAR SU LISTA.
     async function obtenerYMostrarItems(medicamentoEncontrado) {
 
         // CREO OBTENER Y MOSTRAR DENTRO DE ESTA FUNCION YA QUE ES LA UNICA QUE LAS EJECUTA
@@ -339,6 +309,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     inputEstado.value = 'NO DISPONIBLE';
                 }
 
+
                 divEstado.appendChild(labelEstado);
                 divEstado.appendChild(inputEstado);
                 divEstado.classList.add('datoItem');
@@ -429,7 +400,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    //VALIDAR NOMBRES : comparten la misma expresion regular
+    //VALIDAR NOMBRE
     function validarNombre(nombre, tipo) {
         const regex = /^[A-Za-z0-9 ]{6,100}$/;
         let mensaje;
@@ -456,22 +427,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         return true;
     }
+
+
     //B O T O N    B U S C A R : N O M B R E   G E N E R I C O *************************************************************************************************************************************
 
-    // BUSCAR el nombre generico y mostrar el form en blanco o el form y los items existentes...
+    // BUSCAR el nombre generico Y CARGAR SUS DATOS SI ES ENCONTRADO, SI NO MOSTRAR MSJ DE ERROR...
     btnBuscar.addEventListener('click', async () => {
 
-
+        msjs = [];
         // VALIDAR NOMBRE GENERICO INGRESADO ANTES DE HACER EL FETCH, SINO MOSTRAR MSJ DE ERROR...
         const nombre_generico = nombre_generico_input.value.trim().toUpperCase();
-
-
 
         if (!validarNombre(nombre_generico, 'generico')) {
             return;
         }
-
-
         // VARIABLE CON MAYOR SCOPE para otras funciones
         medicamentoEncontrado = await buscarNombreGenerico(nombre_generico);
 
@@ -492,25 +461,15 @@ document.addEventListener('DOMContentLoaded', async function () {
             familia_input.value = medicamentoEncontrado.familia.descripcion;
             categoria_input.value = medicamentoEncontrado.categoria.descripcion;
 
+            selectEstadoMedicamento.innerHTML = '';
             // Seleccionar la opción adecuada
             if (medicamentoEncontrado.estado === 1) {
-                // Crear opciones
-                const optionDisponible = document.createElement('option');
-                optionDisponible.value = '1';
-                optionDisponible.textContent = 'DISPONIBLE';
-                selectEstadoMedicamento.appendChild(optionDisponible);
-                selectEstadoMedicamento.value = '1'; // Selecciona la opción con value='1'
+                selectEstadoMedicamento.value='DISPONIBLE';
             } else {
-                const optionNoDisponible = document.createElement('option');
-                optionNoDisponible.value = '0';
-                optionNoDisponible.textContent = 'NO DISPONIBLE';
-                // Añadir opciones al select
-                selectEstadoMedicamento.appendChild(optionNoDisponible);
-                selectEstadoMedicamento.value = '0'; // Selecciona la opción con value='0'
+                selectEstadoMedicamento.value='NO DISPONIBLE';
             }
+            
 
-            // // VARIABLE CON MAYOR SCOPE para otras funciones : consultar los items existentes 
-            //ITEM: RENDERIZARLOS Y GUARDARLOS en la variable para VALIDAR mas adelante que NO ingresen un item REPETIDO
             itemsMedicamento = obtenerYMostrarItems(medicamentoEncontrado);
 
         } else {
@@ -519,10 +478,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     });
 
+    //REINICIAR BUSQUEDA SI MODIFICAN NOMBRE GENERICO
     nombre_generico_input.addEventListener('input', reiniciarBusqueda);
-
-
-
 
 
 });
@@ -530,14 +487,3 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
 
-
-
-async function fetchData() {
-    // Simulación de una llamada asíncrona, por ejemplo, una solicitud fetch
-    const response = await fetch('https://api.example.com/data');
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    return data;
-}

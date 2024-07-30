@@ -407,6 +407,25 @@ const buscarItemsMedicamento = async (req, res) => {
   }
 };
 
+//BUSCAR TODOS LOS MEDICAMENTOS
+const buscarMedicamentosTodos = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const [medicamentos] = await Promise.all([
+      Medicamento.buscarMedicamentos(transaction)
+    ]);
+
+    await transaction.commit();
+    return res.status(200).json({
+      medicamentos
+    });
+  } catch (error) {
+    await transaction.rollback();
+    console.error('Error al obtener todos los medicamentos:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
+}
+
 // Controlador para obtener todos los medicamentos, familias, categorias, formas, presentaciones y concentraciones disponibles
 const obtenerMedicamentosCategoriasFamiliasFormasPresentacionesConcentraciones = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -771,5 +790,6 @@ export default {
   mostrarFormModificarMedicamento,
   modificarMedicamento,
   modificarMedicamentoItem,
-  mostrarFormListaMedicamentos
+  mostrarFormListaMedicamentos,
+  buscarMedicamentosTodos
 };

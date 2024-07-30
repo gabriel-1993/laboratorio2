@@ -31,9 +31,11 @@ router.post("/modificarMedicamento", medicamentoController.modificarMedicamento)
 //MODIFICAR DATOS DE MEDICAMENTO ITEM
 router.post("/modificarMedicamentoItem", medicamentoController.modificarMedicamentoItem);
 
-//BUSCAR MEDICAMENTOS
+//BUSCAR MEDICAMENTOS : mostrar form principal
 router.get("/buscarMedicamentos", medicamentoController.mostrarFormListaMedicamentos);
 
+//BUSCAR MEDICAMENTOS : traer todos los medicamentos de la base
+router.get("/buscarMedicamentosTodos", medicamentoController.buscarMedicamentosTodos);
 
 
 export default router;
