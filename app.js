@@ -31,7 +31,7 @@ dotenv.config();
 import errorRoutes from "./routes/errorRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import medicamentoRoutes from "./routes/medicamentoRoutes.js";
-
+import prestacionRoutes from "./routes/prestacionRoutes.js";
 
 
 //fileURLToPath convierte una URL de archivo (file://) en una ruta de archivo del sistema de archivos que puede ser utilizada por Node.js.
@@ -52,7 +52,7 @@ let MySQLStore;
 (async () => {
   const module = await import('express-mysql-session');
   MySQLStore = module.default(session);
-  
+
   // Configuración de la sesión con MySQL
   const sessionStore = new MySQLStore({}, pool);
 
@@ -68,36 +68,37 @@ let MySQLStore;
 
 
 
-// Middlewars :
-app.use(cors());
-app.use(helmet());
-app.use(morgan("dev"));
+  // Middlewars :
+  app.use(cors());
+  app.use(helmet());
+  app.use(morgan("dev"));
 
-// Configurar PUG
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+  // Configurar PUG
+  app.set('views', path.join(__dirname, 'views'));
+  app.set('view engine', 'pug');
 
-// configurar carpeta Public y archivos staticos: CSS, imagenes, etc
-app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-
-// Manejo de rutas
- app.use("/", usuarioRoutes);
- app.use("/", medicamentoRoutes);
+  // configurar carpeta Public y archivos staticos: CSS, imagenes, etc
+  app.use(express.static(path.join(__dirname, "public")));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
 
 
-
-
-app.use(errorRoutes);
+  // Manejo de rutas
+  app.use("/", usuarioRoutes);
+  app.use("/", medicamentoRoutes);
+  app.use("/", prestacionRoutes);
+  // app.use("/", obraSocialRoutes);
 
 
 
+  app.use(errorRoutes);
 
-app.listen(port, () => {
+
+
+
+  app.listen(port, () => {
     console.log(`Servidor escuchando el puerto ${port}`);
-});
+  });
 
 
 })(); // Fin de (async () => {

@@ -122,7 +122,8 @@ body {
 }
 
 /* li crear usuario : roles asignados titulo " ROLES ASIGNADOS " */
-.liRolesAsignadosTitulo {
+.liRolesAsignadosTitulo,
+.liLadosAsignadosTitulo {
     background-color: var(--celesteOscuro);
     color: #fff;
     padding: 4px;
@@ -134,7 +135,8 @@ body {
 
 /* li de cada rol asignado en crear usuario */
 .liRolAsignadoCrearUsuario,
-.liRolAsignadoModificarUsuario {
+.liRolAsignadoModificarUsuario,
+.liLadoAsignado {
     color: #fff;
     display: flex;
     justify-content: space-between;
@@ -336,19 +338,27 @@ button:hover {
 }
 
 
-.btnAsignarRol {
+.btnAsignarRol,
+.btnAsignarLado {
     padding: 0.30rem 0.9rem;
 }
 
 .btnAgregarUsuario,
 .btnModificarUsuario,
 .btnAgregarMedicamento,
-.btnModificarMedicamento {
+.btnModificarMedicamento,
+.btnAgregarPrestacion {
     display: flex;
     justify-content: center;
     margin: 0 auto;
     margin-bottom: 15px;
     width: 160px;
+}
+
+.btnAgregarPrestacion {
+    width: auto;
+    margin-top: 15px;
+    margin-bottom: 25px;
 }
 
 .btnModificarUsuario {
@@ -385,7 +395,8 @@ button:hover {
 .divBuscarUsuarios,
 .divAgregarMedicamento,
 .divModificarMedicamento,
-.divBuscarMedicamentos {
+.divBuscarMedicamentos,
+.divCrearPrestacion {
     width: 420px;
     height: auto;
     display: flex;
@@ -427,6 +438,8 @@ button:hover {
     gap: 12px;
 }
 
+
+
 .divAgregarMedicamento .divFlexRow,
 .divModificarMedicamento .divFlexRow,
 .divBuscarMedicamentos .divFlexRow {
@@ -463,7 +476,8 @@ button:hover {
 #formMostrarRolProfesional,
 #formBuscarUsuario,
 #formAgregarMedicamento,
-#formModificarMedicamento {
+#formModificarMedicamento,
+#formAgregarPrestacion {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -495,7 +509,8 @@ button:hover {
 #formBuscarUsuario,
 #formMostrarRolProfesional,
 #formAgregarMedicamento,
-#formModificarMedicamento {
+#formModificarMedicamento,
+#formAgregarPrestacion {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
@@ -514,12 +529,14 @@ button:hover {
 
 .divBuscarDocumento .fa-magnifying-glass,
 .divBuscarNombreGenerico .fa-magnifying-glass,
-.divMedicamentoItem .fa-magnifying-glass {
+.divMedicamentoItem .fa-magnifying-glass,
+#formAgregarPrestacion .fa-magnifying-glass {
     margin-left: 10px;
 }
 
 /* Debajo del boton asignar rol hay un div oculto para mostrar los roles asignados */
-#formAgregarUsuario .divRolesAsignados {
+#formAgregarUsuario .divRolesAsignados,
+#formAgregarPrestacion .divLadosAsignados {
     display: none;
     border-radius: 4px;
     background-color: var(--azulSemiOscuro);
@@ -527,7 +544,8 @@ button:hover {
 }
 
 /* ul lista de roles asigandor en agregar usuario */
-.ulRolesAsignados {
+.ulRolesAsignados,
+.ulLadosAsignados {
     width: 100%;
 }
 
@@ -594,7 +612,8 @@ input,
 .selectRolesModificarUsuario,
 .selectEstadoModificarUsuario,
 .selectEstadoModificarMedicamento,
-.selectEstadoModificarMedicamentoItem {
+.selectEstadoModificarMedicamentoItem,
+#selectEstado {
     width: 130px;
     text-align: center;
     border-top-right-radius: 3px;
@@ -609,7 +628,8 @@ input,
 .selectRolesModificarUsuario,
 .selectEstadoModificarUsuario,
 .selectEstadoModificarMedicamento,
-.selectEstadoModificarMedicamentoItem {
+.selectEstadoModificarMedicamentoItem,
+#selectEstado {
     text-align: start;
 }
 
@@ -624,7 +644,8 @@ input,
 .selectPresentacion,
 .selectConcentracion,
 .selectEstadoModificarMedicamento,
-.selectEstadoModificarMedicamentoItem {
+.selectEstadoModificarMedicamentoItem,
+#selectEstado {
     flex: 1 1 auto;
     /* El input ocupa todo el espacio restante */
 }
@@ -638,7 +659,8 @@ input,
 #formMostrarRolProfesional div,
 #formBuscarUsuario div,
 #formAgregarMedicamento div,
-#formModificarMedicamento div {
+#formModificarMedicamento div,
+#formAgregarPrestacion div {
     width: 100%;
     display: flex;
     align-items: center;
@@ -646,8 +668,14 @@ input,
 
 #formAgregarMedicamento .divDatosMedicamento,
 #formModificarMedicamento .divDatosMedicamento,
-#formModificarMedicamento .divDatosMedicamentoItem {
+#formModificarMedicamento .divDatosMedicamentoItem,
+#formAgregarPrestacion .divMasCampos {
     gap: 5px;
+}
+
+.divMasCampos {
+    height: auto;
+    display: flex;
 }
 
 /* ocultar elementos con display flex  */
@@ -672,6 +700,7 @@ input,
 .selectConcentracion,
 .selectEstadoModificarMedicamento,
 .selectEstadoModificarMedicamentoItem,
+#selectEstado,
 input {
     padding: 4px;
     font-weight: 100;
@@ -692,7 +721,8 @@ input {
 .selectPresentacion,
 .selectConcentracion,
 .selectEstadoModificarMedicamento,
-.selectEstadoModificarMedicamentoItem {
+.selectEstadoModificarMedicamentoItem,
+#selectEstado {
     padding: 3px;
 }
 
@@ -727,7 +757,8 @@ input:focus {
 .divModificarUsuario p,
 .divBuscarUsuarios p,
 .divDatosMedicamentoNuevo p,
-.divDatosBuscarMedicamentos p{
+.divDatosBuscarMedicamentos p,
+.divDatosPrestacionNueva p {
     width: 80%;
     margin: 30px auto;
     margin-bottom: 20px;
@@ -738,9 +769,14 @@ input:focus {
     background-color: #007bffd7;
 }
 
+.divCrearPrestacion p {
+    width: 100%;
+}
+
 .divDatosMedicamentoNuevo p,
 .divDatosMedicamentoModificar p,
-.divDatosBuscarMedicamentos p{
+.divDatosBuscarMedicamentos p,
+.divDatosPrestacionNueva p {
     margin: 20px auto;
 }
 
@@ -932,30 +968,50 @@ input:focus {
 .divMedicamentoConcentracion,
 .divBuscarNombreGenerico,
 .divMedicamentoFamilia,
-.divMedicamentoCategoria {
+.divMedicamentoCategoria,
+.divBuscarDescripcion,
+.divLados {
     position: relative;
 }
 
+.listaFiltrada:hover {
+    .divLados {
+        height: 400px;
+    }
+}
+
 .listaFiltrada {
-    max-height: 200px;
-    overflow-y: auto;
+    max-height: 100px;
+    /* overflow-y: auto; */
     position: absolute;
     z-index: 2;
     top: 26px;
     width: 100%;
-    display: flex;
+    right: -130px;
+    /* display: flex;
     flex-direction: column;
     justify-content: end;
-    align-items: end;
+    align-items: end; */
 }
+
+/* Mover lista crear prestacion buscar descripcion  */
+.right-127px{
+    right: -127px;
+}
+
 
 .listaFiltradaItem {
     background-color: var(--color-fondo);
-    padding: 5px;
+    padding: 2px 5px;
     cursor: pointer;
     width: 62%;
     color: var(--azulOscuro);
+    overflow-y: hidden;
+    overflow-x: hidden;
+    font-size: 0.8rem;
 }
+
+
 
 .listaFiltradaItem:hover {
     background-color: var(--azulSemiOscuro);

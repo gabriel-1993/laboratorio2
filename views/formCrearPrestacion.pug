@@ -1,0 +1,38 @@
+extends indexAdmin 
+
+block content 
+  .divMsj 
+    ul
+    button.btn-Msj 
+  section.flexCenter.section
+    .divCrearPrestacion.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Crear Prestacion
+      h4.text-center.text-fondoCeleste Datos Prestacion 
+      .divFlexRow
+        .divDatosPrestacionNueva
+          p Por favor ingrese una breve Descripcion del Estudio/Examen que desea agregar. Recomendacion: utilizar lista de Descripciones para evitar duplicados.
+          form(id="formAgregarPrestacion" autocomplete="off")
+            .divBuscarDescripcion 
+              div
+                label(for="descripcion" class="labelCenter") Descripcion
+                input(type="text" id="descripcion" name="descripcion" autocomplete="off") 
+                i.fa-solid.fa-magnifying-glass.btnBuscar
+              ul(id="prestaciones-list" class="prestaciones-list listaFiltrada right-127px displayNone") <!-- Div para mostrar las coincidencias -->
+            .divMasCampos.column.displayNone 
+              div 
+                label(for="estado" class="labelCenter") Estado
+                select(type="text" id="selectEstado" name="estado" autocomplete="off") 
+                  option(value="1") DISPONIBLE  
+                  option(value="0") NO DISPONIBLE 
+              .divLados 
+                div
+                  label(for="lado" class="labelCenter") Lado 
+                  input(type="text" id="lado" name="lado" autocomplete="off" placeholder="opcional")
+                ul(id="lados-list" class="lados-list listaFiltrada right-127px displayNone") <!-- Div para mostrar las coincidencias -->
+              button(type="button" class="btnAsignarLado width100") Asignar Lado
+
+            .divLadosAsignados.DisplayNone
+              ul.ulLadosAsignados
+     
+      button(type="button" class="btnAgregarPrestacion displayNone") Agregar Prestacion
+    script(src="/js/formCrearPrestacionCliente.js", type="module") // Incluye el archivo JavaScript del cliente
