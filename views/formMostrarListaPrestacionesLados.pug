@@ -1,0 +1,26 @@
+extends indexAdmin
+
+block content
+  .divMsj 
+    ul
+    button.btn-Msj 
+  section.flexCenter.section.column.contenedorListasPrestacionesLados
+    .divLadosExistentes.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Lados
+      h4.text-center.text-fondoCeleste.h4MedicamentoItem Lados Disponibles para Prestaciones
+      p Ingrese las letras que desea filtrar por Descripcion en el Listado de Lados.
+      .divFiltrar
+        label(for="descripcion" class="labelCenter") Descripcion
+        input(type="text" id="descripcion" name="descripcion" autocomplete="off") 
+      .divContenedorItemsLados
+
+    .divPrestacionesExistentes.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Prestaciones
+      h4.text-center.text-fondoCeleste.h4MedicamentoItem Datos de Prestaciones
+      p Ingrese las letras que desea filtrar por Descripcion en el Listado de Prestaciones.
+      .divFiltrar
+        label(for="descripcion" class="labelCenter") Descripcion
+        input(type="text" id="descripcionPrestacion" name="descripcion" autocomplete="off") 
+      .divContenedorItemsPrestaciones
+
+  script(src="/js/formMostrarPrestacionesLadosCliente.js", type="module") // Incluye el archivo JavaScript del cliente

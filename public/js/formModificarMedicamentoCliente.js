@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnModificarMedicamento.classList.remove('displayNone');
         btnModificarMedicamentoItem.classList.remove('displayNone');
     };
-    //Si es modificado nombre generico se reinica toda la busqueda para evitar errores
+    //Si es modificado nombre generico se reinica toda la busqueda anulado para permitir modificar nombre generico
     //nombre_generico_input.addEventListener('input', reiniciarBusquedaToggleDisplay);
     function reiniciarBusquedaToggleDisplay() {
         addDisplayNone();
@@ -508,7 +508,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     });
 
-    nombre_generico_input.addEventListener('input', reiniciarBusqueda);
+    //anular reiniciar busqueda para poder modificar tambien nombre generico
+    // nombre_generico_input.addEventListener('input', reiniciarBusqueda);
 
 
 
@@ -1054,54 +1055,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     //B O T O N   M O D I F I C A R    I T E M    M E D I C A M E N T O
     // btnModificarMedicamentoItem.addEventListener('click', async () => {
-
-
-    //     let formaIngresada = forma_farmaceutica_input.value.trim().toUpperCase();
-    //     let presentacionIngresada = presentacion_input.value.trim().toUpperCase();
-    //     let concentracionIngresada = concentracion_input.value.trim().toUpperCase();
-    //     let estadoIngresado = selectEstadoItem.value;
-    //     console.log(itemEncontrado);
-    //     console.log(itemsMedicamento);
-
-    //     if (medicamento_item_input.value.trim() === '') {
-    //         mostrarMsjCliente('Datos vacios', ['Datos vacios, primero debe ingresar el ID ITEM y buscarlo con la LUPA.']);
-    //         return;
-    //     }
-
-    //     //SI NO HAY NINGUNA MODIFICACION MOSTRAR MSJ AL USUARIO
-    //     if (formaIngresada == itemEncontrado.descripcion_forma && presentacionIngresada == itemEncontrado.descripcion_presentacion
-    //         && concentracionIngresada == itemEncontrado.descripcion_concentracion
-    //         && estadoIngresado == itemEncontrado.estado) {
-    //         mostrarMsjCliente('Datos incorrectos', ['No se encontraron modificaciones en el Item, primero debe hacer las modificaciones.']);
-    //         return;
-    //     }
-
-
-    //     //SI HAY CAMBIOS VALIDAR LOS DATOS INGRESADOS
-    //     if (!validarForma(formaIngresada) || !validarPresentacion(presentacionIngresada) || !validarConcentracion(concentracionIngresada)) {
-    //         return;
-    //     }
-
-    //     formaIngresada = procesarFormaFarmaceutica(formaIngresada, itemEncontrado, itemsMedicamento);
-    //     presentacionIngresada = procesarPresentacion(presentacionIngresada, itemEncontrado, itemsMedicamento);
-    //     concentracionIngresada = procesarConcentracion(concentracionIngresada, itemEncontrado, itemsMedicamento);
-
-    //     console.log(estadoIngresado);
-    //     if (estadoIngresado === itemEncontrado.estado) {
-    //         estadoIngresado = {
-    //             modificar: false,
-    //             valor: estadoIngresado
-    //         }
-    //     } else {
-    //         estadoIngresado = {
-    //             modificar: true,
-    //             valor: estadoIngresado
-    //         }
-    //     }
-
-
-
-    // });
 
     async function fetchModificarMedicamentoItem(medicamento_id, item_id, formaIngresada, presentacionIngresada, concentracionIngresada, estadoIngresado) {
         // ENVIAR DATOS

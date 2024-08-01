@@ -80,7 +80,28 @@ class Prestacion {
     });
   }
 
+  static async modificarPrestacion( prestacionDescripcion, estadoInt, idInt, transaction = null) {
+    try {
+      const query = `
+      UPDATE prestacion
+      SET descripcion = ?,
+      estado = ?
+        
+      WHERE id = ?
+    `;
 
+      const valores = [ prestacionDescripcion, estadoInt, idInt ];
+
+      await sequelize.query(query, {
+        replacements: valores,
+        type: sequelize.QueryTypes.UPDATE,
+        transaction
+      });
+    } catch (error) {
+      console.error('Error al modificar prestacion:', error);
+      throw error;
+    }
+  }
 
 
 

@@ -2,6 +2,8 @@ import { mostrarMsjCliente } from './mostrarMsjCliente.js';
 // MOSTRAR LISTAS EN INPUT Y FILTRARLA POR LETRAS INGRESADAS
 import { configurarInputConLista, mostrarLista, ocultarLista, renderizarLista, filtrarLista } from './mostrarFiltrarListasInputs.js'
 
+
+
 document.addEventListener('DOMContentLoaded', async () => {
 
 
@@ -31,6 +33,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         configurarInputConLista('#lado', '#lados-list', datos.lados);
     }
 
+
+
+
+    //B O T O N    B U S C A R  
+    // BUSCAR DESCRIPCION la descripcion validar si es una nueva o es existente
+    btnBuscar.addEventListener('click', () => {
+        // Capturar el valor del input y convertirlo a mayúsculas
+        const prestacionIngresada = descripcionInput.value.trim().toUpperCase();
+        // Validar longitud de la descripción
+        if (!validarDescripcion(prestacionIngresada)) {
+            return;
+        }
+        //RECORRER PRESTACIONES
+        if (validarPrestacionExistente(prestacionIngresada, prestacionesBase)) {
+            return;
+        }
+
+        divMasCampos.classList.remove('displayNone');
+        btnAgregarPrestacion.classList.remove('displayNone');
+
+
+        descripcionInput.addEventListener('input', function () {
+            //al modificar la prestacion encontrada , reiniciar la busqueda para evitar errores
+            reiniciarBusqueda();
+        });
+
+    });
+
     //Luego de agregar reiniciar datos para evitar errores
     function reiniciarBusqueda() {
         ladoIngresado = '';
@@ -45,6 +75,87 @@ document.addEventListener('DOMContentLoaded', async () => {
         divMasCampos.classList.add('displayNone');
         btnAgregarPrestacion.classList.add('displayNone');
     }
+
+
+
+    //B O T O N    A S I G N A R    L A D O
+    btnAsignarLado.addEventListener('click', () => {
+        ladoIngresado = ladoInput.value.trim().toUpperCase();
+
+        // Validar lado
+        if (!validarLado(ladoIngresado)) {
+            // NO es válido
+            mostrarMsjCliente('Lado incorrecto', ['Lado puede contener únicamente letras (a-z,A-Z), espacios y comas. Min 5 y max 100 caracteres.']);
+            return;
+        }
+
+        //PARSEAR STRING DE LADO A OBJETO CON ID O BOOLEAN PARA CREARLO
+        ladoIngresado = validarLadoExistente(ladoIngresado, ladosBase);
+
+        asignarLado(ladoIngresado, ladosAsignados);
+
+    });
+
+
+
+    // B O T O N     A G R E G A R     P R E S T A C I O N / L A D O S
+
+    async function enviarPrestacionLados(prestacionIngresada, ladosAsignados) {
+        try {
+            const response = await fetch('/agregarPrestacionLados', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prestacionIngresada, ladosAsignados }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                mostrarMsjCliente('Prestacion agregada', ['Los datos ingresados fueron agregados con exito.']);
+            } else {
+                const error = await response.json();
+                mostrarMsjCliente('Error Agregar Prestacion', [error.message]);
+            }
+        } catch (error) {
+            mostrarMsjCliente('Error conexion Agregar Prestacion', [error.message]);
+        }
+    }
+
+
+    //B O T O N     A G R E G A R    P R E S T A C I O N ( L A D O S)
+    //prestacion es obligatoria, lados puede estar vacio. Solo los que sean nuevos se agregan a la base de datos
+    btnAgregarPrestacion.addEventListener('click', () => {
+
+        //VOLVER A VALIDAR DESCRIPCION POR SI FUE MODIFICADA DESPUES DE BUSCARLA
+        // Capturar el valor del input y convertirlo a mayúsculas
+        let prestacionIngresada = descripcionInput.value.trim().toUpperCase();
+        // Validar longitud de la descripción
+        if (!validarDescripcion(prestacionIngresada)) {
+            return;
+        }
+        //RECORRER PRESTACIONES
+        if (validarPrestacionExistente(prestacionIngresada, prestacionesBase)) {
+            return;
+        }
+
+        //CAPTURAR ESTADO Y ASIGNARLO A LA PRESTACION
+        const estadoSeleccionado = selectEstado.value;
+
+        prestacionIngresada = {
+            descripcion: prestacionIngresada,
+            estado: estadoSeleccionado
+        }
+
+        //ENVIAR PRESTACION NUEVA Y LADOS
+        enviarPrestacionLados(prestacionIngresada, ladosAsignados);
+        reiniciarBusqueda();
+
+    });
+
+
+
+
 
     //BUSCAR TODAS LAS PRESTACIONES Y LADOS EN LA BASE PARA MOSTRARLOS DEBAJO DEL INPUT CON FILTRO( y EVITAR AGREGAR DATOS REPETIDOS)
     async function fetchObtenerPrestacionesYlados() {
@@ -100,8 +211,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Expresión regular para validar solo letras, espacios y comas
         const regex = /^[A-Za-z,\s]{5,100}$/;
 
-        // Validar el campo
-        return regex.test(ladoIngresado);
+        if (!regex.test(ladoIngresado)) {
+            mostrarMsjCliente('Dato incorrecto', ['Lado solo puede contener letras y espacios.', ' Minimo 5 y maximo 100 caracteres. ']);
+            return false;
+        }
+        return true;
     }
 
     //CAPTURAR ID de LADO o CREARLO EN CONTROLADOR : Si es nuevo, se agrega al array para agregarlo en el controlador, sino se captura su ID
@@ -189,102 +303,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
 
-    //B O T O N    B U S C A R  
-    // BUSCAR DESCRIPCION la descripcion validar si es una nueva o es existente
-    btnBuscar.addEventListener('click', () => {
-        // Capturar el valor del input y convertirlo a mayúsculas
-        const prestacionIngresada = descripcionInput.value.trim().toUpperCase();
-        // Validar longitud de la descripción
-        if (!validarDescripcion(prestacionIngresada)) {
-            return;
-        }
-        //RECORRER PRESTACIONES
-        if (validarPrestacionExistente(prestacionIngresada, prestacionesBase)) {
-            return;
-        }
 
-        divMasCampos.classList.remove('displayNone');
-        btnAgregarPrestacion.classList.remove('displayNone');
-    });
-
-
-    //B O T O N    A S I G N A R    L A D O
-    btnAsignarLado.addEventListener('click', () => {
-        ladoIngresado = ladoInput.value.trim().toUpperCase();
-
-        // Validar lado
-        if (!validarLado(ladoIngresado)) {
-            // NO es válido
-            mostrarMsjCliente('Lado incorrecto', ['Lado puede contener únicamente letras (a-z,A-Z), espacios y comas. Min 5 y max 100 caracteres.']);
-            return;
-        }
-
-        //PARSEAR STRING DE LADO A OBJETO CON ID O BOOLEAN PARA CREARLO
-        ladoIngresado = validarLadoExistente(ladoIngresado, ladosBase);
-
-        asignarLado(ladoIngresado, ladosAsignados);
-
-    });
-
-
-
-
-    // B O T O N     A G R E G A R     P R E S T A C I O N / L A D O S
-
-    async function enviarPrestacionLados(prestacionIngresada, ladosAsignados) {
-        try {
-            const response = await fetch('/agregarPrestacionLados', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ prestacionIngresada, ladosAsignados }),
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                mostrarMsjCliente('Prestacion agregada', ['Los datos ingresados fueron agregados con exito.']);
-            } else {
-                const error = await response.json();
-                mostrarMsjCliente('Error Agregar Prestacion', [error.message]);
-            }
-        } catch (error) {
-            mostrarMsjCliente('Error conexion Agregar Prestacion', [error.message]);
-        }
-    }
-
-
-    //B O T O N     A G R E G A R    P R E S T A C I O N ( L A D O S)
-    //prestacion es obligatoria, lados puede estar vacio. Solo los que sean nuevos se agregan a la base de datos
-    btnAgregarPrestacion.addEventListener('click', () => {
-
-        //VOLVER A VALIDAR DESCRIPCION POR SI FUE MODIFICADA DESPUES DE BUSCARLA
-        // Capturar el valor del input y convertirlo a mayúsculas
-        let prestacionIngresada = descripcionInput.value.trim().toUpperCase();
-        // Validar longitud de la descripción
-        if (!validarDescripcion(prestacionIngresada)) {
-            return;
-        }
-        //RECORRER PRESTACIONES
-        if (validarPrestacionExistente(prestacionIngresada, prestacionesBase)) {
-            return;
-        }
-
-        //CAPTURAR ESTADO Y ASIGNARLO A LA PRESTACION
-        const estadoSeleccionado = selectEstado.value;
-
-        prestacionIngresada = {
-            descripcion: prestacionIngresada,
-            estado: estadoSeleccionado
-        }
-
-        //ENVIAR PRESTACION NUEVA Y LADOS
-        enviarPrestacionLados(prestacionIngresada, ladosAsignados);
-        reiniciarBusqueda();
-
-    });
 
 
 });
+
+
+
 
 

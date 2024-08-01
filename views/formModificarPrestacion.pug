@@ -5,13 +5,14 @@ block content
     ul
     button.btn-Msj 
   section.flexCenter.section
-    .divCrearPrestacion.center.column.blur
-      h3.text-center.text-fondoAzul.borderRadiusTop5px Crear Prestacion
+    .divModificarPrestacion.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Modificar Prestacion
       h4.text-center.text-fondoCeleste Datos Prestacion 
       .divFlexRow
-        .divDatosPrestacionNueva
-          p Por favor ingrese una breve Descripcion del Estudio/Examen que desea agregar. Utilizar lista de Descripciones para evitar duplicados.
-          form(id="formAgregarPrestacion" autocomplete="off")
+        .divDatosPrestacion
+          p Por favor ingrese una breve Descripcion del Estudio/Examen que desea Modificar. Utilizar lista de Descripciones para Seleccionar. 
+
+          form(id="formModificarPrestacion" autocomplete="off")
             .divBuscarDescripcion 
               div
                 label(for="descripcion" class="labelCenter") Descripcion
@@ -29,10 +30,10 @@ block content
                   label(for="lado" class="labelCenter") Lado 
                   input(type="text" id="lado" name="lado" autocomplete="off" placeholder="opcional")
                 ul(id="lados-list" class="lados-list listaFiltrada right-127px displayNone") <!-- Div para mostrar las coincidencias -->
-              button(type="button" class="btnAsignarLado width100") Asignar Lado
+              button(type="button" class="btnModificarLado width100") Asignar Lado
 
-            .divLadosAsignados.displayNone
-              ul.ulLadosAsignados
+            .divLadosModificados.displayNone
+              ul.ulLadosModificados
      
-      button(type="button" class="btnAgregarPrestacion displayNone") Agregar Prestacion
-    script(src="/js/formCrearPrestacionCliente.js", type="module") // Incluye el archivo JavaScript del cliente
+      button(type="button" class="btnModificarPrestacion displayNone") Modificar Prestacion
+    script(src="/js/formModificarPrestacionCliente.js", type="module") // Incluye el archivo JavaScript del cliente

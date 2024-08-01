@@ -136,7 +136,7 @@ body {
 /* li de cada rol asignado en crear usuario */
 .liRolAsignadoCrearUsuario,
 .liRolAsignadoModificarUsuario,
-.liLadoAsignado {
+.liLadoAsignados {
     color: #fff;
     display: flex;
     justify-content: space-between;
@@ -339,7 +339,8 @@ button:hover {
 
 
 .btnAsignarRol,
-.btnAsignarLado {
+.btnAsignarLado,
+.btnModificarLado {
     padding: 0.30rem 0.9rem;
 }
 
@@ -347,7 +348,8 @@ button:hover {
 .btnModificarUsuario,
 .btnAgregarMedicamento,
 .btnModificarMedicamento,
-.btnAgregarPrestacion {
+.btnAgregarPrestacion,
+.btnModificarPrestacion {
     display: flex;
     justify-content: center;
     margin: 0 auto;
@@ -355,10 +357,10 @@ button:hover {
     width: 160px;
 }
 
-.btnAgregarPrestacion {
+.btnAgregarPrestacion,
+.btnModificarPrestacion {
     width: auto;
-    margin-top: 15px;
-    margin-bottom: 25px;
+    margin-top: 5px;
 }
 
 .btnModificarUsuario {
@@ -369,7 +371,6 @@ button:hover {
 .btnModificarMedicamento,
 .btnModificarMedicamentoItem {
     width: auto;
-    font-size: 0.9rem;
 }
 
 
@@ -396,7 +397,8 @@ button:hover {
 .divAgregarMedicamento,
 .divModificarMedicamento,
 .divBuscarMedicamentos,
-.divCrearPrestacion {
+.divCrearPrestacion,
+.divModificarPrestacion {
     width: 420px;
     height: auto;
     display: flex;
@@ -477,7 +479,8 @@ button:hover {
 #formBuscarUsuario,
 #formAgregarMedicamento,
 #formModificarMedicamento,
-#formAgregarPrestacion {
+#formAgregarPrestacion,
+#formModificarPrestacion {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -510,7 +513,8 @@ button:hover {
 #formMostrarRolProfesional,
 #formAgregarMedicamento,
 #formModificarMedicamento,
-#formAgregarPrestacion {
+#formAgregarPrestacion,
+#formModificarPrestacion {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
@@ -518,7 +522,13 @@ button:hover {
 
 #formAgregarMedicamento,
 #formModificarMedicamento {
-    padding-bottom: 25px;
+    padding-bottom: 45px;
+}
+
+#formAgregarPrestacion,
+#formModificarPrestacion {
+    padding-top: 0px;
+    margin-bottom: 30px;
 }
 
 /* modificar usuario  */
@@ -530,13 +540,15 @@ button:hover {
 .divBuscarDocumento .fa-magnifying-glass,
 .divBuscarNombreGenerico .fa-magnifying-glass,
 .divMedicamentoItem .fa-magnifying-glass,
-#formAgregarPrestacion .fa-magnifying-glass {
+#formAgregarPrestacion .fa-magnifying-glass,
+#formModificarPrestacion .fa-magnifying-glass {
     margin-left: 10px;
 }
 
 /* Debajo del boton asignar rol hay un div oculto para mostrar los roles asignados */
 #formAgregarUsuario .divRolesAsignados,
-#formAgregarPrestacion .divLadosAsignados {
+#formAgregarPrestacion .divLadosAsignados,
+#formModificarPrestacion .divLadosModificados {
     display: none;
     border-radius: 4px;
     background-color: var(--azulSemiOscuro);
@@ -545,7 +557,8 @@ button:hover {
 
 /* ul lista de roles asigandor en agregar usuario */
 .ulRolesAsignados,
-.ulLadosAsignados {
+.ulLadosAsignados,
+.ulLadosModificados {
     width: 100%;
 }
 
@@ -660,7 +673,9 @@ input,
 #formBuscarUsuario div,
 #formAgregarMedicamento div,
 #formModificarMedicamento div,
-#formAgregarPrestacion div {
+#formAgregarPrestacion div,
+#formModificarPrestacion div,
+.divFiltrar {
     width: 100%;
     display: flex;
     align-items: center;
@@ -669,7 +684,8 @@ input,
 #formAgregarMedicamento .divDatosMedicamento,
 #formModificarMedicamento .divDatosMedicamento,
 #formModificarMedicamento .divDatosMedicamentoItem,
-#formAgregarPrestacion .divMasCampos {
+#formAgregarPrestacion .divMasCampos,
+#formModificarPrestacion .divMasCampos {
     gap: 5px;
 }
 
@@ -758,7 +774,10 @@ input:focus {
 .divBuscarUsuarios p,
 .divDatosMedicamentoNuevo p,
 .divDatosBuscarMedicamentos p,
-.divDatosPrestacionNueva p {
+.divDatosPrestacionNueva p,
+.divDatosPrestacion p,
+.divLadosExistentes p,
+.divPrestacionesExistentes p {
     width: 80%;
     margin: 30px auto;
     margin-bottom: 20px;
@@ -769,14 +788,16 @@ input:focus {
     background-color: #007bffd7;
 }
 
-.divCrearPrestacion p {
+.divCrearPrestacion p,
+.divModificarPrestacion p {
     width: 100%;
 }
 
 .divDatosMedicamentoNuevo p,
 .divDatosMedicamentoModificar p,
 .divDatosBuscarMedicamentos p,
-.divDatosPrestacionNueva p {
+.divDatosPrestacionNueva p,
+.divLadosExistentes p {
     margin: 20px auto;
 }
 
@@ -911,6 +932,47 @@ input:focus {
     width: 90%;
 }
 
+.divPrestacionesExistentes {
+    width: 75%;
+}
+
+/* contenedor cards de prestaciones en mostrar lista prestaciones */
+.divContenedorItemsPrestaciones {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding-bottom: 20px;
+}
+
+.cardPrestacion {
+    width: 30%;
+    border-radius: 5px;
+    border: solid 2px var(--azulSemiOscuro);
+}
+
+.cardPrestacion .datoItem {
+    margin: 3px;
+}
+
+.divLadosExistentes {
+    margin-top: 25px;
+    width: 60%;
+    background-color: var(--color-fondo);
+    border-radius: 11px;
+}
+
+.divLadosExistentes .divFiltrar,
+.divPrestacionesExistentes .divFiltrar {
+    width: 50%;
+    margin: 20px auto;
+}
+
+.divPrestacionesExistentes .divFiltrar {
+    width: 40%;
+}
+
 .divContenedorItems {
     /* width: 90%; */
     display: flex;
@@ -955,6 +1017,56 @@ input:focus {
     background-color: #fff;
 }
 
+.contenedorListasPrestacionesLados {
+    gap: 40px;
+}
+
+/* //contenedor de lados en /buscarPrestaciones */
+.divContenedorItemsLados {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    background-color: var(--color-fondo);
+    padding: 8px;
+    padding-bottom: 20px;
+}
+
+/* //cada una de las cards dentro del contenedor items lados */
+.cardLados {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    border: 2px solid var(--azulSemiOscuro);
+    border-radius: 5px;
+}
+
+.cardLados .datoItem {
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-fondo);
+    padding: 3px;
+    border-radius: 5px;
+    flex-direction: column;
+
+}
+
+
+
+.cardLados .datoItem label,
+.cardLados .datoItem input {
+    width: 100%;
+}
+
+
+.divPrestacionesExistentes {
+    background-color: var(--color-fondo);
+    border-radius: 9px;
+}
+
+
 .footer {
     background-color: var(--azulOscuro);
     color: #fff;
@@ -995,7 +1107,7 @@ input:focus {
 }
 
 /* Mover lista crear prestacion buscar descripcion  */
-.right-127px{
+.right-127px {
     right: -127px;
 }
 

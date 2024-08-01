@@ -16,6 +16,14 @@ router.get("/obtenerPrestacionesYlados", prestacionController.obtenerPrestacione
 router.post('/agregarPrestacionLados', prestacionController.agregarPrestacionLados);
 
 
+//MODIFICAR PRESTACION LADOS
+//Renderizar la vista/form modificar prestacion
+router.get("/modificarPrestacion", prestacionController.mostrarFormModificarPrestacion);
 
+//AGREGAR PRESTACION Y LADO/LADOS cuando sea necesario
+router.post('/modificarPrestacionLados', prestacionController.modificarPrestacionLados);
+
+//Renderizar la vista/form para mostrar lista de prestaciones / lados
+router.get("/buscarPrestaciones", prestacionController.formMostrarListaPrestacionesLados);
 
 export default router;

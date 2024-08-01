@@ -88,6 +88,10 @@ export function renderizarLista(elementoLista, elementos) {
     elementos.forEach(elemento => {
         const itemLista = document.createElement('li');
         itemLista.classList.add('listaFiltradaItem');
+        //SI TIENE ID ASIGNARLO AL LI
+        if(elemento.id){
+            itemLista.dataset.id = elemento.id;
+        }
         itemLista.textContent = elemento.descripcion;
         elementoLista.appendChild(itemLista);
     });
