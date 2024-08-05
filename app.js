@@ -32,6 +32,7 @@ import errorRoutes from "./routes/errorRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import medicamentoRoutes from "./routes/medicamentoRoutes.js";
 import prestacionRoutes from "./routes/prestacionRoutes.js";
+import obraSocialRoutes from "./routes/obraSocialRoutes.js";
 
 
 //fileURLToPath convierte una URL de archivo (file://) en una ruta de archivo del sistema de archivos que puede ser utilizada por Node.js.
@@ -87,6 +88,7 @@ let MySQLStore;
   app.use("/", usuarioRoutes);
   app.use("/", medicamentoRoutes);
   app.use("/", prestacionRoutes);
+  app.use("/", obraSocialRoutes)
   // app.use("/", obraSocialRoutes);
 
 

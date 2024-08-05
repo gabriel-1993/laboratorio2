@@ -1,0 +1,44 @@
+extends indexAdmin
+
+block content
+  .divMsj 
+    ul
+    button.btn-Msj 
+  section.flexCenter.section.column
+    .divFormObraSocial.center.column.blur  
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Crear Obra Social
+      h4.text-center.text-fondoCeleste Datos Obra Social 
+      p Por favor, ingrese y busque el Nombre de la Obra Social para validarlo. Utilizar lista de Nombres para evitar duplicados.
+      form(id='formCrearObraSocial' autocomplete="off")
+        .divBuscarNombre 
+          div 
+            label(for="nombre" class="labelCenter") Nombre
+            input#nombre(type="text" name="nombre" autocomplete="off") 
+            i.fa-solid.fa-magnifying-glass.btnBuscar
+          ul(id="obrasSociales-list" class="obrasSociales-list listaFiltrada right-127px displayNone") <!-- Div para mostrar las coincidencias -->
+
+        .divMasCampos.column.displayNone
+          div
+            label(for="telefono" class="labelCenter") Telefono
+            input#telefono(type="tel" name="telefono" autocomplete="off") 
+          div
+            label(for="direccion" class="labelCenter") Direccion
+            input#direccion(type="text" name="direccion" autocomplete="off") 
+          div
+            label(for="estado" class="labelCenter") Estado
+            select#selectEstado(name="estado")
+              option(value="DISPONIBLE") DISPONIBLE
+              option(value="NO DISPONIBLE") NO DISPONIBLE
+          .divBuscarPlan
+            div
+              label(for="plan" class="labelCenter") Planes
+              input#plan(type="text" name="plan" autocomplete="off")             
+            ul(id="planes-list" class="planes-list listaFiltrada right-127px") <!-- Div para mostrar las coincidencias -->
+          button(class="btnAsignarPlan width100") Asignar Plan
+        .divPlanesAsignados  
+        ul(id="listaPlanesAsignados" class="listaPlanesAsignados") <!-- Div para mostrar las coincidencias -->
+
+          
+        button(class="btnAgregarObraSocial displayNone") Agregar Obra Social
+    script(src="/js/formCrearObraSocialCliente.js", type="module") // Incluye el archivo JavaScript del cliente
+            

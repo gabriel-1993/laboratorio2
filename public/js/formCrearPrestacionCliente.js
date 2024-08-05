@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             // Manejo de errores
             console.error('Hubo un problema con la solicitud:', error);
-            document.getElementById('data').innerText = 'Ocurrió un error al cargar los datos.';
+            mostrarMsjCliente('Error en conexion', ['Error al obtenerPrestacionesYlados.'])
             return null;
         }
     }

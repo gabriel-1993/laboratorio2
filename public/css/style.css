@@ -136,7 +136,8 @@ body {
 /* li de cada rol asignado en crear usuario */
 .liRolAsignadoCrearUsuario,
 .liRolAsignadoModificarUsuario,
-.liLadoAsignados {
+.liLadoAsignados,
+.planAsignado {
     color: #fff;
     display: flex;
     justify-content: space-between;
@@ -340,7 +341,8 @@ button:hover {
 
 .btnAsignarRol,
 .btnAsignarLado,
-.btnModificarLado {
+.btnModificarLado,
+.btnAsignarPlan {
     padding: 0.30rem 0.9rem;
 }
 
@@ -349,7 +351,8 @@ button:hover {
 .btnAgregarMedicamento,
 .btnModificarMedicamento,
 .btnAgregarPrestacion,
-.btnModificarPrestacion {
+.btnModificarPrestacion,
+.btnAgregarObraSocial {
     display: flex;
     justify-content: center;
     margin: 0 auto;
@@ -369,7 +372,8 @@ button:hover {
 
 .btnAgregarMedicamento,
 .btnModificarMedicamento,
-.btnModificarMedicamentoItem {
+.btnModificarMedicamentoItem,
+.btnAgregarObraSocial {
     width: auto;
 }
 
@@ -398,7 +402,8 @@ button:hover {
 .divModificarMedicamento,
 .divBuscarMedicamentos,
 .divCrearPrestacion,
-.divModificarPrestacion {
+.divModificarPrestacion,
+.divFormObraSocial {
     width: 420px;
     height: auto;
     display: flex;
@@ -480,7 +485,8 @@ button:hover {
 #formAgregarMedicamento,
 #formModificarMedicamento,
 #formAgregarPrestacion,
-#formModificarPrestacion {
+#formModificarPrestacion,
+#formCrearObraSocial {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -514,7 +520,8 @@ button:hover {
 #formAgregarMedicamento,
 #formModificarMedicamento,
 #formAgregarPrestacion,
-#formModificarPrestacion {
+#formModificarPrestacion,
+#formCrearObraSocial {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
@@ -541,14 +548,16 @@ button:hover {
 .divBuscarNombreGenerico .fa-magnifying-glass,
 .divMedicamentoItem .fa-magnifying-glass,
 #formAgregarPrestacion .fa-magnifying-glass,
-#formModificarPrestacion .fa-magnifying-glass {
+#formModificarPrestacion .fa-magnifying-glass,
+#formCrearObraSocial .fa-magnifying-glass {
     margin-left: 10px;
 }
 
 /* Debajo del boton asignar rol hay un div oculto para mostrar los roles asignados */
 #formAgregarUsuario .divRolesAsignados,
 #formAgregarPrestacion .divLadosAsignados,
-#formModificarPrestacion .divLadosModificados {
+#formModificarPrestacion .divLadosModificados,
+#formCrearObraSocial .divPlanesAsignados {
     display: none;
     border-radius: 4px;
     background-color: var(--azulSemiOscuro);
@@ -558,7 +567,9 @@ button:hover {
 /* ul lista de roles asigandor en agregar usuario */
 .ulRolesAsignados,
 .ulLadosAsignados,
-.ulLadosModificados {
+.ulLadosModificados,
+.planes-list,
+.listaPlanesAsignados {
     width: 100%;
 }
 
@@ -675,7 +686,9 @@ input,
 #formModificarMedicamento div,
 #formAgregarPrestacion div,
 #formModificarPrestacion div,
-.divFiltrar {
+.divFiltrar,
+#formCrearObraSocial div,
+#formCrearObraSocial .divPlanesAsignados {
     width: 100%;
     display: flex;
     align-items: center;
@@ -685,7 +698,8 @@ input,
 #formModificarMedicamento .divDatosMedicamento,
 #formModificarMedicamento .divDatosMedicamentoItem,
 #formAgregarPrestacion .divMasCampos,
-#formModificarPrestacion .divMasCampos {
+#formModificarPrestacion .divMasCampos,
+#formCrearObraSocial .divMasCampos {
     gap: 5px;
 }
 
@@ -777,13 +791,15 @@ input:focus {
 .divDatosPrestacionNueva p,
 .divDatosPrestacion p,
 .divLadosExistentes p,
-.divPrestacionesExistentes p {
+.divPrestacionesExistentes p,
+.divFormObraSocial p {
     width: 80%;
     margin: 30px auto;
     margin-bottom: 20px;
     border-radius: 4px;
     padding: 10px;
     color: #fff;
+    text-align: center;
     /* celeste oscuro trasparente */
     background-color: #007bffd7;
 }
@@ -797,7 +813,8 @@ input:focus {
 .divDatosMedicamentoModificar p,
 .divDatosBuscarMedicamentos p,
 .divDatosPrestacionNueva p,
-.divLadosExistentes p {
+.divLadosExistentes p,
+.divFormObraSocial p {
     margin: 20px auto;
 }
 
@@ -1082,7 +1099,9 @@ input:focus {
 .divMedicamentoFamilia,
 .divMedicamentoCategoria,
 .divBuscarDescripcion,
-.divLados {
+.divLados,
+.divBuscarNombre,
+.divBuscarPlan {
     position: relative;
 }
 
@@ -1128,4 +1147,10 @@ input:focus {
 .listaFiltradaItem:hover {
     background-color: var(--azulSemiOscuro);
     color: #fff;
+}
+
+/* crear obra social */
+.divFormObraSocial {
+    margin: 25px 0;
+    padding-bottom: 25px;
 }

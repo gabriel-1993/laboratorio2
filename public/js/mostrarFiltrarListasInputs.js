@@ -89,20 +89,38 @@ export function renderizarLista(elementoLista, elementos) {
         const itemLista = document.createElement('li');
         itemLista.classList.add('listaFiltradaItem');
         //SI TIENE ID ASIGNARLO AL LI
-        if(elemento.id){
+        if (elemento.id) {
             itemLista.dataset.id = elemento.id;
         }
-        itemLista.textContent = elemento.descripcion;
-        elementoLista.appendChild(itemLista);
+        if (elemento.descripcion) {
+            itemLista.textContent = elemento.descripcion;
+            elementoLista.appendChild(itemLista);
+        } else if (elemento.nombre) {
+            //obras sociales por ej muestro nombres
+            itemLista.textContent = elemento.nombre;
+            elementoLista.appendChild(itemLista);
+        }
+
+
     });
 }
 
 // Función para filtrar la lista
 export function filtrarLista(input, lista, elementos) {
     const textoFiltro = input.value.toLowerCase();
-    const elementosFiltrados = elementos.filter(elemento => 
-        elemento.descripcion.toLowerCase().includes(textoFiltro)
-    );
+    let elementosFiltrados;
+    if (elementos[0].descripcion) {
+        elementosFiltrados = elementos.filter(elemento =>
+            elemento.descripcion.toLowerCase().includes(textoFiltro)
+        );
+    } else if (elementos[0].nombre) {
+        //Obra social .nombre
+        elementosFiltrados = elementos.filter(elemento =>
+            elemento.nombre.toLowerCase().includes(textoFiltro)
+        );
+    }
+
+
 
     if (textoFiltro === '') {
         ocultarLista(lista);

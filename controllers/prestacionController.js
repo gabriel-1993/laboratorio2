@@ -141,7 +141,6 @@ async function modificarPrestacionLados(req, res) {
 
     }
 
-
     // Agregar los lados asociados si existen
     if (ladosAsignados.length) {
       for (let lado of ladosAsignados) {
@@ -150,10 +149,6 @@ async function modificarPrestacionLados(req, res) {
         }
       }
     }
-
-
-
-
     // Commit si se realizaron modificaciones
     await transaction.commit();
     return res.status(200).json({ message: 'Medicamento modificado exitosamente' });
