@@ -1,4 +1,4 @@
-import sequelize from '../sequalize.js'; // Asegúrate de que la ruta sea correcta
+import sequelize from '../sequalize.js';
 import { Transaction } from 'sequelize';
 
 
@@ -57,7 +57,6 @@ class ObraSocial {
         }
     }
 
-
     //Agregar Obra Social y recuperar id
     static async agregarObraSocial(descripcion, telefono, direccion, estado, transaction = null) {
         try {
@@ -107,6 +106,80 @@ class ObraSocial {
         } catch (error) {
             console.error('Error al asignar plan a obra social:', error);
             throw error; // Lanzar el error para que sea manejado por la transacción
+        }
+    }
+
+    //eliminar relacion entre obra y plan
+    static async desasignarPlan(idObraSocial, idPlan, transaction = null) {
+        try {
+
+            // Validar que no sean nulos o indefinidos
+            if (!idObraSocial || !idPlan) {
+                throw new Error('El ID de Obra Social o el ID del Plan no pueden ser nulos o indefinidos');
+            }
+
+            const query = `DELETE FROM obrasocial_plan WHERE obraSocial_id = ? AND plan_id = ?`;
+            await sequelize.query(query, {
+                replacements: [idObraSocial, idPlan],
+                type: sequelize.QueryTypes.DELETE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al desasignar plan de obra social:', error);
+            throw error; // Lanzar el error para que sea manejado por la transacción
+        }
+    }
+
+
+    //Buscar planes asignados a obra social con nombre
+    static async buscarPlanesAsignados(idObraSocial, transaction = null) {
+        try {
+            const planesAsignados = await sequelize.query(
+                `SELECT 
+                osp.*, 
+                p.nombre AS nombrePlan 
+             FROM obrasocial_plan osp
+             INNER JOIN plan p ON osp.plan_id = p.id
+             WHERE osp.obraSocial_id = ?`,
+                {
+                    replacements: [idObraSocial],
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!planesAsignados || planesAsignados.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return planesAsignados;
+        } catch (error) {
+            console.error('Error al buscar todos los planes asignados:', error);
+            throw error;
+        }
+    }
+
+    //Modificar datos obra social
+    static async modificarObraSocial(idObraSocial, nombre, telefono, direccion, estado, transaction = null) {
+        try {
+            const query = `
+          UPDATE obrasocial
+          SET nombre = ?,
+          estado = ?,
+          telefono = ?,
+          direccion = ?
+            
+          WHERE id = ?
+        `;
+            const valores = [nombre, estado, telefono, direccion, idObraSocial];
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar obra social:', error);
+            throw error;
         }
     }
 

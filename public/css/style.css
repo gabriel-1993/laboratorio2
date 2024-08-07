@@ -123,7 +123,8 @@ body {
 
 /* li crear usuario : roles asignados titulo " ROLES ASIGNADOS " */
 .liRolesAsignadosTitulo,
-.liLadosAsignadosTitulo {
+.liLadosAsignadosTitulo,
+.liPlanesAsignados {
     background-color: var(--celesteOscuro);
     color: #fff;
     padding: 4px;

@@ -15,12 +15,18 @@ router.get("/obtenerObrasSocialesYplanes", obraSocialController.obtenerObrasSoci
 // //AGREGAR OBRA SOCIAL Y PLAN/ES AGREGAR/ASIGNAR
 router.post('/agregarObraSocialConPlan', obraSocialController.agregarObraSocialConPlan);
 
-// //MODIFICAR PRESTACION LADOS
-// //Renderizar la vista/form modificar prestacion
-// router.get("/modificarPrestacion", prestacionController.mostrarFormModificarPrestacion);
+//MODIFICAR OBRA SOCIAL - PLAN/ES
+router.get("/modificarObraSocial", obraSocialController.mostrarFormModificarObraSocial);
 
-// //AGREGAR PRESTACION Y LADO/LADOS cuando sea necesario
-// router.post('/modificarPrestacionLados', prestacionController.modificarPrestacionLados);
+//Obtener todos los planes asignados a obrasocial por id
+router.post("/obtenerPlanesAsignados", obraSocialController.obtenerPlanesAsignados);
+
+//Modificar obra social y plan/es
+router.post('/modificarObraSocialPlanes', obraSocialController.modificarObraYplan);
+
+
+
+
 
 // //Renderizar la vista/form para mostrar lista de prestaciones / lados
 // router.get("/buscarPrestaciones", prestacionController.formMostrarListaPrestacionesLados);

@@ -45,6 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         allPlanes = [];
         planesAsignados = [];
         divMasCampos.classList.add('displayNone');
+        btnAgregarObraSocial.classList.add('displayNone');
+        ulPlanesAsignados.innerHTML = '';
+        divPlanesAsignados.innerHTML = '';
         //nombreInput.value = '';
         telefonoInput.value = '';
         direccionInput.value = '';
@@ -156,7 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Título para mostrar roles asignados
             const liTitulo = document.createElement('li');
             liTitulo.innerHTML = 'PLANES ASIGNADOS';
-            liTitulo.classList.add('liRolesAsignadosTitulo');
+            liTitulo.classList.add('liPlanesAsignados');
             ulPlanesAsignados.appendChild(liTitulo);
 
             // Renderizamos los roles asignados
@@ -348,6 +351,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const result = await response.json();
             mostrarMsjCliente('Datos agregados', [result.message]);
+            reiniciarBusqueda();
+
         } catch (error) {
             console.error('Error al agregar obra social:', error);
             mostrarMsjCliente('Error', ['Hubo un problema al intentar agregar la obra social.']);
