@@ -54,17 +54,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         telefonoInput.value = '';
         direccionInput.value = '';
         // Volver a ejecutar la búsqueda
-        buscarObraSocial();
+        await buscarObraSocial();
 
-        datos = await fetchObtenerObrasSocialesYplanes();
-        if (datos) {
-            allObrasSociales = datos.allObrasSociales;
-            allPlanes = datos.allPlanes;
+        // datos = await fetchObtenerObrasSocialesYplanes();
+        // if (datos) {
+        //     allObrasSociales = datos.allObrasSociales;
+        //     allPlanes = datos.allPlanes;
 
-            //Mostrar lista al hacer click en inputs y filtrar lista por letras ingresadas
-            configurarInputConLista('#nombre', '.obrasSociales-list', allObrasSociales);
-            configurarInputConLista('#plan', '.planes-list', allPlanes);
-        }
+        //     //Mostrar lista al hacer click en inputs y filtrar lista por letras ingresadas
+        //     configurarInputConLista('#nombre', '.obrasSociales-list', allObrasSociales);
+        //     configurarInputConLista('#plan', '.planes-list', allPlanes);
+        // }
     }
 
     //VALIDAR CON EXPRESION REGULAR LA DESCRIPCION
@@ -262,16 +262,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Encontramos el rol en el array roles
             const plan = planesAsignadosFront.find(plan => plan.nombrePlan == descripcion);
 
-            // Filtramos el array roles para eliminar el rol correspondiente
-            planesAsignadosFront = planesAsignadosFront.filter(plan => plan.nombrePlan != descripcion);
 
-            // Eliminamos el elemento <li> del DOM
-            li.remove();
+            if (planesAsignadosFront.length > 1) {
+                // Filtramos el array roles para eliminar el rol correspondiente
+                planesAsignadosFront = planesAsignadosFront.filter(plan => plan.nombrePlan != descripcion);
 
-            // Si se borra el último elemento, ocultamos el div completo
-            if (planesAsignadosFront.length === 0) {
-                divPlanesAsignados.style.display = 'none';
+                // Eliminamos el elemento <li> del DOM
+                li.remove();
+            }else{
+                mostrarMsjCliente('Datos incorrectos',['La Obra social debe tener minimo un plan asignado.']);
+                return;
             }
+
+
+        
         }
     };
 
@@ -411,7 +415,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return planesNoExistentes;
     }
 
-// VERIFICAR SI OBRA SOCIAL TIENE CAMBIOS
+    // VERIFICAR SI OBRA SOCIAL TIENE CAMBIOS
     function obraSocialModificadaBool(obraSocialIngresada, nombre, telefono, direccion, estado) {
         if (obraSocialIngresada.nombre === nombre &&
             obraSocialIngresada.telefono === telefono &&
