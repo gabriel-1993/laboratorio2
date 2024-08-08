@@ -38,13 +38,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.appendChild(h4);
 
             const divLabelInput = document.createElement('div');
+            divLabelInput.classList.add('borderRadiusTop5px');
             divLabelInput.classList.add('datoItem');
 
             const label = document.createElement('label');
             label.classList.add('labelCenter');
             label.classList.add('text-fondoCeleste');
+            label.classList.add('borderRadiusTop5px');
             label.style.borderBottomLeftRadius = '0px';
-            label.style.borderTopLeftRadius = '0px';
             label.textContent = 'Descripcion';
             divLabelInput.appendChild(label);
 

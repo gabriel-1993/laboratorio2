@@ -20,6 +20,15 @@ const mostrarFormModificarObraSocial = (req, res) => {
   }
 };
 
+//RENDERIZAR FORM PARA MOSTRAR LISTA DE TODAS LAS OBRAS SOCIALES Y PLANES
+const mostrarFormBuscarObrasSociales = (req, res) => {
+  if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
+    res.render('formMostrarListaObrasSociales');
+  } else {
+    res.status(403).json({ mensaje: 'Acceso denegado' });
+  }
+};
+
 
 //Obtener/Consultar todas las  ObrasSocialesYplanes en la base
 const obtenerObrasSocialesYplanes = async (req, res) => {
@@ -248,5 +257,6 @@ export default {
   agregarObraSocialConPlan,
   mostrarFormModificarObraSocial,
   obtenerPlanesAsignados,
-  modificarObraYplan
+  modificarObraYplan,
+  mostrarFormBuscarObrasSociales
 };

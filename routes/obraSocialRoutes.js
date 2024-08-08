@@ -24,6 +24,8 @@ router.post("/obtenerPlanesAsignados", obraSocialController.obtenerPlanesAsignad
 //Modificar obra social y plan/es
 router.post('/modificarObraSocialPlanes', obraSocialController.modificarObraYplan);
 
+//Buscar lista de obras sociales
+router.get("/buscarObrasSociales", obraSocialController.mostrarFormBuscarObrasSociales);
 
 
 

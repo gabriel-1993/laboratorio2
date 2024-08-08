@@ -1,0 +1,43 @@
+extends indexAdmin
+
+block content
+  .divMsj 
+    ul
+    button.btn-Msj 
+  section.flexCenter.section.column
+    .divFormObraSocial.center.column.blur  
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Buscar Obra Social y Planes
+      h4.text-center.text-fondoCeleste Ingrese el Nombre 
+      p Por favor, ingrese el Nombre de la Obra Social para buscarlo en la lista.
+      form(id='formBuscarObraSocial' autocomplete="off")
+        .divBuscarNombre 
+          div 
+            label(for="nombre" class="labelCenter") Nombre
+            input#nombre(type="text" name="nombre" autocomplete="off") 
+            i.fa-solid.fa-magnifying-glass.btnBuscar
+          ul(id="obrasSociales-list" class="obrasSociales-list listaFiltrada right-127px displayNone") <!-- Div para mostrar las coincidencias -->
+
+        .divMasCampos.column.displayNone
+          div
+            label(for="telefono" class="labelCenter") Telefono
+            input#telefono(type="tel" name="telefono" autocomplete="off") 
+          div
+            label(for="direccion" class="labelCenter") Direccion
+            input#direccion(type="text" name="direccion" autocomplete="off") 
+          div
+            label(for="estado" class="labelCenter") Estado
+            select#selectEstado(name="estado")
+        .divPlanesAsignados  
+         ul(id="listaPlanesAsignados" class="listaPlanesAsignados") <!-- Div para mostrar las coincidencias -->
+    .divMostrarPlanes.center.column.blur  
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Planes
+      h4.text-center.text-fondoCeleste ID y Nombre de Todos los Planes
+      .contenedorPlanes
+    .divMostrarObrasSociales.center.column.blur  
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Lista de Obras Sociales
+      h4.text-center.text-fondoCeleste Datos de Obras Sociales
+      .contenedorObrasSociales
+
+          
+    script(src="/js/formMostrarObrasSocialesCliente.js", type="module") // Incluye el archivo JavaScript del cliente
+            

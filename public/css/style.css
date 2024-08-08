@@ -57,6 +57,9 @@ body {
     align-items: center;
 }
 
+.displayFlex {
+    display: flex;
+}
 
 /* ESTILOS PARA NAV DEL HEADER */
 /* Estilo base para la lista y ocultar submenús */
@@ -487,7 +490,8 @@ button:hover {
 #formModificarMedicamento,
 #formAgregarPrestacion,
 #formModificarPrestacion,
-#formCrearObraSocial {
+#formCrearObraSocial,
+#formBuscarObraSocial {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -522,7 +526,8 @@ button:hover {
 #formModificarMedicamento,
 #formAgregarPrestacion,
 #formModificarPrestacion,
-#formCrearObraSocial {
+#formCrearObraSocial,
+#formBuscarObraSocial {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
@@ -550,7 +555,8 @@ button:hover {
 .divMedicamentoItem .fa-magnifying-glass,
 #formAgregarPrestacion .fa-magnifying-glass,
 #formModificarPrestacion .fa-magnifying-glass,
-#formCrearObraSocial .fa-magnifying-glass {
+#formCrearObraSocial .fa-magnifying-glass,
+#formBuscarObraSocial .fa-magnifying-glass {
     margin-left: 10px;
 }
 
@@ -689,7 +695,8 @@ input,
 #formModificarPrestacion div,
 .divFiltrar,
 #formCrearObraSocial div,
-#formCrearObraSocial .divPlanesAsignados {
+#formCrearObraSocial .divPlanesAsignados,
+#formBuscarObraSocial div {
     width: 100%;
     display: flex;
     align-items: center;
@@ -700,7 +707,8 @@ input,
 #formModificarMedicamento .divDatosMedicamentoItem,
 #formAgregarPrestacion .divMasCampos,
 #formModificarPrestacion .divMasCampos,
-#formCrearObraSocial .divMasCampos {
+#formCrearObraSocial .divMasCampos,
+#formBuscarObraSocial .divMasCampos {
     gap: 5px;
 }
 
@@ -1043,10 +1051,10 @@ input:focus {
 .divContenedorItemsLados {
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 8px;
     background-color: var(--color-fondo);
     padding: 8px;
     padding-bottom: 20px;
@@ -1056,7 +1064,7 @@ input:focus {
 .cardLados {
     display: flex;
     flex-direction: column;
-    width: 30%;
+    width: 42%;
     border: 2px solid var(--azulSemiOscuro);
     border-radius: 5px;
 }
@@ -1066,7 +1074,6 @@ input:focus {
     align-items: center;
     background-color: var(--color-fondo);
     padding: 3px;
-    border-radius: 5px;
     flex-direction: column;
 
 }
@@ -1154,4 +1161,38 @@ input:focus {
 .divFormObraSocial {
     margin: 25px 0;
     padding-bottom: 25px;
+}
+
+/* /formBuscarObrasSociales */
+.divMostrarPlanes {
+    width: 65%;
+}
+.contenedorPlanes,
+.contenedorObrasSociales {
+    display: flex;
+    background-color: var(--color-fondo);
+    padding: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+}
+
+.divCard {
+    width: 47%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: solid 2px var(--azulSemiOscuro);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+/* .cardObras{
+    width: 100%;
+} */
+
+.divMostrarObrasSociales{
+    margin-top: 30px;
+    width: 65%;
 }
