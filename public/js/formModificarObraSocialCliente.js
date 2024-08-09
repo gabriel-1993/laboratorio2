@@ -56,15 +56,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Volver a ejecutar la búsqueda
         await buscarObraSocial();
 
-        // datos = await fetchObtenerObrasSocialesYplanes();
-        // if (datos) {
-        //     allObrasSociales = datos.allObrasSociales;
-        //     allPlanes = datos.allPlanes;
-
-        //     //Mostrar lista al hacer click en inputs y filtrar lista por letras ingresadas
-        //     configurarInputConLista('#nombre', '.obrasSociales-list', allObrasSociales);
-        //     configurarInputConLista('#plan', '.planes-list', allPlanes);
-        // }
     }
 
     //VALIDAR CON EXPRESION REGULAR LA DESCRIPCION
@@ -273,9 +264,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 mostrarMsjCliente('Datos incorrectos',['La Obra social debe tener minimo un plan asignado.']);
                 return;
             }
-
-
-        
         }
     };
 

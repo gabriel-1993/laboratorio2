@@ -27,12 +27,15 @@ import pool from './database.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-
+//ADMINISTRADOR
 import errorRoutes from "./routes/errorRoutes.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import medicamentoRoutes from "./routes/medicamentoRoutes.js";
 import prestacionRoutes from "./routes/prestacionRoutes.js";
 import obraSocialRoutes from "./routes/obraSocialRoutes.js";
+//PROFESIONAL
+import pacienteRoutes from "./routes/pacienteRoutes.js";
+// import prescripcionRoutes from "./routes/prescripcionRoutes.js";
 
 
 //fileURLToPath convierte una URL de archivo (file://) en una ruta de archivo del sistema de archivos que puede ser utilizada por Node.js.
@@ -85,11 +88,13 @@ let MySQLStore;
 
 
   // Manejo de rutas
+  //ADMINISTRADOR
   app.use("/", usuarioRoutes);
   app.use("/", medicamentoRoutes);
   app.use("/", prestacionRoutes);
   app.use("/", obraSocialRoutes)
-  // app.use("/", obraSocialRoutes);
+  //PROFESIONAL
+  app.use("/", pacienteRoutes);
 
 
 

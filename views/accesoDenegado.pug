@@ -1,0 +1,24 @@
+extends layout
+
+block content 
+  .divMsj 
+    ul
+    button.btn-Msj 
+  section.flexCenter.section.column
+
+    .divLogin.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Iniciar Sesión
+
+      form(id="formLogin", class="formLogin flexCenter column", novalidate)
+        div
+          label(for="username", class="labelLogin") Documento
+          input(type="text", id="username", class="input", name="username", required)
+        div
+          label(for="password", class="labelLogin") Contraseña
+          input(type="password", id="password", class="input", name="password", required)
+        a(href="/restablecer-password", class="btnRecuperarPass") Restablecer Contraseña
+        button(type="submit", class="btnLogin") Iniciar Sesión
+      h3.text-center.text-fondoAzul.width100 Ruta ingresada privada, debe Iniciar Sesion...
+   
+
+  script(src="/js/loginCliente.js", type="module") // Incluye el archivo JavaScript del cliente

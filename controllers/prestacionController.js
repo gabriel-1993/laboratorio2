@@ -8,7 +8,8 @@ const mostrarFormAgregarPrestacion = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formCrearPrestacion');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    // res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -18,7 +19,8 @@ const mostrarFormModificarPrestacion = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formModificarPrestacion');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //    res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -27,7 +29,8 @@ const formMostrarListaPrestacionesLados = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formMostrarListaPrestacionesLados');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 }
 

@@ -346,7 +346,8 @@ button:hover {
 .btnAsignarRol,
 .btnAsignarLado,
 .btnModificarLado,
-.btnAsignarPlan {
+.btnAsignarPlan,
+.btnPaciente {
     padding: 0.30rem 0.9rem;
 }
 
@@ -407,7 +408,8 @@ button:hover {
 .divBuscarMedicamentos,
 .divCrearPrestacion,
 .divModificarPrestacion,
-.divFormObraSocial {
+.divFormObraSocial,
+.divFormPaciente {
     width: 420px;
     height: auto;
     display: flex;
@@ -491,7 +493,9 @@ button:hover {
 #formAgregarPrestacion,
 #formModificarPrestacion,
 #formCrearObraSocial,
-#formBuscarObraSocial {
+#formBuscarObraSocial,
+#formPaciente,
+#formPaciente .divMasCampos {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -527,7 +531,8 @@ button:hover {
 #formAgregarPrestacion,
 #formModificarPrestacion,
 #formCrearObraSocial,
-#formBuscarObraSocial {
+#formBuscarObraSocial,
+#formPaciente {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
@@ -545,10 +550,10 @@ button:hover {
 }
 
 /* modificar usuario  */
-.divBuscarDocumento {
+/* .divBuscarDocumento {
     width: 330px;
     margin: 0 auto;
-}
+} */
 
 .divBuscarDocumento .fa-magnifying-glass,
 .divBuscarNombreGenerico .fa-magnifying-glass,
@@ -556,7 +561,8 @@ button:hover {
 #formAgregarPrestacion .fa-magnifying-glass,
 #formModificarPrestacion .fa-magnifying-glass,
 #formCrearObraSocial .fa-magnifying-glass,
-#formBuscarObraSocial .fa-magnifying-glass {
+#formBuscarObraSocial .fa-magnifying-glass,
+#formPaciente .fa-magnifying-glass{
     margin-left: 10px;
 }
 
@@ -660,7 +666,8 @@ input,
 .selectEstadoModificarUsuario,
 .selectEstadoModificarMedicamento,
 .selectEstadoModificarMedicamentoItem,
-#selectEstado {
+#selectEstado,
+#genero {
     text-align: start;
 }
 
@@ -676,6 +683,7 @@ input,
 .selectConcentracion,
 .selectEstadoModificarMedicamento,
 .selectEstadoModificarMedicamentoItem,
+#genero,
 #selectEstado {
     flex: 1 1 auto;
     /* El input ocupa todo el espacio restante */
@@ -696,7 +704,8 @@ input,
 .divFiltrar,
 #formCrearObraSocial div,
 #formCrearObraSocial .divPlanesAsignados,
-#formBuscarObraSocial div {
+#formBuscarObraSocial div,
+#formPaciente div {
     width: 100%;
     display: flex;
     align-items: center;
@@ -740,6 +749,7 @@ input,
 .selectEstadoModificarMedicamento,
 .selectEstadoModificarMedicamentoItem,
 #selectEstado,
+#genero,
 input {
     padding: 4px;
     font-weight: 100;
@@ -801,7 +811,8 @@ input:focus {
 .divDatosPrestacion p,
 .divLadosExistentes p,
 .divPrestacionesExistentes p,
-.divFormObraSocial p {
+.divFormObraSocial p,
+.divFormPaciente p {
     width: 80%;
     margin: 30px auto;
     margin-bottom: 20px;
@@ -1109,7 +1120,8 @@ input:focus {
 .divBuscarDescripcion,
 .divLados,
 .divBuscarNombre,
-.divBuscarPlan {
+.divBuscarPlan,
+.divBuscarDocumento {
     position: relative;
 }
 
@@ -1167,6 +1179,7 @@ input:focus {
 .divMostrarPlanes {
     width: 65%;
 }
+
 .contenedorPlanes,
 .contenedorObrasSociales {
     display: flex;
@@ -1192,7 +1205,33 @@ input:focus {
     width: 100%;
 } */
 
-.divMostrarObrasSociales{
+.divMostrarObrasSociales {
     margin-top: 30px;
     width: 65%;
+}
+
+
+
+
+/* PACIENTES  */
+.divFormPaciente {
+    margin: 40px 0;
+}
+
+#formPaciente {
+    padding-top: 0px;
+}
+
+.font08rem {
+    font-size: 0.8rem;
+}
+
+#genero, #fechaNacimiento{
+    padding: 2px;
+}
+
+.btnPaciente {
+    width: 155px;
+    margin: 0 auto;
+    margin-top: 15px;
 }

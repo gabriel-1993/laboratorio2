@@ -95,10 +95,14 @@ export function renderizarLista(elementoLista, elementos) {
         if (elemento.descripcion) {
             itemLista.textContent = elemento.descripcion;
             elementoLista.appendChild(itemLista);
-        } else if (elemento.nombre) {
+        } else if (elemento.nombre && !elemento.documento) {
             //obras sociales por ej muestro nombres
             itemLista.textContent = elemento.nombre;
             elementoLista.appendChild(itemLista);
+        }else if(elemento.documento){
+              // pacientes muestra documento
+              itemLista.textContent = elemento.documento;
+              elementoLista.appendChild(itemLista);
         }
 
 

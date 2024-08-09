@@ -6,7 +6,8 @@ const mostrarFormAgregarMedicamento = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formCrearMedicamento');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //    res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -15,7 +16,8 @@ const mostrarFormListaMedicamentos = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formMostrarListaMedicamentos');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    // res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -24,7 +26,8 @@ const mostrarFormModificarMedicamento = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formModificarMedicamento');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //    res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 

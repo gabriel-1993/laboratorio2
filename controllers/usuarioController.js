@@ -20,7 +20,8 @@ const mostrarIndexAdmin = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('indexAdmin');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //    res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -28,7 +29,8 @@ const mostrarIndexProf = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'PROFESIONAL')) {
     res.render('indexProf');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -36,7 +38,8 @@ const mostrarSelectRol = (req, res) => {
   if (req.session.user && req.session.user.roles.length > 1) {
     res.render('selectRol', { roles: req.session.user.roles });
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -58,7 +61,8 @@ const mostrarFormCrearUsuario = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formCrearUsuario');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //    res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -231,7 +235,8 @@ const mostrarFormModificarUsuario = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formModificarUsuario');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //    res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
 
@@ -510,7 +515,8 @@ const mostrarFormBuscarUsuarios = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'ADMINISTRADOR')) {
     res.render('formBuscarUsuarios');
   } else {
-    res.status(403).json({ mensaje: 'Acceso denegado' });
+    res.render('accesoDenegado');
+    //res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 }
 

@@ -5,6 +5,8 @@ html(lang="es")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Gabriel Torrez
     link(rel='stylesheet', href='/css/style.css')
+    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css')
+
 
   body
     header.header
@@ -17,30 +19,30 @@ html(lang="es")
             a(href='#') Prescripcion
             ul.subMenu
               li
-                a(href='/crearPrescripcion') Agregar Prescripcion
+                a(href='/agregarPrescripcion') Agregar Prescripcion
               li
-                a(href='/modificarUsuario') Modificar Prescripciom
+                a(href='/modificarPrescripcion') Modificar Prescripciom
               li
-                a(href='/') Buscar Prescripciones
+                a(href='/buscarPrescripciones') Buscar Prescripciones
 
           li
             a(href='#') Paciente
             ul.subMenu
               li
-                a(href='/crearPrescripcion') Agregar Paciente
+                a(href='/agregarPaciente') Agregar Paciente
               li
-                a(href='/modificarUsuario') Modificar Paciente
+                a(href='/modificarPaciente') Modificar Paciente
               li
                 a(href='/buscarPacientes') Buscar Pacientes
           li
-            a(href='#') Mis turnos
+            a(href='#') Mis turnos(pendiente)
             ul.subMenu
               li
-                a(href='') Agregar Turno
+                a(href='') Agregar Turno(pendiente)
               li
-                a(href='') Modificar Turno
+                a(href='') Modificar Turno(pendiente)
               li
-                a(href='') Buscar Turnos                  
+                a(href='') Buscar Turnos(pendiente)                  
           li
             a(href='#') Mi cuenta
             ul.subMenu
@@ -50,7 +52,7 @@ html(lang="es")
                 a(href='/logout') Cerrar sesíon
 
     block content
-    section.section
+      section.section
 
 
     footer.flexCenter.column.footer
