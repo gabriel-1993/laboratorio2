@@ -37,68 +37,111 @@ class Paciente {
             });
         } catch (error) {
             console.error('Error en crear:', error);
-            throw error; 
+            throw error;
         }
     }
 
-// Buscar paciente por documento/ validar DNI ocupado
-static async buscarDocumento(documentoPaciente, transaction = null) {
-    try {
-        const query = `SELECT * FROM paciente WHERE documento = ?`;
-        const rows = await sequelize.query(query, {
-            replacements: [documentoPaciente],
-            type: sequelize.QueryTypes.SELECT,
-            transaction 
-        });
+    // Buscar paciente por documento/ validar DNI ocupado
+    static async buscarDocumento(documentoPaciente, transaction = null) {
+        try {
+            const query = `SELECT * FROM paciente WHERE documento = ?`;
+            const rows = await sequelize.query(query, {
+                replacements: [documentoPaciente],
+                type: sequelize.QueryTypes.SELECT,
+                transaction
+            });
 
-        if (rows.length === 0) { 
-            return null;
+            if (rows.length === 0) {
+                return null;
+            }
+
+            const pacienteData = rows[0];
+            const { id, nombre, apellido, documento, fecha_nacimiento, sexo, telefono, alergia, estado } = pacienteData;
+            return new Paciente({ id, nombre, apellido, documento, fecha_nacimiento, sexo, telefono, alergia, estado });
+        } catch (error) {
+            console.error('Error en buscarDocumento:', error);
+            throw error;
         }
-
-        const pacienteData = rows[0];
-        const { id, nombre, apellido, documento, fecha_nacimiento, sexo, telefono, alergia, estado } = pacienteData;
-        return new Paciente({ id, nombre, apellido, documento, fecha_nacimiento, sexo, telefono, alergia, estado });
-    } catch (error) {
-        console.error('Error en buscarDocumento:', error);
-        throw error; 
     }
-}
 
 
 
-// Buscar todos los pacientes
-static async obtenerTodosLosPacientes(transaction = null) {
-    try {
-        const query = `SELECT * FROM paciente`;
-        const rows = await sequelize.query(query, {
-            type: sequelize.QueryTypes.SELECT,
-            transaction 
-        });
+    // Buscar todos los pacientes
+    static async obtenerTodosLosPacientes(transaction = null) {
+        try {
+            const query = `SELECT * FROM paciente`;
+            const rows = await sequelize.query(query, {
+                type: sequelize.QueryTypes.SELECT,
+                transaction
+            });
 
-        if (!rows || rows.length === 0) {
-            return null;
+            if (!rows || rows.length === 0) {
+                return null;
+            }
+
+            // Mapea los resultados a instancias de Paciente
+            return rows.map(row => new Paciente({
+                id: row.id,
+                nombre: row.nombre,
+                apellido: row.apellido,
+                documento: row.documento,
+                fecha_nacimiento: row.fecha_nacimiento,
+                sexo: row.sexo,
+                telefono: row.telefono,
+                alergia: row.alergia,
+                estado: row.estado,
+            }));
+        } catch (error) {
+            console.error('Error en obtenerTodosLosPacientes:', error);
+            throw error;
         }
-
-        // Mapea los resultados a instancias de Paciente
-        return rows.map(row => new Paciente({
-            id: row.id,
-            nombre: row.nombre,
-            apellido: row.apellido,
-            documento: row.documento,
-            fecha_nacimiento: row.fecha_nacimiento,
-            sexo: row.sexo,
-            telefono: row.telefono,
-            alergia: row.alergia,
-            estado: row.estado,
-        }));
-    } catch (error) {
-        console.error('Error en obtenerTodosLosPacientes:', error);
-        throw error; 
     }
-}
 
+    //modificar paciente
+    static async modificarPaciente(id,
+        nombre,
+        apellido,
+        documento,
+        fecha_nacimiento,
+        sexo,
+        telefono,
+        alergia,
+        estado, transaction = null) {
+        try {
+            const query = `
+        UPDATE paciente
+        SET nombre = ?,
+            apellido = ?,
+            documento = ?,
+            fecha_nacimiento = ?,
+            sexo = ?,
+            telefono = ?,
+            alergia = ?,
+            estado = ?
+        WHERE id = ?
+      `;
 
-    
+            const valores = [nombre,
+                apellido,
+                documento,
+                fecha_nacimiento,
+                sexo,
+                telefono,
+                alergia,
+                estado, 
+                id];
+
+            await sequelize.query(query, {
+                replacements: valores,
+                type: sequelize.QueryTypes.UPDATE,
+                transaction
+            });
+        } catch (error) {
+            console.error('Error al modificar el medicamento:', error);
+            throw error;
+        }
+    }
+
 
 
 

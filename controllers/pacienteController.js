@@ -1,11 +1,7 @@
 import Paciente from '../models/pacienteModel.js';
 import sequelize from '../sequalize.js';
 
-
-
-
-
-// RENDERIZAR FORM PRINCIPAL PARA MODIFICAR OBRA SOCIAL/ PLAN/ES
+// RENDERIZAR FORM PRINCIPAL PARA CREAR/AGREGAR PACIENTE
 const mostrarFormAgregarPaciente = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'PROFESIONAL')) {
     res.render('formCrearPaciente');
@@ -14,6 +10,25 @@ const mostrarFormAgregarPaciente = (req, res) => {
     //   res.status(403).json({ mensaje: 'Acceso denegado' });
   }
 };
+
+// RENDERIZAR FORM PRINCIPAL PARA MODIFICAR PACIENTE
+const mostrarFormModificarPaciente = (req, res) => {
+  if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'PROFESIONAL')) {
+    res.render('formModificarPaciente');
+  } else {
+    res.render('accesoDenegado');
+    //   res.status(403).json({ mensaje: 'Acceso denegado' });
+  }
+};
+
+const mostrarFormListaPacientes = (req, res) =>{
+  if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'PROFESIONAL')) {
+    res.render('formMostrarListaPacientes');
+  } else {
+    res.render('accesoDenegado');
+    //   res.status(403).json({ mensaje: 'Acceso denegado' });
+  }
+}
 
 // Buscar paciente por documento/ validar DNI ocupado
 async function buscarPacientePorDocumento(req, res) {
@@ -125,9 +140,128 @@ async function crearPaciente(req, res) {
   }
 }
 
+//Modificar datos paciente
+async function modificarPaciente(req, res) {
+  const transaction = await sequelize.transaction();
+  try {
+    const { id,
+      nombre,
+      apellido,
+      documento,
+      fecha_nacimiento,
+      sexo,
+      telefono,
+      alergia,
+      estado } = req.body;
+
+    // Validaciones con expresiones regulares
+    if (!validarDocumento(documento)) {
+      return res.status(400).json({ message: 'Documento no válido.' });
+    }
+
+    if (!validarNombreApellido(nombre)) {
+      return res.status(400).json({ message: 'Nombre no válido. Debe contener entre 4 y 25 caracteres, y solo puede incluir letras y espacios.' });
+    }
+
+    if (!validarNombreApellido(apellido)) {
+      return res.status(400).json({ message: 'Apellido no válido. Debe contener entre 4 y 25 caracteres, y solo puede incluir letras y espacios.' });
+    }
+
+    if (!validarTelefono(telefono)) {
+      return res.status(400).json({ message: 'Teléfono incorrecto. El número debe comenzar con un código de país y contener solo dígitos.' });
+    }
+
+    if (!validarAlergia(alergia)) {
+      return res.status(400).json({ message: 'Alergia incorrecta. Debe tener entre 10 y 149 caracteres y solo puede contener letras sin tildes y espacios.' });
+    }
+
+    if (!validarFechaNacimiento(fecha_nacimiento)) {
+      return res.status(400).json({ message: 'Fecha de nacimiento incorrecta. Verifique que no sea una fecha futura o que no tenga más de 120 años.' });
+    }
+
+    if (!validarGenero(sexo)) {
+      return res.status(400).json({ message: 'Género incorrecto. Debe seleccionar un género válido.' });
+    }
+
+    // Modificar los datos del paciente en la base de datos
+    await Paciente.modificarPaciente( id,
+      nombre,
+      apellido,
+      documento,
+      fecha_nacimiento,
+      sexo,
+      telefono,
+      alergia,
+      estado , transaction);
+
+    await transaction.commit();
+    res.status(200).json({ message: 'Modificación exitosa' });
+  } catch (error) {
+    await transaction.rollback();
+    console.error('Error al modificar paciente:', error);
+    res.status(500).json({ message: 'Error al modificar paciente', error: error.message });
+  }
+}
+
+// FUNCIONES DE VALIDACIÓN
+function validarNombreApellido(elem) {
+  if (!elem || elem.trim() === '') {
+    return false;
+  }
+  const regex = /^[a-zA-Z\s]{4,25}$/;
+  return regex.test(elem);
+}
+
+function validarDocumento(documento) {
+  const regex = /^\d{6,20}$/;
+  return regex.test(documento);
+}
+
+function validarGenero(genero) {
+  return genero !== "-1";
+}
+
+function validarTelefono(telefono) {
+  const regex = /^\+?[1-9]\d{1,14}$/;
+  return regex.test(telefono);
+}
+
+function validarFechaNacimiento(fechaInput) {
+  if (!fechaInput) return false;
+  const fechaNacimiento = new Date(fechaInput);
+  const fechaValida = fechaNacimiento instanceof Date && !isNaN(fechaNacimiento.getTime());
+  if (!fechaValida) return false;
+
+  const fechaActual = new Date();
+  const edad = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
+  const mesNacimiento = fechaNacimiento.getMonth();
+  const mesActual = fechaActual.getMonth();
+  const diaNacimiento = fechaNacimiento.getDate();
+  const diaActual = fechaActual.getDate();
+
+  if (mesNacimiento > mesActual || (mesNacimiento === mesActual && diaNacimiento > diaActual)) {
+    edad--;
+  }
+  if (edad > 120 || fechaNacimiento > fechaActual) return false;
+  return true;
+}
+
+function validarAlergia(alergia) {
+  const regex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/;
+  if (alergia !== "") {
+    if (alergia.length < 7 || alergia.length > 149) return false;
+    return regex.test(alergia);
+  }
+  return true;
+}
+
+
 export default {
   mostrarFormAgregarPaciente,
   buscarPacientePorDocumento,
   obtenerTodosLosPacientes,
-  crearPaciente
+  crearPaciente,
+  mostrarFormModificarPaciente,
+  modificarPaciente,
+  mostrarFormListaPacientes
 };

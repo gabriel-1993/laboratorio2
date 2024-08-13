@@ -495,7 +495,9 @@ button:hover {
 #formCrearObraSocial,
 #formBuscarObraSocial,
 #formPaciente,
-#formPaciente .divMasCampos {
+#formPaciente .divMasCampos,
+#formModificarPaciente,
+#formModificarPaciente .divMasCampos {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -532,7 +534,8 @@ button:hover {
 #formModificarPrestacion,
 #formCrearObraSocial,
 #formBuscarObraSocial,
-#formPaciente {
+#formPaciente,
+#formModificarPaciente {
     padding-top: 15px;
     padding-bottom: 15px;
     width: 340px;
@@ -684,7 +687,8 @@ input,
 .selectEstadoModificarMedicamento,
 .selectEstadoModificarMedicamentoItem,
 #genero,
-#selectEstado {
+#selectEstado,
+#estado {
     flex: 1 1 auto;
     /* El input ocupa todo el espacio restante */
 }
@@ -705,7 +709,8 @@ input,
 #formCrearObraSocial div,
 #formCrearObraSocial .divPlanesAsignados,
 #formBuscarObraSocial div,
-#formPaciente div {
+#formPaciente div,
+#formModificarPaciente div {
     width: 100%;
     display: flex;
     align-items: center;
@@ -750,7 +755,8 @@ input,
 .selectEstadoModificarMedicamentoItem,
 #selectEstado,
 #genero,
-input {
+input,
+#estado {
     padding: 4px;
     font-weight: 100;
     font-size: 0.9rem;
@@ -1218,20 +1224,37 @@ input:focus {
     margin: 40px 0;
 }
 
-#formPaciente {
+#formPaciente, #formModificarPaciente {
     padding-top: 0px;
+    padding-bottom: 40px;
 }
 
 .font08rem {
     font-size: 0.8rem;
 }
 
-#genero, #fechaNacimiento{
-    padding: 2px;
+#genero, #fechaNacimiento,#formModificarPaciente #estado{
+    padding: 3px;
 }
 
 .btnPaciente {
-    width: 155px;
+    width: 162px;
     margin: 0 auto;
     margin-top: 15px;
+}
+
+/* mostrar pacientes lista */
+.divContenedorPacientes{
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--color-fondo);
+    padding: 10px;
+}
+
+.divContenedorPacientes .cardItem{
+    width: 100%;
 }

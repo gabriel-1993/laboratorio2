@@ -1,0 +1,49 @@
+extends indexProf
+
+block content
+  .divMsj
+    ul
+    button.btn-Msj
+  section.flexCenter.section
+    .divFormPaciente.center.column.blur
+      h3.text-center.text-fondoAzul.borderRadiusTop5px Modificar Paciente
+      h4.text-center.text-fondoCeleste Datos del Paciente
+      p Por favor, ingrese el documento del paciente que desea modificar.
+      
+      form#formModificarPaciente(autocomplete="off")
+        .divBuscarDocumento
+          div
+            label.labelCenter(for="documento") Documento
+            input(type="text" id="documento" name="documento" autocomplete="off")
+            i.fa-solid.fa-magnifying-glass.btnBuscar
+          ul(id="pacientes-list" class="pacientes-list listaFiltrada right-127px displayNone")
+        .divMasCampos.column.displayNone
+          div
+            label.labelCenter(for="nombre") Nombre
+            input(type="text" id="nombre" name="nombre" autocomplete="off")
+          div
+            label.labelCenter(for="apellido") Apellido
+            input(type="text" id="apellido" name="apellido" autocomplete="off")
+          div
+            label.labelCenter(for="telefono") Teléfono
+            input(type="text" id="telefono" name="telefono" autocomplete="off")
+          div
+            label.labelCenter(for="alergia") Alergia
+            input(type="text" id="alergia" name="alergia" autocomplete="off" placeholder="Opcional")
+          div
+            label.labelCenter.font08rem.padding5px(for="fechaNacimiento") Fecha Nacimiento
+            input.padding3px(type="date" id="fechaNacimiento" name="fechaNacimiento" autocomplete="off")
+          div
+            label.labelCenter(for="genero") Género
+            select.padding3px(id="genero" name="genero")
+              option(value="-1") Seleccionar Género
+              option(value="1") Masculino
+              option(value="2") Femenino
+              option(value="3") Otro
+          div
+            label.labelCenter(for="estado") Estado
+            select.padding3px(id="estado" name="estado")
+              option(value="1") Disponible
+              option(value="0") No Disponible
+        button.btnPaciente.displayNone(type="button") Modificar Paciente
+  script(src="/js/formModificarPacienteCliente.js", type="module")

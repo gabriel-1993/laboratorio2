@@ -2,15 +2,7 @@ import { mostrarMsjCliente } from './mostrarMsjCliente.js';
 // MOSTRAR LISTAS EN INPUT Y FILTRARLA POR LETRAS INGRESADAS
 import { configurarInputConLista, mostrarLista, ocultarLista, renderizarLista, filtrarLista } from './mostrarFiltrarListasInputs.js'
 
-const documentoInput = document.querySelector('#documento');
-const nombreInput = document.querySelector('#nombre');
-const apellidoInput = document.querySelector('#apellido');
-const telefonoInput = document.querySelector('#telefono');
-const alergiaInput = document.querySelector('#alergia');
-const fechaNacimientoDate = document.querySelector('#fechaNacimiento');
-const generoSelect = document.querySelector('#genero');
-const btnBuscar = document.querySelector('.btnBuscar');
-const divMasCampos = document.querySelector('.divMasCampos ');
+
 
 // FUNCIONES CON EXPRESIONES REGULARES PARA EL FORM
 function validarNombreApellido(elem) {
@@ -183,87 +175,138 @@ async function fetchVerificarDocumento(documento) {
 
 
 
-// Esperar a que el DOM esté completamente cargado
+
 document.addEventListener('DOMContentLoaded', async function () {
-    const btnPaciente = document.querySelector('.btnPaciente');
+    const documentoInput = document.querySelector('#documento');
+    const nombreInput = document.querySelector('#nombre');
+    const apellidoInput = document.querySelector('#apellido');
+    const telefonoInput = document.querySelector('#telefono');
+    const alergiaInput = document.querySelector('#alergia');
+    const fechaNacimientoDate = document.querySelector('#fechaNacimiento');
+    const generoSelect = document.querySelector('#genero');
+    const estadoSelect = document.querySelector('#estado');
+    const btnModificarPaciente = document.querySelector('.btnPaciente');
+    const divMasCampos = document.querySelector('.divMasCampos');
+    const btnBuscar = document.querySelector('.btnBuscar');
+
+
     const pacientes = await fetchObtenerTodosLosPacientes();
     configurarInputConLista('#documento', '.pacientes-list', pacientes);
-
+    let pacienteEncontrado;
     //---------------------------------------------------------------------------------------------------------------------------
 
     btnBuscar.addEventListener('click', async function () {
-        let documento = documentoInput.value.trim();
+        let documentoBuscado = documentoInput.value.trim();
 
-        if (!documento) {
+        if (!documentoBuscado) {
             mostrarMsjCliente('Documento obligatorio', ['Documento vacío, debe ingresar el número de documento.']);
             return;
-        } else if (!validarDocumento(documento)) {
+        } else if (!validarDocumento(documentoBuscado)) {
             mostrarMsjCliente('Documento incorrecto', ['El documento debe tener solo números y una longitud mínima de 6 y máxima de 12.']);
             return;
         }
 
-        documento = parseInt(documento, 10);
-        const paciente = await fetchVerificarDocumento(documento);
+        documentoBuscado = parseInt(documentoBuscado, 10);
+        pacienteEncontrado = await fetchVerificarDocumento(documentoBuscado);
         // console.log(paciente);
 
-        if (paciente) {
-            mostrarMsjCliente('Paciente encontrado', [`El paciente ${paciente.nombre} ${paciente.apellido} ya se encuentra registrado.`]);
+        if (pacienteEncontrado) {
+            divMasCampos.classList.remove('displayNone')
+            btnModificarPaciente.classList.remove('displayNone');
+            console.log(pacienteEncontrado);
+
+            //cargar datos del paciente encontrado
+            nombreInput.value = pacienteEncontrado.nombre;
+            apellidoInput.value = pacienteEncontrado.apellido;
+            telefonoInput.value = pacienteEncontrado.telefono;
+            alergiaInput.value = pacienteEncontrado.alergia;
+            fechaNacimientoDate.value = pacienteEncontrado.fecha_nacimiento;
+
+            switch (pacienteEncontrado.sexo) {
+                case "MASCULINO":
+                    generoSelect.value = "1";
+                    break;
+                case "FEMENINO":
+                    generoSelect.value = "2";
+                    break;
+                case "OTRO":
+                    generoSelect.value = "3";
+                    break;
+                default:
+                    console.log("Sexo no reconocido");
+                    break;
+            }
+            estadoSelect.value = pacienteEncontrado.estado;
+
+        } else {
+            mostrarMsjCliente('Documento incorrecto', [`El numero de documento no esta registrado, puede agregarlo como paciente nuevo.`]);
             return;
         }
 
-        divMasCampos.classList.remove('displayNone')
     });
 
 
 
-    //B O T O N   A G R E G A R   P A C I E N T E ----------------------------------------------------------------------------------------
-    async function enviarDatosPaciente(data) {
-        try {
-            const response = await fetch('/agregarPaciente', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                nombreInput.value = '';
-                apellido.value = '';
-                telefonoInput.value = '';
-                alergiaInput.value = '';
-                fechaNacimientoDate.value = '';
-                generoSelect.value = -1;
-                documentoInput.value = '';
-                divMasCampos.classList.add('displayNone');
-                mostrarMsjCliente('Paciente agregado', [result.mensaje]);
-            } else {
-                alert(result.mensaje);
-                mostrarMsjCliente('Error', [result.mensaje])
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            mostrarMsjCliente('Error al crear paciente', [error]);
-        }
-    }
 
 
-    btnPaciente.addEventListener('click', async function () {
+
+
+
+
+    btnModificarPaciente.addEventListener('click', async function () {
+        // Aquí la lógica específica para modificar el paciente
 
         let documento = documentoInput.value.trim();
-        if (!documento) {
-            mostrarMsjCliente('Documento obligatorio', ['Documento vacío, debe ingresar el número de documento.']);
-            return;
-        } else if (!validarDocumento(documento)) {
-            mostrarMsjCliente('Documento incorrecto', ['El documento debe tener solo números y una longitud mínima de 6 y máxima de 12.']);
+        const nombre = nombreInput.value.trim().toUpperCase();
+        const apellido = apellidoInput.value.trim().toUpperCase();
+        const telefono = telefonoInput.value.trim();
+        const alergia = alergiaInput.value.trim().toUpperCase();
+        const fecha_nacimiento = fechaNacimientoDate.value.trim();
+        let sexo = generoSelect.value;
+        const estado = estadoSelect.value;
+
+
+
+        // //mo funciono esto....................
+        // console.log(documento);
+        // console.log(typeof documento);
+        // console.log(pacienteEncontrado.documento);
+        // console.log(typeof pacienteEncontrado.documento);
+        // console.log(nombre);
+        // console.log(pacienteEncontrado.nombre);
+        // console.log(apellido);
+        // console.log(pacienteEncontrado.apellido);
+        // console.log(telefono);
+        // console.log(pacienteEncontrado.telefono);
+        // console.log(alergia);
+        // console.log(pacienteEncontrado.alergia);
+        // console.log(fecha_nacimiento);
+        // console.log(pacienteEncontrado.fecha_nacimiento);
+        // console.log(sexo);
+        // console.log(pacienteEncontrado.sexo);
+
+        if (documento == pacienteEncontrado.documento && nombre === pacienteEncontrado.nombre && apellido === pacienteEncontrado.apellido && telefono === pacienteEncontrado.telefono && alergia === pacienteEncontrado.alergia && fecha_nacimiento === pacienteEncontrado.fecha_nacimiento && sexo === pacienteEncontrado.sexo && estado == pacienteEncontrado.estado) {
+            mostrarMsjCliente('Datos incorrectos', ['No se encontraron modificaciones en el paciente, primero debe hacer las modificaciones.'])
             return;
         }
-        documento = parseInt(documento, 10);
-        const paciente = await fetchVerificarDocumento(documento);
 
-        const nombre = nombreInput.value.trim().toUpperCase();
+        //EXPRESIONES REGULARES con MSJS DE ERROR
+        if (!documento || !validarDocumento(documento)) {
+            mostrarMsjCliente('Documento incorrecto', ['Documento no válido.']);
+            return;
+        }
+
+        // VERIFICAR SI MODIFICARON EL DOCUMENTO DEL PACIENTE: si no esta ocupado el nuevo documento
+        if (documento != pacienteEncontrado.documento) {
+            //validar que no este ocupado el documento modificado
+            const documentoOcupado = await fetchVerificarDocumento(documento);
+            if (documentoOcupado) {
+                mostrarMsjCliente('Documento incorrecto', [`El numero de documento no fue posible modificarlo, ya se encuentra registrado un paciente con el documento: ${documentoOcupado.documento}.`])
+                return;
+            }
+        }
+
+        //EXPRESIONES REGULARES con MSJS DE ERROR
         if (!nombre) {
             mostrarMsjCliente('Nombre obligatorio', ['Nombre vacio, debe ingresar el nombre.']);
             return;
@@ -272,7 +315,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        const apellido = apellidoInput.value.trim().toUpperCase();
         if (!apellido) {
             mostrarMsjCliente('Apellido obligatorio', ['Apellido vacio, debe ingresar el apellido.'])
             return;
@@ -281,7 +323,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        const telefono = telefonoInput.value.trim();
         if (!telefono) {
             mostrarMsjCliente('Telefono obligatorio', ['Telefono vacio, debe ingresar el telefono.']);
             return;
@@ -290,17 +331,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        const alergia = alergiaInput.value.trim().toUpperCase();
         if (!validarAlergia(alergia)) {
             return;
         }
 
-        const fecha_nacimiento = fechaNacimientoDate.value.trim();
         if (!validarFechaNacimiento(fecha_nacimiento)) {
             return;
         }
 
-        let sexo = generoSelect.value;
         if (sexo === '-1') {
             mostrarMsjCliente('Genero incorrecto', ['Debe seleccionar un genero']);
             return;
@@ -310,37 +348,46 @@ document.addEventListener('DOMContentLoaded', async function () {
             sexo = 'FEMENINO';
         } else if (sexo === '3') {
             sexo = 'OTRO';
+        } else {
+            mostrarMsjCliente('Sexo incorrecto', ['Verifique el genero ingresado.']);
+            return;
         }
+
 
 
         // Preparar datos para enviar
         const data = {
+            id: pacienteEncontrado.id,
             nombre,
             apellido,
             documento,
             fecha_nacimiento,
             sexo,
             telefono,
-            alergia
+            alergia,
+            estado
         };
 
-        // Llamar a la función para enviar los datos
-        await enviarDatosPaciente(data);
+        try {
+            const response = await fetch('/modificarPaciente', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                mostrarMsjCliente('Paciente modificado', ['Las modificaciones fueron realizadas con éxito.']);
+            } else {
+                mostrarMsjCliente('Error', [result.mensaje]);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarMsjCliente('Error al modificar paciente', [error.message]);
+        }
+
 
     });
-
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
