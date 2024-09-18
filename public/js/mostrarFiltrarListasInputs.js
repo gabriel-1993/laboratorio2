@@ -99,32 +99,42 @@ export function renderizarLista(elementoLista, elementos) {
             //obras sociales por ej muestro nombres
             itemLista.textContent = elemento.nombre;
             elementoLista.appendChild(itemLista);
-        }else if(elemento.documento){
-              // pacientes muestra documento
-              itemLista.textContent = elemento.documento;
-              elementoLista.appendChild(itemLista);
+        } else if (elemento.documento) {
+            // pacientes muestra documento
+            itemLista.textContent = elemento.documento;
+            elementoLista.appendChild(itemLista);
         }
-
+        //mostrar medicamento items en prescripcion nueva
+        else if (elemento.item_id && elemento.concentracion_descripcion && elemento.formafarmaceutica_descripcion && elemento.nombre_generico && elemento.presentacion_descripcion) {
+            itemLista.dataset.id = elemento.item_id;
+            itemLista.textContent = `${elemento.nombre_generico} ${elemento.concentracion_descripcion} ${elemento.formafarmaceutica_descripcion} ${elemento.presentacion_descripcion}`
+            elementoLista.appendChild(itemLista);
+        }
 
     });
 }
 
 // Función para filtrar la lista
 export function filtrarLista(input, lista, elementos) {
-    const textoFiltro = input.value.toLowerCase();
+    const textoFiltro = input.value.toUpperCase();
     let elementosFiltrados;
     if (elementos[0].descripcion) {
         elementosFiltrados = elementos.filter(elemento =>
-            elemento.descripcion.toLowerCase().includes(textoFiltro)
+            elemento.descripcion.toUpperCase().includes(textoFiltro)
         );
     } else if (elementos[0].nombre) {
         //Obra social .nombre
         elementosFiltrados = elementos.filter(elemento =>
-            elemento.nombre.toLowerCase().includes(textoFiltro)
+            elemento.nombre.toUpperCase().includes(textoFiltro)
         );
     }
+    //filtrar medicamento items en prescripcion nueva
+    else if (elementos[0].item_id && elementos[0].concentracion_descripcion && elementos[0].formafarmaceutica_descripcion && elementos[0].nombre_generico && elementos[0].presentacion_descripcion) {
 
-
+        elementosFiltrados = elementos.filter(elemento =>
+            `${elemento.nombre_generico.toUpperCase()} ${elemento.concentracion_descripcion.toUpperCase()} ${elemento.formafarmaceutica_descripcion.toUpperCase()} ${elemento.presentacion_descripcion.toUpperCase()}`
+                .includes(textoFiltro));
+    }
 
     if (textoFiltro === '') {
         ocultarLista(lista);

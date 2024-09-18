@@ -27,11 +27,11 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0px 10px;
-    height: 60px;
+    height: 62px;
     background-color: var(--azulOscuro);
     color: #fff;
     border-bottom: 2px solid var(--celesteOscuro);
-    z-index: 2;
+    z-index: 100;
     margin: 0px auto;
 }
 
@@ -84,7 +84,7 @@ body {
 
 
 .subMenu {
-    border-top: solid 2px var(--celesteOscuro);
+    /* border-top: solid 2px var(--celesteOscuro); */
     display: none;
     position: absolute;
     right: 0;
@@ -247,6 +247,10 @@ body {
 }
 
 .width100 {
+    width: 100%;
+}
+
+#width100{
     width: 100%;
 }
 
@@ -565,7 +569,8 @@ button:hover {
 #formModificarPrestacion .fa-magnifying-glass,
 #formCrearObraSocial .fa-magnifying-glass,
 #formBuscarObraSocial .fa-magnifying-glass,
-#formPaciente .fa-magnifying-glass{
+#formPaciente .fa-magnifying-glass,
+#formPrescripcion .fa-magnifying-glass {
     margin-left: 10px;
 }
 
@@ -670,7 +675,17 @@ input,
 .selectEstadoModificarMedicamento,
 .selectEstadoModificarMedicamentoItem,
 #selectEstado,
-#genero {
+#genero,
+#pacObraSocial,
+#pacPlan,
+#pacSexo,
+#vigencia,
+#medicamentosSelect,
+#formaFarmaceuticaSelect,
+#presentacionSelect,
+#concentracionSelect,
+#prestacion,
+#lado {
     text-align: start;
 }
 
@@ -688,7 +703,17 @@ input,
 .selectEstadoModificarMedicamentoItem,
 #genero,
 #selectEstado,
-#estado {
+#estado,
+#pacObraSocial,
+#pacPlan,
+#pacSexo,
+#vigencia,
+#medicamentosSelect,
+#formaFarmaceuticaSelect,
+#presentacionSelect,
+#concentracionSelect,
+#prestacion,
+#lado {
     flex: 1 1 auto;
     /* El input ocupa todo el espacio restante */
 }
@@ -710,10 +735,55 @@ input,
 #formCrearObraSocial .divPlanesAsignados,
 #formBuscarObraSocial div,
 #formPaciente div,
-#formModificarPaciente div {
+#formModificarPaciente div,
+#formPrescripcion .divDatos,
+#formPrescripcion .divMasCampos {
     width: 100%;
     display: flex;
     align-items: center;
+}
+
+/* CREAR PRESCRIPCION */
+.divDatos,
+#formPrescripcion .divMasCampos {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 10px;
+}
+
+
+.divDatos div {
+    display: flex;
+    width: 48%;
+    margin: 0 auto;
+}
+
+.divDatosMedicamentos div,
+.divDatosPrestaciones div,
+.divDatosMedicamentos .divBuscarMedicamentoItem div {
+    /* aumento para crear medicamentos en crear prescipcion */
+    /* width: 80%; */
+    width: 98%;
+}
+
+/* aumento para crear medicamentos en crear prescipcion */
+
+.divBuscarDescripcion .prestaciones-list .listaFiltradaItem,
+.divBuscarDescripcion .lados-list .listaFiltradaItem {
+    width: 84%;
+}
+
+.divDatos .divBuscarDocumento div,
+.divDatosMedicamentos .divBuscarMedicamentoItem,
+.divDatosPrestaciones .divBuscarDescripcion {
+    width: 100%;
+}
+
+.divDatos .divBuscarDocumento {
+    width: 43%;
+    margin-bottom: 15px;
 }
 
 #formAgregarMedicamento .divDatosMedicamento,
@@ -756,7 +826,8 @@ input,
 #selectEstado,
 #genero,
 input,
-#estado {
+#estado,
+#pacObraSocial {
     padding: 4px;
     font-weight: 100;
     font-size: 0.9rem;
@@ -818,7 +889,8 @@ input:focus {
 .divLadosExistentes p,
 .divPrestacionesExistentes p,
 .divFormObraSocial p,
-.divFormPaciente p {
+.divFormPaciente p,
+.divFormPrescripcion p {
     width: 80%;
     margin: 30px auto;
     margin-bottom: 20px;
@@ -828,6 +900,11 @@ input:focus {
     text-align: center;
     /* celeste oscuro trasparente */
     background-color: #007bffd7;
+}
+
+.divFormPrescripcion p {
+    margin-top: 1px;
+    margin-bottom: 1px;
 }
 
 .divCrearPrestacion p,
@@ -975,8 +1052,9 @@ input:focus {
     width: 90%;
 }
 
-.divPrestacionesExistentes {
-    width: 75%;
+.divPrestacionesExistentes,
+.divFormPrescripcion {
+    width: 70%;
 }
 
 /* contenedor cards de prestaciones en mostrar lista prestaciones */
@@ -1092,7 +1170,6 @@ input:focus {
     background-color: var(--color-fondo);
     padding: 3px;
     flex-direction: column;
-
 }
 
 
@@ -1103,7 +1180,8 @@ input:focus {
 }
 
 
-.divPrestacionesExistentes {
+.divPrestacionesExistentes,
+.divFormPrescripcion {
     background-color: var(--color-fondo);
     border-radius: 9px;
 }
@@ -1127,7 +1205,8 @@ input:focus {
 .divLados,
 .divBuscarNombre,
 .divBuscarPlan,
-.divBuscarDocumento {
+.divBuscarDocumento,
+.divBuscarMedicamentoItem {
     position: relative;
 }
 
@@ -1156,6 +1235,14 @@ input:focus {
     right: -127px;
 }
 
+.right-135px {
+    right: -135px;
+}
+
+.right-140px {
+    right: -140px;
+}
+
 
 .listaFiltradaItem {
     background-color: var(--color-fondo);
@@ -1168,6 +1255,10 @@ input:focus {
     font-size: 0.8rem;
 }
 
+/* lista en medicamentos nueva prescripcion */
+.divBuscarMedicamentoItem .listaFiltrada .listaFiltradaItem {
+    width: 83%;
+}
 
 
 .listaFiltradaItem:hover {
@@ -1220,11 +1311,12 @@ input:focus {
 
 
 /* PACIENTES  */
-.divFormPaciente {
+.divFormPrescripcion {
     margin: 40px 0;
 }
 
-#formPaciente, #formModificarPaciente {
+#formPaciente,
+#formModificarPaciente {
     padding-top: 0px;
     padding-bottom: 40px;
 }
@@ -1233,7 +1325,9 @@ input:focus {
     font-size: 0.8rem;
 }
 
-#genero, #fechaNacimiento,#formModificarPaciente #estado{
+#genero,
+#fechaNacimiento,
+#formModificarPaciente #estado {
     padding: 3px;
 }
 
@@ -1244,7 +1338,7 @@ input:focus {
 }
 
 /* mostrar pacientes lista */
-.divContenedorPacientes{
+.divContenedorPacientes {
     display: flex;
     flex-direction: column;
 
@@ -1255,6 +1349,66 @@ input:focus {
     padding: 10px;
 }
 
-.divContenedorPacientes .cardItem{
+.divContenedorPacientes .cardItem {
     width: 100%;
 }
+
+.divMedicamentosAgregados, .divPrestacionesAgregadas  {
+    border: solid 2px var(--azulSemiOscuro);
+    border-radius: 9px;
+    gap: 8px;
+    padding-bottom: 8px;
+}
+
+.divFormPrescripcion .eliminarMedicamentoPrescripcion,
+.divFormPrescripcion .eliminarMedicamentoPrescripcion .fa-trash {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    background-color: var(--azulSemiOscuro);
+    /* opcional */
+    cursor: pointer;
+    width: auto;
+    padding: 2px 4px;
+    gap: 2px;
+    transition: all 0.3s ease-out;
+}
+
+.divFormPrescripcion .eliminarMedicamentoPrescripcion:hover,
+.divFormPrescripcion .eliminarMedicamentoPrescripcion .fa-trash:hover {
+    background-color: var(--celesteOscuro);
+
+    .fa-trash {
+        background-color: var(--celesteOscuro);
+    }
+}
+.divBtnAgregarPrescripcion{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 0;
+}
+.btnAgregarPrescripcion {
+    width: 250px;
+    margin:auto 0;
+}
+
+/*agregar prescripcion--> prescripciones anteriores en el mismo form*/
+.divPrescAnteriores{
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+}
+
+.divPrescAnteriores .cardPrescripcionAnterior{
+    width: 100%;
+    border: solid 1px var(--azulSemiOscuro);
+    border-radius: 8px;
+}
+
+.cardPrescripcionAnterior .displayFlex {
+    width: 100%;
+    padding: 5px 0;
+    gap: 5px;
+} 

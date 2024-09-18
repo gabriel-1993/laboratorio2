@@ -496,6 +496,29 @@ const buscarUsuarioDocumento = async (req, res) => {
   }
 };
 
+const buscarUsuarioPorId = async (req, res) => {
+  let { usuario_id } = req.body; // Cambia de req.params a req.body
+  console.log(usuario_id);
+
+  // Convertir el ID a un número entero
+  usuario_id = parseInt(usuario_id, 10);
+
+  console.log('int');
+  console.log(usuario_id);
+
+  try {
+    const usuario = await Usuario.buscarUsuarioPorId(usuario_id);
+    if (!usuario) {
+      return res.status(404).json({ message: 'El id ingresado no se encuentra registrado.' });
+    }
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al buscar el usuario' });
+  }
+};
+
+
+
 const buscarRolesUsuario = async (req, res) => {
   const { usuario_id } = req.params;
   try {
@@ -814,5 +837,6 @@ export default {
   buscarRolesUsuario,
   modificarUsuarioCompleto,
   mostrarFormBuscarUsuarios,
-  buscarUsuarios
+  buscarUsuarios,
+  buscarUsuarioPorId
 };

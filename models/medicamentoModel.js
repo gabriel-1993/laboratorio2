@@ -204,7 +204,7 @@ class Medicamento {
     }
 
     //MODIFICAR EL ESTADO DE TODOS LOS ITEMS QUE COMPARTAN IDMEDICAMENTO
-    static async modificarEstadoMedicamentosItemsId( estadoNum, medicamentoId, transaction = null) {
+    static async modificarEstadoMedicamentosItemsId(estadoNum, medicamentoId, transaction = null) {
         try {
             const query = `
                         UPDATE medicamento_item
@@ -212,7 +212,7 @@ class Medicamento {
                         WHERE medicamento_id = ?
                     `;
 
-            const valores = [ estadoNum, medicamentoId];
+            const valores = [estadoNum, medicamentoId];
 
             await sequelize.query(query, {
                 replacements: valores,
@@ -247,6 +247,48 @@ class Medicamento {
             throw error;
         }
     }
+
+
+    // Buscar todos los medicamentos items con estado disponible (estado = 1)
+    static async buscarTodosItemsMedicamentosDisponibles(transaction = null) {
+        try {
+            const medicamentosItems = await sequelize.query(
+                `SELECT 
+                    medicamento_item.item_id,
+                    medicamento_item.estado,
+                    medicamento.nombre_generico,
+                    formafarmaceutica.descripcion AS formafarmaceutica_descripcion,
+                    presentacion.descripcion AS presentacion_descripcion,
+                    concentracion.descripcion AS concentracion_descripcion
+                FROM 
+                    medicamento_item
+                JOIN 
+                    medicamento ON medicamento_item.medicamento_id = medicamento.id
+                JOIN 
+                    formafarmaceutica ON medicamento_item.formafarmaceutica_id = formafarmaceutica.id
+                JOIN 
+                    presentacion ON medicamento_item.presentacion_id = presentacion.id
+                JOIN 
+                    concentracion ON medicamento_item.concentracion_id = concentracion.id
+                WHERE 
+                    medicamento_item.estado = 1`, // Solo selecciona los items con estado = 1
+                {
+                    type: sequelize.QueryTypes.SELECT,
+                    transaction
+                }
+            );
+
+            if (!medicamentosItems || medicamentosItems.length === 0) {
+                return null; // No se encontraron items
+            }
+
+            return medicamentosItems;
+        } catch (error) {
+            console.error('Error al buscar todos los medicamentos items disponibles:', error);
+            throw error;
+        }
+    }
+
 
 
     // F A M I L I A ***************************************************************************************************************
@@ -820,7 +862,7 @@ class Medicamento {
     //Por cada item encontrado devuelve su concentracion_id, estado, formafarmaceutica_id, medicamento_id, presentacion_id
     // (Queda pendiente buscar la descripciones de cada ID para renderizarlas)
 
-    // BUSCAR ITEM DEL MEDICAMENTO POR SU ID Y TRAER LAS DESCRIPCIONES DE FORMA,PRESENTACION Y CONCENTRACION 
+    // BUSCAR TODOS LOS ITEMS DEL MEDICAMENTO POR SU ID Y TRAER LAS DESCRIPCIONES DE FORMA,PRESENTACION Y CONCENTRACION 
     static async buscarItemsMedicamento(medicamento_id, transaction = null) {
         try {
             const query = `
@@ -844,6 +886,34 @@ class Medicamento {
             return items;
         } catch (error) {
             console.error('Error al buscar los items del medicamento:', error);
+            throw error;
+        }
+    }
+
+    //BUSCAR DESCRIPCIONES DE UN MEDICAMENTO ITEM
+    static async buscarDatosItemMedicamento(item_id, transaction = null) {
+        try {
+            const query = `
+                 SELECT mi.*,
+                       ff.descripcion AS descripcion_forma,
+                       p.descripcion AS descripcion_presentacion,
+                       c.descripcion AS descripcion_concentracion
+                FROM medicamento_item mi
+                LEFT JOIN formafarmaceutica ff ON mi.formafarmaceutica_id = ff.id
+                LEFT JOIN presentacion p ON mi.presentacion_id = p.id
+                LEFT JOIN concentracion c ON mi.concentracion_id = c.id
+                WHERE mi.item_id = :item_id
+            `;
+
+            const item = await sequelize.query(query, {
+                replacements: { item_id },
+                type: sequelize.QueryTypes.SELECT,
+                transaction
+            });
+
+            return item;
+        } catch (error) {
+            console.error('Error al buscar datos de item medicamento:', error);
             throw error;
         }
     }

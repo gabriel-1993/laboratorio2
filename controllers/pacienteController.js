@@ -21,7 +21,7 @@ const mostrarFormModificarPaciente = (req, res) => {
   }
 };
 
-const mostrarFormListaPacientes = (req, res) =>{
+const mostrarFormListaPacientes = (req, res) => {
   if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'PROFESIONAL')) {
     res.render('formMostrarListaPacientes');
   } else {
@@ -184,7 +184,7 @@ async function modificarPaciente(req, res) {
     }
 
     // Modificar los datos del paciente en la base de datos
-    await Paciente.modificarPaciente( id,
+    await Paciente.modificarPaciente(id,
       nombre,
       apellido,
       documento,
@@ -192,7 +192,7 @@ async function modificarPaciente(req, res) {
       sexo,
       telefono,
       alergia,
-      estado , transaction);
+      estado, transaction);
 
     await transaction.commit();
     res.status(200).json({ message: 'Modificación exitosa' });
@@ -255,6 +255,37 @@ function validarAlergia(alergia) {
   return true;
 }
 
+//BUSCAR OBRA Y PLAN DEL PACIENTE
+async function buscarObraYplanPacienteId(req, res) {
+  const transaction = await sequelize.transaction();
+  try {
+      const { id } = req.body;
+console.log(typeof id);
+
+      if (!id) {
+          return res.status(400).json({ message: 'ID PACIENTE VACÍO' });
+      }
+
+      // Llamada al modelo para obtener la obra social y plan
+      const resultado = await Paciente.buscarObraYPlanPorPacienteId(id, transaction);
+
+      if (!resultado.obra_social && !resultado.plan) {
+          return res.status(404).json({ message: 'No se encontraron obras sociales ni planes para este paciente' });
+      }
+
+      await transaction.commit();
+      res.status(200).json({ 
+          message: 'Obra social y plan encontrados', 
+          obra_social: resultado.obra_social, 
+          plan: resultado.plan 
+      });
+  } catch (error) {
+      await transaction.rollback();
+      console.error('Error al buscar obra social y plan de paciente:', error);
+      res.status(500).json({ message: 'Error al buscar obra social y plan de paciente', error: error.message });
+  }
+}
+
 
 export default {
   mostrarFormAgregarPaciente,
@@ -263,5 +294,6 @@ export default {
   crearPaciente,
   mostrarFormModificarPaciente,
   modificarPaciente,
-  mostrarFormListaPacientes
+  mostrarFormListaPacientes,
+  buscarObraYplanPacienteId
 };

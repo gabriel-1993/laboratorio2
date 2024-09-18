@@ -1,4 +1,3 @@
-// routes/taskRoutes.js
 import express from 'express';
 const router = express.Router();
 import pacienteController from '../controllers/pacienteController.js';
@@ -24,6 +23,7 @@ router.get("/modificarPaciente", pacienteController.mostrarFormModificarPaciente
 router.post("/modificarPaciente", pacienteController.modificarPaciente)
 
 router.get('/buscarPacientes', pacienteController.mostrarFormListaPacientes);
+
 // reutilizar :
 // router.get('/obtenerPacientes', pacienteController.obtenerTodosLosPacientes);
 

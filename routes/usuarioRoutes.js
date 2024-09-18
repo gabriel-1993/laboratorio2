@@ -52,6 +52,8 @@ router.get('/buscarUsuarios', usuarioController.buscarUsuarios);
 //reutilizo las rutas de modificar usuario para obtener datos para los roles (profesional)
 router.get('/buscarRolesUsuario/:usuario_id', usuarioController.buscarRolesUsuario);
 router.get('/buscarDatosProfesional/:usuario_id', profesionalController.obtenerDatosProfesional);
+//Buscar usuario por id
+router.post('/buscarUsuarioId', usuarioController.buscarUsuarioPorId);
 
 
 

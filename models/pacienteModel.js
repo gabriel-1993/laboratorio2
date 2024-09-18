@@ -64,6 +64,48 @@ class Paciente {
         }
     }
 
+//BUSCAR OBRA Y PLAN DEL PACIENTE
+static async buscarObraYPlanPorPacienteId(pacienteId, transaction = null) {
+    try {
+        const queryObraSocial = `
+            SELECT os.nombre 
+            FROM paciente_obrasocial pos 
+            JOIN obrasocial os ON pos.obra_social_id = os.id 
+            WHERE pos.paciente_id = ?`;
+
+        const obraSocialRows = await sequelize.query(queryObraSocial, {
+            replacements: [pacienteId],
+            type: sequelize.QueryTypes.SELECT,
+            transaction
+        });
+
+        const nombreObraSocial = obraSocialRows.length > 0 ? obraSocialRows[0].nombre : null;
+
+        const queryPlan = `
+            SELECT p.nombre 
+            FROM paciente_plan pp 
+            JOIN plan p ON pp.plan_id = p.id 
+            WHERE pp.paciente_id = ?`;
+
+        const planRows = await sequelize.query(queryPlan, {
+            replacements: [pacienteId],
+            type: sequelize.QueryTypes.SELECT,
+            transaction
+        });
+
+        const nombrePlan = planRows.length > 0 ? planRows[0].nombre : null;
+
+        return {
+            obra_social: nombreObraSocial,
+            plan: nombrePlan
+        };
+    } catch (error) {
+        console.error('Error en buscarObraYPlanPorPacienteId:', error);
+        throw error;
+    }
+}
+
+
 
 
     // Buscar todos los pacientes

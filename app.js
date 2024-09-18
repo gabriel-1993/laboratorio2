@@ -35,7 +35,7 @@ import prestacionRoutes from "./routes/prestacionRoutes.js";
 import obraSocialRoutes from "./routes/obraSocialRoutes.js";
 //PROFESIONAL
 import pacienteRoutes from "./routes/pacienteRoutes.js";
-// import prescripcionRoutes from "./routes/prescripcionRoutes.js";
+import prescripcionRoutes from "./routes/prescripcionRoutes.js";
 
 
 //fileURLToPath convierte una URL de archivo (file://) en una ruta de archivo del sistema de archivos que puede ser utilizada por Node.js.
@@ -95,6 +95,8 @@ let MySQLStore;
   app.use("/", obraSocialRoutes)
   //PROFESIONAL
   app.use("/", pacienteRoutes);
+  //PRESCRIPCION
+  app.use("/", prescripcionRoutes);
 
 
 

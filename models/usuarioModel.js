@@ -59,7 +59,7 @@ class Usuario {
     return new Usuario({ id, nombre, apellido, documento, password, estado, email });
   }
 
-  // Ejemplo de función existente para buscar usuario por email
+  //buscar usuario por email
   static async buscarUsuarioPorEmail(email) {
     const query = `SELECT * FROM usuario WHERE email = ?`;
     const [rows] = await pool.query(query, [email]);
@@ -67,6 +67,17 @@ class Usuario {
       return null;
     }
     const { id, nombre, apellido, documento, password, estado } = rows[0];
+    return new Usuario({ id, nombre, apellido, documento, password, estado, email });
+  }
+
+  //  buscar usuario por ID
+  static async buscarUsuarioPorId(usuario_id) {
+    const query = `SELECT * FROM usuario WHERE id = ?`;
+    const [rows] = await pool.query(query, [usuario_id]);
+    if (rows.length === 0) {
+      return null;
+    }
+    const { id, nombre, apellido, documento, password, estado, email } = rows[0];
     return new Usuario({ id, nombre, apellido, documento, password, estado, email });
   }
 
@@ -79,13 +90,13 @@ class Usuario {
       LEFT JOIN rol r ON ur.rol_id = r.id
     `;
     const [rows] = await pool.query(query);
-    
+
     if (rows.length === 0) {
       return null;
     }
-  
+
     const usuariosMap = new Map();
-  
+
     for (const row of rows) {
       const { id, nombre, apellido, documento, estado, email, rol_id, rol_descripcion } = row;
       if (!usuariosMap.has(id)) {
@@ -97,18 +108,18 @@ class Usuario {
         usuariosMap.get(id).roles.push({ rol_id, rol_descripcion });
       }
     }
-  
+
     for (const usuario of usuariosMap.values()) {
       const profesionalRol = usuario.roles.find(rol => rol.rol_descripcion === 'PROFESIONAL');
       if (profesionalRol) {
         usuario.datosProfesional = await Profesional.obtenerDatosProfesional(usuario.id);
       }
     }
-  
+
     return Array.from(usuariosMap.values());
   }
-  
-  
+
+
 
   static async buscarRolesUsuario(usuario_id) {
     const query = `SELECT ur.rol_id, r.rol_descripcion
