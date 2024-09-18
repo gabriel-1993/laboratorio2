@@ -28,8 +28,6 @@ router.post('/agregarPrescripcion', prescripcionController.agregarPrescripcionCo
 
 router.post("/obtenerPrescripcionesAnteriores", prescripcionController.obtenerPrescripcionesAnteriores);
 
-router.post("/modificarPrescripcion", prescripcionController.mostrarFormModificarPrescripcion);
-
 
 router.get("/descargarPdf", (req, res) => {
     const prescripcion = JSON.parse(atob(req.query.prescripcion));

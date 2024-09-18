@@ -14,15 +14,6 @@ const mostrarFormAgregarPrescripcion = (req, res) => {
 };
 
 
-const mostrarFormModificarPrescripcion
-  = (req, res) => {
-    if (req.session.user && req.session.user.roles.some(role => role.rol_descripcion === 'PROFESIONAL')) {
-      res.render('formModificarPrescripcion');
-    } else {
-      res.render('accesoDenegado');
-      //   res.status(403).json({ mensaje: 'Acceso denegado' });
-    }
-  };
 
 const agregarPrescripcionCompleta = async (req, res) => {
   const {
