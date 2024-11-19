@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error al buscar el usuario:', error);
         }
     }
+
     cargarDatosProfesional();
 
     //FETCH OBTENER TODOS LOS PACIENTES
@@ -152,6 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return [];
         }
     }
+
     //BUSCAR PACIENTE : DOCUMENTO ENCONTRADO MOSTRAR FORM CON LOS DATOS / SINO : MOSTRAR CARTEL CON ENLACE PARA CREAR PACIENTE
     document.querySelector('.btnBuscar').addEventListener('click', async () => {
         let documento = documentoPac.value.trim();
@@ -521,17 +523,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     divPrescAnteriores.appendChild(cardPrescripcion);
 
-                    const btnPdf = document.querySelector('.btnPdf');
-                    btnPdf.addEventListener('click', () => {
-                        const prescripcionData = btnPdf.getAttribute('data-prescripcion');
-                        const profesionalData = btnPdf.getAttribute('data-profesional');
-                        const pacienteData = btnPdf.getAttribute('data-paciente');
+                    const btnPdfs = document.querySelectorAll('.btnPdf');
 
-                        // Hacer una solicitud GET al servidor para descargar el PDF
-                        const url = `/descargarPdf?prescripcion=${encodeURIComponent(prescripcionData)}&profesional=${encodeURIComponent(profesionalData)}&paciente=${encodeURIComponent(pacienteData)}`;
-
-                        // Abrir el PDF en una nueva pestaña o forzar la descarga
-                        window.open(url, '_blank');
+                    btnPdfs.forEach(btnPdf => {
+                        btnPdf.addEventListener('click', () => {
+                            const prescripcionData = btnPdf.getAttribute('data-prescripcion');
+                            const profesionalData = btnPdf.getAttribute('data-profesional');
+                            const pacienteData = btnPdf.getAttribute('data-paciente');
+                    
+                            // Hacer una solicitud GET al servidor para descargar el PDF
+                            const url = `/descargarPdf?prescripcion=${encodeURIComponent(prescripcionData)}&profesional=${encodeURIComponent(profesionalData)}&paciente=${encodeURIComponent(pacienteData)}`;
+                    
+                            // Abrir el PDF en una nueva pestaña o forzar la descarga
+                            window.open(url, '_blank');
+                        });
                     });
 
                 }

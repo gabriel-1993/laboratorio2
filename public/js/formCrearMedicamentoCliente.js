@@ -518,30 +518,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // VALIDAR FORMA,PRESENTACION Y CONCENTRACION PARA APLICARLES EXPRESIONES REGULARES LAS MISMAS SE APLICAN TAMBIEN EN EL SERVIDOR
-    // function validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada) {
-    //     msjs = [];
+    function validarFormaPresentacionConcentracion(formaIngresada, presentacionIngresada, concentracionIngresada) {
+        msjs = [];
 
-    //     // Expresión regular
-    //     const regex = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;
-    //     // const regex2 = /^[0-9]+ [A-Za-z][A-Za-z0-9 ]{1,97}$/;
-    //     const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
+        // Expresión regular
+        const regex = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;
+        // const regex2 = /^[0-9]+ [A-Za-z][A-Za-z0-9 ]{1,97}$/;
+        const regex2 = /^[0-9]+(\.[0-9]+)? [A-Za-z ]{1,94}$/;
 
-    //     // Validar forma, presentacion y concentracion ingresada
-    //     if (!regex.test(formaIngresada)) {
-    //         msjs.push('Forma farmaceutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras,espacios y numeros.');
-    //     }
-    //     if (!regex2.test(presentacionIngresada)) {
-    //         msjs.push('Presentacion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 15 UNIDADES)');
-    //     }
-    //     if (!regex2.test(concentracionIngresada)) {
-    //         msjs.push('Concentracion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 200 MG)');
-    //     }
-    //     if (msjs.length > 0) {
-    //         mostrarMsjCliente('Datos incorrectos', msjs);
-    //         return false;
-    //     }
-    //     return true;
-    // }
+        // Validar forma, presentacion y concentracion ingresada
+        if (!regex.test(formaIngresada)) {
+            msjs.push('Forma farmaceutica debe comenzar con letras, min 6 max 99 caracteres. Puede ingresar letras,espacios y numeros.');
+        }
+        if (!regex2.test(presentacionIngresada)) {
+            msjs.push('Presentacion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 15 UNIDADES)');
+        }
+        if (!regex2.test(concentracionIngresada)) {
+            msjs.push('Concentracion debe comenzar con numero/s, min 6 max 99 caracteres. Puede ingresar numeros, espacios y letras.(Ej: 200 MG)');
+        }
+        if (msjs.length > 0) {
+            mostrarMsjCliente('Datos incorrectos', msjs);
+            return false;
+        }
+        return true;
+    }
 
     function validarForma(formaIngresada) {
         const regex = /^[A-Za-z][A-Za-z0-9 ]{4,99}$/;

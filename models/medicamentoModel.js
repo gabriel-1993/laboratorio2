@@ -558,22 +558,25 @@ class Medicamento {
     static async validarFormaIdEnMedicamento(medicamentoId, formaId, transaction = null) {
         try {
             const query = `
-            SELECT COUNT(*) AS count
-            FROM medicamento_formafarmaceutica
-            WHERE medicamento_id = ? AND formaFarmaceutica_id = ?
-        `;
+                SELECT COUNT(*) AS count
+                FROM medicamento_formafarmaceutica
+                WHERE medicamento_id = ? AND formaFarmaceutica_id = ?
+            `;
             const [results, metadata] = await sequelize.query(query, {
                 replacements: [medicamentoId, formaId],
                 type: sequelize.QueryTypes.SELECT,
                 transaction
             });
-
-            return results[0].count > 0;
+    
+            // Verifica si `results` es un array y tiene al menos un elemento antes de acceder a `count`
+            const count = results && results.length > 0 ? results[0].count : 0;
+            return count > 0;
         } catch (error) {
             console.error('Error al validar combinación de medicamento y forma farmacéutica:', error);
             throw error;
         }
     }
+    
 
     //ASIGNAR FORMA FARMACEUTICA A MEDICAMENTO
     static async asignarFormaMedicamento(medicamentoId, formaId, transaction = null) {

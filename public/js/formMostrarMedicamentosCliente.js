@@ -471,6 +471,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             
 
             itemsMedicamento = obtenerYMostrarItems(medicamentoEncontrado);
+            
 
         } else {
             mostrarMsjCliente('Medicamento incorrecto', ['El Nombre Generico ingresado no existe en medicamentos.']);

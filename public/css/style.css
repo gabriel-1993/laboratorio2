@@ -141,7 +141,8 @@ body {
 .liRolAsignadoCrearUsuario,
 .liRolAsignadoModificarUsuario,
 .liLadoAsignados,
-.planAsignado {
+.planAsignado,
+.liLadoAsignado {
     color: #fff;
     display: flex;
     justify-content: space-between;
@@ -647,6 +648,11 @@ button:hover {
 .labelFormaFarmaceutica {
     font-size: 0.8rem;
     padding: 5px;
+}
+
+.labelFormaFarmaceuticaFormMedicamento{
+    font-size: 0.8rem;
+    padding: 3px;
 }
 
 /* Styles for login inputs */
@@ -1412,3 +1418,8 @@ input:focus {
     padding: 5px 0;
     gap: 5px;
 } 
+
+.divBuscarDocumento{
+    width: 50%;
+    margin: auto;
+}

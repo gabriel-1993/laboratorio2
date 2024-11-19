@@ -6,7 +6,7 @@ import { Sequelize } from 'sequelize';
 //   dialect: 'mysql',
 // });
 
-const sequelize = new Sequelize('laboratorio2', 'root', '', {
+const sequelize = new Sequelize('laboratorio2', 'root', '1234', {
   host: 'localhost',
   dialect: 'mysql',
   pool: {

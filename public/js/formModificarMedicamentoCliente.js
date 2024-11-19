@@ -500,17 +500,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // // VARIABLE CON MAYOR SCOPE para otras funciones : consultar los items existentes 
             //ITEM: RENDERIZARLOS Y GUARDARLOS en la variable para VALIDAR mas adelante que NO ingresen un item REPETIDO
-            itemsMedicamento = obtenerYMostrarItems(medicamentoEncontrado);
-
+            itemsMedicamento = await obtenerYMostrarItems(medicamentoEncontrado);
+            console.log(itemsMedicamento);
+            
         } else {
             mostrarMsjCliente('Medicamento incorrecto', 'El Nombre Generico ingresado no existe en medicamentos.');
         }
 
     });
-
-    //anular reiniciar busqueda para poder modificar tambien nombre generico
-    // nombre_generico_input.addEventListener('input', reiniciarBusqueda);
-
 
 
     // M O D I F I C A R   M E D I C A M E N T O  *******************************************************************************************************************************************************
@@ -604,7 +601,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     //Validar Nombre Comercial esta modificado o no, si existe en la base o es nuevo : CREAR OBJETO PARA CONTROLADOR
     function procesarNombreComercial(nombreComercial, medicamentoEncontrado) {
         // SI MODIFICARON NOMBRE COMERCIAL (dato desconocido se renderiza cuando el dato llega vacio de la base)
-        if (nombreComercial !== medicamentoEncontrado.nombre_comercial && nombreComercial !== 'DATO DESCONOCIDO') {
+        if (nombreComercial !== medicamentoEncontrado.nombre_comercial && nombreComercial !== 'DATO DESCONOCIDO' && nombreComercial !== '') {
             // VALIDAR CON EXPRESION REGULAR MOSTRAR MSJS ERROR
             if (!validarNombre(nombreComercial, 'comercial')) {
                 return null;
@@ -766,7 +763,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let estado = selectEstadoMedicamento.value;
         estado = parseInt(estado, 10);
 
-
+        console.log("769 comercial: " + nombreComercial)
         //SI NO HAY NINGUN CAMBIO SE MUESTRA MSJ DE ERROR Y SE EVITA EL FETCH
         // Verificar si todos los campos coinciden
         if (
@@ -933,27 +930,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     //Validar FormaFarmaceutica esta modificada o no, si existe en la base o es nueva : CREAR OBJETO PARA CONTROLADOR
     function procesarFormaFarmaceutica(formaFarmaceutica, itemEncontrado, itemsMedicamento) {
         // SI MODIFICARON FormaFarmaceutica
-        if (formaFarmaceutica !== itemEncontrado.descripcion_forma) {
+        if (formaFarmaceutica.toUpperCase().trim() != itemEncontrado.descripcion_forma.toUpperCase().trim()) {
             // VALIDAR CON EXPRESION REGULAR MOSTRAR MSJS ERROR
             if (!validarForma(formaFarmaceutica)) {
                 return null;
             } else {
-                // EXPRESION OK: VALIDAR SI EXISTE EN LA BASE O ES PARA AGREGAR
-                let existe = itemsMedicamento.some(element => element.descripcion_forma === formaFarmaceutica);
 
-                if (existe) {
+                // let concentracionesBase;
+                // let formasBase;
+                // let presentacionesBase;
+                console.log(formasBase);
+                
+                // EXPRESION OK: VALIDAR SI EXISTE EN LA BASE O ES PARA AGREGAR
+                let elementoEncontrado = formasBase.find(
+                    element => element.descripcion.toUpperCase().trim() == formaFarmaceutica.toUpperCase().trim()
+                  );
+                  if (elementoEncontrado) {
+                    console.log("945 existeeee");
+                
                     return {
-                        id: existe.formafarmaceutica_id,
+                        id: elementoEncontrado.id,
                         descripcion: '',
                         asignarExistente: true,
                         crearYasignar: false
-                    }
+                    };
                 } else {
                     // SI NO ESTA REPETIDO: CREAR UN OBJETO CON LA DESCRIPCION Y crearYasignar: true
 
                     return {
                         id: '',
-                        descripcion: formaFarmaceutica,
+                        descripcion: formaFarmaceutica.toUpperCase().trim(),
                         asignarExistente: false,
                         crearYasignar: true
                     };
@@ -1052,10 +1058,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
-
-    //B O T O N   M O D I F I C A R    I T E M    M E D I C A M E N T O
-    // btnModificarMedicamentoItem.addEventListener('click', async () => {
-
     async function fetchModificarMedicamentoItem(medicamento_id, item_id, formaIngresada, presentacionIngresada, concentracionIngresada, estadoIngresado) {
         // ENVIAR DATOS
         const data = {
@@ -1103,6 +1105,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         let concentracionIngresada = concentracion_input.value.trim().toUpperCase();
         let estadoIngresado = selectEstadoItem.value;
 
+
+
         // Verificar si el ID del medicamento está vacío
         if (medicamento_item_input.value.trim() === '') {
             mostrarMsjCliente('Datos vacíos', ['Primero debe ingresar el ID ITEM y buscarlo con la LUPA.']);
@@ -1139,6 +1143,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Procesar los datos ingresados
         formaIngresada = procesarFormaFarmaceutica(formaIngresada, itemEncontrado, itemsMedicamento);
+        console.log("1144: " + formaIngresada);
+
         presentacionIngresada = procesarPresentacion(presentacionIngresada, itemEncontrado, itemsMedicamento);
         concentracionIngresada = procesarConcentracion(concentracionIngresada, itemEncontrado, itemsMedicamento);
 

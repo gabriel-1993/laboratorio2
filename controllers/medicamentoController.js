@@ -118,7 +118,7 @@ async function modificarMedicamento(req, res) {
     }
 
     // Validar y procesar nombre comercial
-    if (nombreComercial.modificar) {
+    if (nombreComercial.modificar && nombreComercial.descripcion !== '') {
       let comercialValidacion = validarNombre(nombreComercial.descripcion, 'comercial');
       if (comercialValidacion) {
         nombreComercial = nombreComercial.descripcion;
@@ -126,7 +126,7 @@ async function modificarMedicamento(req, res) {
       } else {
         return res.status(400).json({ message: 'Nombre comercial no valido' });
       }
-    } else if (nombreComercial.descripcion === 'DATO DESCONOCIDO') {
+    } else if (nombreComercial.descripcion === 'DATO DESCONOCIDO' || nombreComercial === '') {
       nombreComercial = '';
     } else {
       nombreComercial = nombreComercial.descripcion;
@@ -250,6 +250,15 @@ function validarConcentracion(concentracionIngresada) {
 async function modificarMedicamentoItem(req, res) {
   let { medicamento_id, item_id, formaIngresada, presentacionIngresada, concentracionIngresada, estadoIngresado } = req.body;
 
+  console.log("modificarMedicamentoItemController");
+
+  console.log(medicamento_id);
+console.log(item_id);
+console.log(formaIngresada);
+console.log(presentacionIngresada);
+console.log(concentracionIngresada);
+console.log(estadoIngresado);
+
   if (!medicamento_id || !item_id || !formaIngresada || !presentacionIngresada || !concentracionIngresada || !estadoIngresado) {
     return res.status(400).json({ message: 'Datos obligatorios: medicamentoID, ItemID, forma farmaceutica, presentacion, concentracion, estado' });
   }
@@ -287,6 +296,9 @@ async function modificarMedicamentoItem(req, res) {
     // ASIGNAR EXISTENTE
     if (presentacionIngresada.asignarExistente) {
       // VALIDAR SI PRESENTACION ID ESTA ASIGNADA AL MEDICAMENTO 
+      console.log("290: " + medicamento_id);
+      console.log("291: " + presentacionIngresada.id);
+
       const existe = await Medicamento.validarPresentacionIdEnMedicamento(medicamento_id, presentacionIngresada.id, transaction);
       if (!existe) {
         //SI PRESENTACION ID NO ESTA ASIGNADA AL MEDICAMENTO : ASIGNARLA
